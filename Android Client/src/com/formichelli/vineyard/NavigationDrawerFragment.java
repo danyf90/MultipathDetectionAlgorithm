@@ -1,7 +1,5 @@
 package com.formichelli.vineyard;
 
-import com.formichelli.vit.R;
-
 import android.support.v7.app.ActionBarActivity;
 import android.app.Activity;
 import android.support.v7.app.ActionBar;

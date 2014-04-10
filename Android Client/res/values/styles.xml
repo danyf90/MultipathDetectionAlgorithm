@@ -14,7 +14,14 @@
 
     <!-- Application theme. -->
     <style name="AppTheme" parent="AppBaseTheme">
-        <!-- All customizations that are NOT specific to a particular API-level can go here. -->
+        <item name="actionBarStyle">@style/WineActionBar</item>
+    </style>
+
+    <!-- ActionBar styles -->
+    <style name="WineActionBar" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
+
+        <!-- Support library compatibility -->
+        <item name="background">@drawable/wine_color</item>
     </style>
 
 </resources>
