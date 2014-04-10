@@ -1,4 +1,6 @@
-package com.formichelli.vit;
+package com.formichelli.vineyard;
+
+import com.formichelli.vit.R;
 
 import android.app.Activity;
 import android.support.v7.app.ActionBarActivity;
@@ -14,7 +16,7 @@ import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
 import android.widget.TextView;
 
-public class VITMainActivity extends ActionBarActivity implements
+public class VineyardMainActivity extends ActionBarActivity implements
 		NavigationDrawerFragment.NavigationDrawerCallbacks {
 
 	/**
@@ -32,7 +34,7 @@ public class VITMainActivity extends ActionBarActivity implements
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_vitmain);
+		setContentView(R.layout.activity_vineyardmain);
 
 		mNavigationDrawerFragment = (NavigationDrawerFragment) getSupportFragmentManager()
 				.findFragmentById(R.id.navigation_drawer);
@@ -80,7 +82,7 @@ public class VITMainActivity extends ActionBarActivity implements
 			// Only show items in the action bar relevant to this screen
 			// if the drawer is not showing. Otherwise, let the drawer
 			// decide what to show in the action bar.
-			getMenuInflater().inflate(R.menu.vitmain, menu);
+			getMenuInflater().inflate(R.menu.vineyardmain, menu);
 			restoreActionBar();
 			return true;
 		}
@@ -92,10 +94,10 @@ public class VITMainActivity extends ActionBarActivity implements
 		// Handle action bar item clicks here. The action bar will
 		// automatically handle clicks on the Home/Up button, so long
 		// as you specify a parent activity in AndroidManifest.xml.
-		int id = item.getItemId();
-		if (id == R.id.action_settings) {
-			return true;
-		}
+//		int id = item.getItemId();
+//		if (id == R.id.action_settings) {
+//			return true;
+//		}
 		return super.onOptionsItemSelected(item);
 	}
 
@@ -126,7 +128,7 @@ public class VITMainActivity extends ActionBarActivity implements
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container,
 				Bundle savedInstanceState) {
-			View rootView = inflater.inflate(R.layout.fragment_vitmain,
+			View rootView = inflater.inflate(R.layout.fragment_vineyardmain,
 					container, false);
 			TextView textView = (TextView) rootView
 					.findViewById(R.id.section_label);
@@ -138,7 +140,7 @@ public class VITMainActivity extends ActionBarActivity implements
 		@Override
 		public void onAttach(Activity activity) {
 			super.onAttach(activity);
-			((VITMainActivity) activity).onSectionAttached(getArguments()
+			((VineyardMainActivity) activity).onSectionAttached(getArguments()
 					.getInt(ARG_SECTION_NUMBER));
 		}
 	}

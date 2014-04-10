@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Vigneto</string>
+    <string name="title_section1">Problemi</string>
+    <string name="title_section2">Lavori</string>
+    <string name="title_section3">Impostazioni</string>
+    <string name="action_report_issue">Segnala</string>
+
+</resources>

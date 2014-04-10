@@ -4,13 +4,8 @@
     tools:context="com.formichelli.vit.VITMainActivity" >
 
     <item
-        android:id="@+id/action_example"
-        android:title="@string/action_example"
+        android:id="@+id/action_report_issue"
+        android:title="@string/action_report_issue"
         app:showAsAction="withText|ifRoom"/>
-    <item
-        android:id="@+id/action_settings"
-        android:orderInCategory="100"
-        android:title="@string/action_settings"
-        app:showAsAction="never"/>
-
+    
 </menu>
