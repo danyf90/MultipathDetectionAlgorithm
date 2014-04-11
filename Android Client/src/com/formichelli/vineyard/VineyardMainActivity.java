@@ -4,8 +4,8 @@ import android.app.Activity;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,8 +16,9 @@ import android.widget.TextView;
 
 public class VineyardMainActivity extends ActionBarActivity implements
 		NavigationDrawerFragment.NavigationDrawerCallbacks {
-	
-	Fragment mainFragment, issueFragment, worksFragment, settingsFragment;
+	private static final String TAG = "VineyardMainActivity";
+
+	Fragment mainFragment, issuesFragment, tasksFragment, settingsFragment;
 
 	/**
 	 * Fragment managing the behaviors, interactions and presentation of the
@@ -34,8 +35,14 @@ public class VineyardMainActivity extends ActionBarActivity implements
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_vineyardmain);
 
+		mainFragment = new MainFragment();
+		issuesFragment = new IssuesFragment();
+		tasksFragment = new TasksFragment();
+		settingsFragment = new SettingsFragment();
+		
+		setContentView(R.layout.activity_vineyardmain);
+		
 		mNavigationDrawerFragment = (NavigationDrawerFragment) getSupportFragmentManager()
 				.findFragmentById(R.id.navigation_drawer);
 		mTitle = getTitle();
@@ -43,16 +50,35 @@ public class VineyardMainActivity extends ActionBarActivity implements
 		// Set up the drawer.
 		mNavigationDrawerFragment.setUp(R.id.navigation_drawer,
 				(DrawerLayout) findViewById(R.id.drawer_layout));
+
 	}
 
 	@Override
 	public void onNavigationDrawerItemSelected(int position) {
+		Fragment next = null;
+		switch (position) {
+		case 0:
+			next = mainFragment;
+			break;
+		case 1:
+			next = issuesFragment;
+			break;
+		case 2:
+			next = tasksFragment;
+			break;
+		case 3:
+			next = settingsFragment;
+			break;
+		default:
+			Log.e(TAG, "onNavigationDrawerItemSelected: Unexpected position");
+			return;
+		}
+		
+		
+		
 		// update the main content by replacing fragments
-		FragmentManager fragmentManager = getSupportFragmentManager();
-		fragmentManager
-				.beginTransaction()
-				.replace(R.id.container,
-						PlaceholderFragment.newInstance(position + 1)).commit();
+		getSupportFragmentManager().beginTransaction()
+				.replace(R.id.container, next).commit();
 	}
 
 	public void onSectionAttached(int number) {
