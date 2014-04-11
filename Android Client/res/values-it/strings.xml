@@ -2,9 +2,10 @@
 <resources>
 
     <string name="app_name">Vigneto</string>
-    <string name="title_section1">Problemi</string>
-    <string name="title_section2">Lavori</string>
-    <string name="title_section3">Impostazioni</string>
+    <string name="title_section_main">Main</string>
+    <string name="title_section_issues">Problemi</string>
+    <string name="title_section_tasks">Lavori</string>
+    <string name="title_section_settings">Impostazioni</string>
     <string name="action_report_issue">Segnala</string>
 
 </resources>
