@@ -6,6 +6,9 @@
     <string name="title_section_issues">Problemi</string>
     <string name="title_section_tasks">Lavori</string>
     <string name="title_section_settings">Impostazioni</string>
+    <string name="navigation_drawer_open">Apri il navigation drawer</string>
+    <string name="navigation_drawer_close">Chiudi il navigation drawer</string>
     <string name="action_report_issue">Segnala</string>
+    <string name="action_reset_settings">Ripristina predefiniti</string>
 
 </resources>

@@ -19,7 +19,8 @@ public class VineyardMainActivity extends ActionBarActivity implements
 	private static final String TAG = "VineyardMainActivity";
 
 	Fragment mainFragment, issuesFragment, tasksFragment, settingsFragment;
-
+	Menu menu;
+	
 	/**
 	 * Fragment managing the behaviors, interactions and presentation of the
 	 * navigation drawer.
@@ -59,6 +60,7 @@ public class VineyardMainActivity extends ActionBarActivity implements
 		switch (position) {
 		case 0:
 			next = mainFragment;
+			
 			break;
 		case 1:
 			next = issuesFragment;
@@ -107,11 +109,13 @@ public class VineyardMainActivity extends ActionBarActivity implements
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
+		this.menu = menu;
+		
 		if (!mNavigationDrawerFragment.isDrawerOpen()) {
 			// Only show items in the action bar relevant to this screen
 			// if the drawer is not showing. Otherwise, let the drawer
 			// decide what to show in the action bar.
-			getMenuInflater().inflate(R.menu.vineyardmain, menu);
+			// getMenuInflater().inflate(R.menu.vineyardmain, menu);
 			restoreActionBar();
 			return true;
 		}
