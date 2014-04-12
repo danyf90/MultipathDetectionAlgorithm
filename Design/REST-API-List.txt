@@ -1,0 +1,72 @@
+### WORKER
+
+# Get worker(s)
+GET http://vineyard-server.org/worker/
+GET http://vineyard-server.org/worker/<id>
+
+# CRUD on worker ID or username
+POST http://vineyard-server.org/worker/
+PUT/DELETE http://vineyard-server.org/worker/87
+PUT/DELETE http://vineyard-server.org/worker/pinco.pallo
+
+### GROUPS
+
+# get group(s)
+GET http://vineyard-server.org/group/
+GET http://vineyard-server.org/group/<id>
+
+# CRUD on group id
+POST http://vineyard-server.org/group/
+PUT/DELETE http://vineyard-server.org/group/<id>
+
+# add/remove a worker from a group
+PUT/DELETE http://vineyard-server.org/group/<gid>/worker/<wid>
+
+### ISSUES
+
+# Get issue(s)
+GET http://vineyard-server.org/issue
+GET http://vineyard-server.org/issue/<id>
+
+# Get issues per status
+GET http://vineyard-server.org/issue/new/
+GET http://vineyard-server.org/issue/assigned/
+GET http://vineyard-server.org/issue/resolved/
+
+# CRUD operations on issue id
+POST	http://vineyard-server.org/issue/	(create)
+PUT	http://vineyard-server.org/issue/<id>/	(update)
+DELETE	http://vineyard-server.org/issue/<id>/
+
+# add a photo and associate it to issue <id>
+POST http://vineyard-server.org/issue/<id>/photo
+
+# get all photos associated with issue <id>
+GET http://vineyard-server.org/issue/<id>/photo
+
+### PLACES
+
+# Get place(s) (already in hierarchy?, already with attributes?)
+GET http://vineyard-server.org/place
+GET http://vineyard-server.org/place/<id>/
+
+# CRUD operations on place id
+POST http://vineyard-server.org/place/
+PUT/DELETE http://vineyard-server.org/place/<id>/
+
+# add/remove/update place attribute
+POST http://vineyard-server.org/place/<id>/attribute/<key>/<value>
+PUT http://vineyard-server.org/place/<id>/attribute/<key>/<newValue>
+DELETE http://vineyard-server.org/place/<id>/attribute/<key>
+
+# add/remove child from place hierarchy
+PUT/DELETE http://vineyard-server.org/place/<id>/child/<id>
+
+# Get issues of place <id>
+GET http://vineyard-server.org/place/<id>/issues
+
+
+
+
+http://vineyard-server.org/
+
