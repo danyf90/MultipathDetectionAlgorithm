@@ -13,6 +13,7 @@
     <!-- Application theme. -->
     <style name="AppTheme" parent="AppBaseTheme">
         <item name="android:actionBarStyle">@style/WineActionBar</item>
+        <item name="android:actionMenuTextColor">#fff</item>
     </style>
 
     <!-- ActionBar styles -->

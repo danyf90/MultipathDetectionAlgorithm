@@ -11,6 +11,7 @@
     <string name="action_report_issue">Segnala</string>
     <string name="action_reset_settings">Ripristina predefiniti</string>
     <string name="action_cancel">Annulla</string>
+    <string name="action_send">Invia</string>
     <string name="issue_title_label">Titolo</string>
     <string name="issue_title_hint">Titolo del problema</string>
     <string name="issue_description_label">Descrizione</string>

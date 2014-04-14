@@ -1,4 +1,4 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -8,60 +8,94 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.formichelli.vineyard.MainFragment$PlaceholderFragment" >
 
-    <TextView
-        android:id="@+id/report_issue_title_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="30dp"
-        android:text="@string/issue_title_label" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
 
-    <EditText
-        android:id="@+id/report_issue_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/report_issue_title_label"
-        android:layout_alignParentRight="true"
-        android:layout_alignTop="@+id/report_issue_title_label"
-        android:ems="10"
-        android:hint="@string/issue_title_hint" />
+        <TextView
+            android:id="@+id/report_issue_title_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:text="@string/issue_title_label" />
 
-    <TextView
-        android:id="@+id/report_issue_description_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@id/report_issue_title"
-        android:layout_marginTop="30dp"
-        android:text="@string/issue_description_label" />
+        <EditText
+            android:id="@+id/report_issue_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/report_issue_title_label"
+            android:layout_alignParentRight="true"
+            android:ems="10"
+            android:hint="@string/issue_title_hint" />
 
-    <EditText
-        android:id="@+id/report_issue_description"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/report_issue_description_label"
-        android:layout_alignParentRight="true"
-        android:layout_alignTop="@+id/report_issue_description_label"
-        android:ems="10"
-        android:hint="@string/issue_description_hint" />
+        <TextView
+            android:id="@+id/report_issue_description_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@id/report_issue_title"
+            android:layout_marginTop="30dp"
+            android:text="@string/issue_description_label" />
 
-    <TextView
-        android:id="@+id/report_issue_photos"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@id/report_issue_description"
-        android:layout_marginTop="30dp"
-        android:text="@string/issue_photos_label" />
+        <EditText
+            android:id="@+id/report_issue_description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/report_issue_description_label"
+            android:layout_alignParentRight="true"
+            android:layout_alignTop="@+id/report_issue_description_label"
+            android:ems="10"
+            android:hint="@string/issue_description_hint" />
 
-    <TextView
-        android:id="@+id/report_issue_place_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@id/report_issue_photos"
-        android:layout_marginTop="30dp"
-        android:text="@string/issue_place_label" />
+        <RelativeLayout
+            android:id="@+id/report_issue_photos_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/report_issue_description"
+            android:layout_marginTop="30dp" >
 
-</RelativeLayout>
+            <TextView
+                android:id="@+id/report_issue_photos_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:gravity="center_vertical"
+                android:text="@string/issue_photos_label" />
+
+            <ImageButton
+                android:id="@+id/report_issue_add_photo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:contentDescription="@string/add_photo"
+                android:src="@drawable/action_camera" />
+
+            <HorizontalScrollView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_toLeftOf="@id/report_issue_add_photo"
+                android:layout_toRightOf="@id/report_issue_photos_label"
+                android:text="@string/issue_photos_label" >
+
+                <LinearLayout
+                    android:id="@+id/report_issue_photos"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right"
+                    android:orientation="horizontal" >
+                </LinearLayout>
+            </HorizontalScrollView>
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/report_issue_place_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@id/report_issue_photos_container"
+            android:layout_marginTop="30dp"
+            android:text="@string/issue_place_label" />
+    </RelativeLayout>
+
+</ScrollView>

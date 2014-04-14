@@ -11,11 +11,13 @@
     <string name="action_report_issue">Report</string>
     <string name="action_reset_settings">Restore default</string>
     <string name="action_cancel">Cancel</string>
+    <string name="action_send">Send</string>
     <string name="issue_title_label">Title</string>
     <string name="issue_title_hint">Issue title</string>
     <string name="issue_description_label">Description</string>
     <string name="issue_description_hint">Issue details</string>
     <string name="issue_photos_label">Photos</string>
     <string name="issue_place_label">Place</string>
+    <string name="add_photo">Add photo</string>
 
 </resources>
