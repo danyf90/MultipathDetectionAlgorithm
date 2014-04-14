@@ -1,11 +1,16 @@
 package com.formichelli.vineyard.entities;
 
 import java.net.URL;
+import java.util.ArrayList;
 
 public class IssueTask extends SimpleTask {
 	private int issuer;
-	private URL[] photos;
+	private ArrayList<URL> photos;
 
+	public IssueTask() {
+		photos = new ArrayList<URL>();
+	}
+	
 	public int getIssuer() {
 		return this.issuer;
 	}
@@ -14,15 +19,15 @@ public class IssueTask extends SimpleTask {
 		this.issuer = issuer;
 	}
 
-	public URL[] getPhotos() {
+	public ArrayList<URL> getPhotos() {
 		return this.photos;
 	}
 
 	public void addPhoto(URL photo) {
-		throw new UnsupportedOperationException();
+		photos.add(photo);
 	}
 
 	public void removePhoto(URL photo) {
-		throw new UnsupportedOperationException();
+		photos.remove(photo);
 	}
 }
