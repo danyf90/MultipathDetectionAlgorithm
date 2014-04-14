@@ -10,5 +10,12 @@
     <string name="navigation_drawer_close">Chiudi il navigation drawer</string>
     <string name="action_report_issue">Segnala</string>
     <string name="action_reset_settings">Ripristina predefiniti</string>
+    <string name="action_cancel">Annulla</string>
+    <string name="issue_title_label">Titolo</string>
+    <string name="issue_title_hint">Titolo del problema</string>
+    <string name="issue_description_label">Descrizione</string>
+    <string name="issue_description_hint">Dettagli del problema</string>
+    <string name="issue_photos_label">Foto</string>
+    <string name="issue_place_label">Luogo</string>
 
 </resources>

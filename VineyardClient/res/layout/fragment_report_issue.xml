@@ -1,0 +1,67 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.formichelli.vineyard.MainFragment$PlaceholderFragment" >
+
+    <TextView
+        android:id="@+id/report_issue_title_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="30dp"
+        android:text="@string/issue_title_label" />
+
+    <EditText
+        android:id="@+id/report_issue_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/report_issue_title_label"
+        android:layout_alignParentRight="true"
+        android:layout_alignTop="@+id/report_issue_title_label"
+        android:ems="10"
+        android:hint="@string/issue_title_hint" />
+
+    <TextView
+        android:id="@+id/report_issue_description_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@id/report_issue_title"
+        android:layout_marginTop="30dp"
+        android:text="@string/issue_description_label" />
+
+    <EditText
+        android:id="@+id/report_issue_description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/report_issue_description_label"
+        android:layout_alignParentRight="true"
+        android:layout_alignTop="@+id/report_issue_description_label"
+        android:ems="10"
+        android:hint="@string/issue_description_hint" />
+
+    <TextView
+        android:id="@+id/report_issue_photos"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@id/report_issue_description"
+        android:layout_marginTop="30dp"
+        android:text="@string/issue_photos_label" />
+
+    <TextView
+        android:id="@+id/report_issue_place_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@id/report_issue_photos"
+        android:layout_marginTop="30dp"
+        android:text="@string/issue_place_label" />
+
+</RelativeLayout>
