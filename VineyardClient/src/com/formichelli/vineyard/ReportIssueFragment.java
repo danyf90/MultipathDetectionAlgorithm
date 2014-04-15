@@ -36,8 +36,6 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-// TODO remove photos when are no more needed
-
 public class ReportIssueFragment extends Fragment {
 	public static final int REQUEST_TAKE_PHOTO = 1;
 	public static final int REQUEST_SELECT_PHOTO = 2;
@@ -235,6 +233,7 @@ public class ReportIssueFragment extends Fragment {
 	class Gallery {
 		LinearLayout gallery;
 		Activity activity;
+		int selectedColor, notSelectedColor;
 		int size;
 		int padding;
 		HashSet<ImageView> selected;
@@ -250,10 +249,14 @@ public class ReportIssueFragment extends Fragment {
 					R.dimen.gallery_inner_height);
 			this.padding = activity.getResources().getDimensionPixelSize(
 					R.dimen.gallery_padding);
-			this.deleteItem = ReportIssueFragment.this.menu.findItem(R.id.action_report_issue_delete_selected_photos);
+			this.deleteItem = ReportIssueFragment.this.menu
+					.findItem(R.id.action_report_issue_delete_selected_photos);
 
 			selected = new HashSet<ImageView>();
 			images = new HashMap<ImageView, String>();
+
+			selectedColor = activity.getResources().getColor(R.drawable.white);
+			notSelectedColor = activity.getResources().getColor(R.drawable.wine_light);
 		}
 
 		public ImageView addImage(String path) {
@@ -306,7 +309,7 @@ public class ReportIssueFragment extends Fragment {
 					images.remove(v);
 				}
 			}
-			
+
 			selected.clear();
 			deleteItem.setVisible(false);
 		}
@@ -314,11 +317,16 @@ public class ReportIssueFragment extends Fragment {
 		public void removeAllImages() {
 			for (ImageView v : images.keySet()) {
 				gallery.removeView(v);
-				images.remove(v);
 
-				new File(images.get(v)).delete();
+				if (images.get(v) != null) {
+					File f = new File(images.get(v));
+					if (f != null)
+						f.delete();
+
+					images.remove(v);
+				}
 			}
-			
+
 			selected.clear();
 			images.clear();
 			deleteItem.setVisible(false);
@@ -335,12 +343,10 @@ public class ReportIssueFragment extends Fragment {
 					deleteItem.setVisible(true);
 
 				selected.add(v);
-				v.setBackgroundColor(activity.getResources().getColor(
-						R.drawable.wine_medium));
+				v.setBackgroundColor(selectedColor);
 			} else {
 				selected.remove(v);
-				v.setBackgroundColor(activity.getResources().getColor(
-						R.drawable.white));
+				v.setBackgroundColor(notSelectedColor);
 
 				if (selected.isEmpty())
 					deleteItem.setVisible(false);
