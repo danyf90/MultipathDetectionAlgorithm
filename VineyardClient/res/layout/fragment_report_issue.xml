@@ -26,7 +26,8 @@
             android:layout_alignBaseline="@+id/report_issue_title_label"
             android:layout_alignParentRight="true"
             android:ems="10"
-            android:hint="@string/issue_title_hint" />
+            android:hint="@string/issue_title_hint"
+            android:inputType="textCapSentences" />
 
         <TextView
             android:id="@+id/report_issue_description_label"
@@ -45,7 +46,8 @@
             android:layout_alignParentRight="true"
             android:layout_alignTop="@+id/report_issue_description_label"
             android:ems="10"
-            android:hint="@string/issue_description_hint" />
+            android:hint="@string/issue_description_hint"
+            android:inputType="textCapSentences" />
 
         <TextView
             android:id="@+id/report_issue_place_label"

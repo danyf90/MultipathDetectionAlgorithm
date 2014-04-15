@@ -49,7 +49,7 @@ public class ReportIssueFragment extends Fragment {
 	Spinner places, priorities;
 	ImageView addPhoto;
 	boolean actionMode = false;
-	MenuItem deleteItem;
+	Menu menu;
 	int imagePadding;
 
 	@Override
@@ -100,7 +100,7 @@ public class ReportIssueFragment extends Fragment {
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		inflater.inflate(R.menu.menu_report_issue, menu);
 
-		deleteItem = menu.getItem(0); // TODO
+		this.menu = menu;
 		gallery = new Gallery();
 
 		super.onCreateOptionsMenu(menu, inflater);
@@ -154,8 +154,10 @@ public class ReportIssueFragment extends Fragment {
 			return false;
 		else {
 			s = t.getText().toString();
-			if (s.compareTo("") == 0)
+			if (s.compareTo("") == 0) {
+				t.setError(getString(R.string.issue_title_error));
 				return false;
+			}
 
 			i.setTitle(s);
 		}
@@ -248,7 +250,7 @@ public class ReportIssueFragment extends Fragment {
 					R.dimen.gallery_inner_height);
 			this.padding = activity.getResources().getDimensionPixelSize(
 					R.dimen.gallery_padding);
-			this.deleteItem = ReportIssueFragment.this.deleteItem;
+			this.deleteItem = ReportIssueFragment.this.menu.findItem(R.id.action_report_issue_delete_selected_photos);
 
 			selected = new HashSet<ImageView>();
 			images = new HashMap<ImageView, String>();
