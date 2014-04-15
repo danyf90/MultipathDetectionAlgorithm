@@ -6,8 +6,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Set;
 
 import com.formichelli.vineyard.entities.IssueTask;
 
@@ -45,13 +45,12 @@ public class ReportIssueFragment extends Fragment {
 	VineyardMainActivity activity;
 	IssueTask i;
 	String currentPhotoPath;
-	LinearLayout gallery;
+	Gallery gallery;
 	Spinner places, priorities;
 	ImageView addPhoto;
 	boolean actionMode = false;
-	Set<ImageView> selected;
 	MenuItem deleteItem;
-	int imageSize, selectedImageSize, imagePadding;
+	int imagePadding;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -59,7 +58,6 @@ public class ReportIssueFragment extends Fragment {
 		setHasOptionsMenu(true);
 
 		i = new IssueTask();
-		selected = new HashSet<ImageView>();
 
 		// Inflate the layout for this fragment
 		return inflater.inflate(R.layout.fragment_report_issue, container,
@@ -76,20 +74,17 @@ public class ReportIssueFragment extends Fragment {
 		addPhoto = (ImageView) activity.findViewById(R.id.action_add_photo);
 		addPhoto.setOnClickListener(dispatchTakePictureIntent);
 
-		gallery = (LinearLayout) activity
-				.findViewById(R.id.report_issue_gallery);
+		imagePadding = getResources().getDimensionPixelSize(
+				R.dimen.gallery_padding);
 
+		// populate priorities spinner
 		priorities = (Spinner) activity
 				.findViewById(R.id.report_issue_priority);
 		setSpinnerAdapter(priorities, R.array.priorities);
 
+		// populate places spinner
 		places = (Spinner) activity.findViewById(R.id.report_issue_place);
 		setSpinnerAdapter(places, R.array.places);
-		
-		imageSize = getResources().getDimensionPixelSize(R.dimen.gallery_inner_height);
-		selectedImageSize = (int) 0.8*imageSize;
-		
-		imagePadding = getResources().getDimensionPixelSize(R.dimen.gallery_padding);
 	}
 
 	private void setSpinnerAdapter(Spinner s, int array) {
@@ -104,11 +99,9 @@ public class ReportIssueFragment extends Fragment {
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		inflater.inflate(R.menu.menu_report_issue, menu);
-		// showGlobalContextActionBar();
 
-		// deleteItem = (MenuItem)
-		// activity.findViewById(R.id.action_report_issue_delete_selected_photos);
-		deleteItem = menu.getItem(0);
+		deleteItem = menu.getItem(0); // TODO
+		gallery = new Gallery();
 
 		super.onCreateOptionsMenu(menu, inflater);
 	}
@@ -118,10 +111,8 @@ public class ReportIssueFragment extends Fragment {
 
 		switch (item.getItemId()) {
 		case R.id.action_report_issue_delete_selected_photos:
-			for (ImageView v : selected)
-				gallery.removeView(v);
-
-			selected.clear();
+			// remove selected images from gallery
+			gallery.removeSelectedImages();
 
 			break;
 		case R.id.action_report_issue_cancel:
@@ -132,6 +123,7 @@ public class ReportIssueFragment extends Fragment {
 			if (parseFields()) {
 				Toast.makeText(activity, "TODO: send issue to server",
 						Toast.LENGTH_LONG).show();
+				gallery.removeAllImages();
 				closeFragment();
 				break;
 			}
@@ -142,6 +134,7 @@ public class ReportIssueFragment extends Fragment {
 		return true;
 	}
 
+	// Navigate back to issuesFragment
 	private void closeFragment() {
 		activity.getSupportFragmentManager()
 				.beginTransaction()
@@ -150,6 +143,7 @@ public class ReportIssueFragment extends Fragment {
 				.commit();
 	}
 
+	// Checks if the fields are valid and populates issueTask
 	private boolean parseFields() {
 		Activity activity = getActivity();
 		EditText t;
@@ -179,15 +173,14 @@ public class ReportIssueFragment extends Fragment {
 	}
 
 	OnClickListener dispatchTakePictureIntent = new OnClickListener() {
-
 		@Override
 		public void onClick(View v) {
+			File photoFile;
+
 			Intent takePictureIntent = new Intent(
 					MediaStore.ACTION_IMAGE_CAPTURE);
-			if (takePictureIntent.resolveActivity(activity.getPackageManager()) != null) {
-				// Create the File where the photo should go
-				File photoFile;
 
+			if (takePictureIntent.resolveActivity(activity.getPackageManager()) != null) {
 				try {
 					photoFile = createImageFile();
 				} catch (IOException ex) {
@@ -201,12 +194,6 @@ public class ReportIssueFragment extends Fragment {
 		}
 	};
 
-	// private void dispatchChoosePictureIntent() {
-	// Intent i = new Intent(Intent.ACTION_PICK,
-	// android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-	// startActivityForResult(i, REQUEST_SELECT_PHOTO);
-	// }
-
 	@SuppressLint("SimpleDateFormat")
 	private File createImageFile() throws IOException {
 		// Create an image file name
@@ -214,8 +201,8 @@ public class ReportIssueFragment extends Fragment {
 				.format(new Date());
 		String imageFileName = "issue_" + timeStamp + "";
 		File storageDir = activity.getExternalFilesDir(null);
-//		File storageDir = Environment
-//				.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+		// File storageDir = Environment
+		// .getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
 		File image = File.createTempFile(imageFileName, /* prefix */
 				".jpg", /* suffix */
 				storageDir /* directory */
@@ -230,58 +217,132 @@ public class ReportIssueFragment extends Fragment {
 
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		Bitmap b = null;
-
 		if (requestCode == REQUEST_TAKE_PHOTO
 				&& resultCode == Activity.RESULT_OK) {
 			try {
-				if (currentPhotoPath != null)
-					i.addPhoto(new URL(currentPhotoPath));
+				i.addPhoto(new URL(currentPhotoPath));
 			} catch (MalformedURLException e) {
 			}
 
-			b = getBitmapFromFilePath(currentPhotoPath, getResources()
-					.getDimensionPixelSize(R.dimen.gallery_inner_height));
+			// create an image view and put it in the gallery
+			gallery.addImage(currentPhotoPath);
+		}
+	}
 
-			ImageView v = new ImageView(activity);
+	// Class that manages the gallery
+	class Gallery {
+		LinearLayout gallery;
+		Activity activity;
+		int size;
+		int padding;
+		HashSet<ImageView> selected;
+		HashMap<ImageView, String> images;
+		MenuItem deleteItem;
+
+		public Gallery() {
+			this.activity = ReportIssueFragment.this.activity;
+			this.gallery = (LinearLayout) activity
+					.findViewById(R.id.report_issue_gallery);
+			;
+			this.size = activity.getResources().getDimensionPixelSize(
+					R.dimen.gallery_inner_height);
+			this.padding = activity.getResources().getDimensionPixelSize(
+					R.dimen.gallery_padding);
+			this.deleteItem = ReportIssueFragment.this.deleteItem;
+
+			selected = new HashSet<ImageView>();
+			images = new HashMap<ImageView, String>();
+		}
+
+		public ImageView addImage(String path) {
+			ImageView v;
+			Bitmap b;
+
+			b = getThumbnailFromFilePath(path, size);
+			if (b == null)
+				return null;
+
+			v = new ImageView(activity);
 			v.setImageBitmap(b);
-			
-			v.setPadding(0, imagePadding, 0, imagePadding);
+			v.setPadding(0, padding, 0, padding);
 			v.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					// select if it is not selected and viceversa
+					// select the image if it is not selected and viceversa
 					setSelected((ImageView) v, !selected.contains(v));
 				}
 			});
 
 			gallery.addView(v, 0);
+			images.put(v, path);
+			return v;
 		}
-	}
 
-	public static Bitmap getBitmapFromFilePath(String filePath, int size) {
-		return ThumbnailUtils.extractThumbnail(
-				BitmapFactory.decodeFile(filePath), size, size);
-	}
-
-	private void setSelected(ImageView v, boolean select) {
-		if (select) {
-			if (selected.isEmpty()) {
-				actionMode = true;
-				deleteItem.setVisible(true);
-			}
-
-			selected.add(v);
-			v.setBackgroundColor(getResources().getColor(R.drawable.wine_medium));
-		} else {
+		public void removeImage(ImageView v) {
 			selected.remove(v);
-			v.setBackgroundColor(getResources().getColor(R.drawable.white));
 
-			if (selected.isEmpty()) {
-				actionMode = false;
-				deleteItem.setVisible(false);
+			gallery.removeView(v);
+
+			if (images.get(v) != null) {
+				File f = new File(images.get(v));
+				if (f != null)
+					f.delete();
+
+				images.remove(v);
 			}
 		}
-	}
 
+		public void removeSelectedImages() {
+			for (ImageView v : selected) {
+				gallery.removeView(v);
+
+				if (images.get(v) != null) {
+					File f = new File(images.get(v));
+					if (f != null)
+						f.delete();
+
+					images.remove(v);
+				}
+			}
+			
+			selected.clear();
+			deleteItem.setVisible(false);
+		}
+
+		public void removeAllImages() {
+			for (ImageView v : images.keySet()) {
+				gallery.removeView(v);
+				images.remove(v);
+
+				new File(images.get(v)).delete();
+			}
+			
+			selected.clear();
+			images.clear();
+			deleteItem.setVisible(false);
+		}
+
+		private Bitmap getThumbnailFromFilePath(String filePath, int size) {
+			return ThumbnailUtils.extractThumbnail(
+					BitmapFactory.decodeFile(filePath), size, size);
+		}
+
+		private void setSelected(ImageView v, boolean select) {
+			if (select) {
+				if (selected.isEmpty())
+					deleteItem.setVisible(true);
+
+				selected.add(v);
+				v.setBackgroundColor(activity.getResources().getColor(
+						R.drawable.wine_medium));
+			} else {
+				selected.remove(v);
+				v.setBackgroundColor(activity.getResources().getColor(
+						R.drawable.white));
+
+				if (selected.isEmpty())
+					deleteItem.setVisible(false);
+			}
+		}
+	};
 };
