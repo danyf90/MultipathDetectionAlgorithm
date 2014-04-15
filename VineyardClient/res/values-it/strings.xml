@@ -10,7 +10,10 @@
     <string name="navigation_drawer_close">Chiudi il navigation drawer</string>
     <string name="action_report_issue">Segnala</string>
     <string name="action_reset_settings">Ripristina predefiniti</string>
+    <string name="action_add_photo">Aggiungi foto</string>
+    <string name="action_delete_selected_photos">Cancella foto selezionate</string>
     <string name="action_cancel">Annulla</string>
+    <string name="action_delete">Cancella</string>
     <string name="action_send">Invia</string>
     <string name="issue_title_label">Titolo</string>
     <string name="issue_title_hint">Titolo del problema</string>
@@ -18,5 +21,13 @@
     <string name="issue_description_hint">Dettagli del problema</string>
     <string name="issue_photos_label">Foto</string>
     <string name="issue_place_label">Luogo</string>
+    <string name="issue_priority_label">Priorità</string>
+
+    <string-array name="priorities">
+        <item>--</item>
+        <item>Bassa</item>
+        <item>Media</item>
+        <item>Alta</item>
+    </string-array>
 
 </resources>

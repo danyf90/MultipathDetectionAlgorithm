@@ -4,6 +4,13 @@
     tools:context="com.formichelli.vit.VineyardMainActivity" >
 
     <item
+        android:id="@+id/action_report_issue_delete_selected_photos"
+        android:title="@string/action_delete_selected_photos"
+        android:icon="@drawable/action_delete"
+        android:visible="false"
+        app:showAsAction="ifRoom"/>
+    
+    <item
         android:id="@+id/action_report_issue_cancel"
         android:title="@string/action_cancel"
         android:icon="@drawable/action_cancel"

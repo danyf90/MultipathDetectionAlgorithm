@@ -3,5 +3,6 @@
     <drawable name="wine_dark">#6d1653</drawable>
     <drawable name="wine_medium">#d9c3cf</drawable>
     <drawable name="wine_light">#e6dfe3</drawable>
+    <drawable name="white">#fff</drawable>
 
 </resources>

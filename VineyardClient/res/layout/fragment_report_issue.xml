@@ -47,55 +47,63 @@
             android:ems="10"
             android:hint="@string/issue_description_hint" />
 
-        <RelativeLayout
-            android:id="@+id/report_issue_photos_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/report_issue_description"
-            android:layout_marginTop="30dp" >
-
-            <TextView
-                android:id="@+id/report_issue_photos_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:gravity="center_vertical"
-                android:text="@string/issue_photos_label" />
-
-            <ImageButton
-                android:id="@+id/report_issue_add_photo"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:contentDescription="@string/add_photo"
-                android:src="@drawable/action_camera" />
-
-            <HorizontalScrollView
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_toLeftOf="@id/report_issue_add_photo"
-                android:layout_toRightOf="@id/report_issue_photos_label"
-                android:text="@string/issue_photos_label" >
-
-                <LinearLayout
-                    android:id="@+id/report_issue_photos"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="right"
-                    android:orientation="horizontal" >
-                </LinearLayout>
-            </HorizontalScrollView>
-        </RelativeLayout>
-
         <TextView
             android:id="@+id/report_issue_place_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
-            android:layout_below="@id/report_issue_photos_container"
+            android:layout_below="@id/report_issue_description_label"
             android:layout_marginTop="30dp"
             android:text="@string/issue_place_label" />
+
+        <Spinner
+            android:id="@+id/report_issue_place"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/report_issue_place_label"
+            android:layout_alignParentRight="true" />
+
+        <TextView
+            android:id="@+id/report_issue_priority_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@id/report_issue_place_label"
+            android:layout_marginTop="30dp"
+            android:text="@string/issue_priority_label" />
+
+        <Spinner
+            android:id="@+id/report_issue_priority"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/report_issue_priority_label"
+            android:layout_alignParentRight="true" />
+
+        <HorizontalScrollView
+            android:id="@+id/report_issue_gallery_container"
+            android:layout_width="fill_parent"
+            android:layout_height="@dimen/gallery_height"
+            android:layout_below="@+id/report_issue_priority_label"
+            android:layout_marginTop="30dp"
+            android:background="@drawable/white_with_border" >
+
+            <LinearLayout
+                android:id="@+id/report_issue_gallery"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:padding="5dp" >
+
+                <ImageView
+                    android:id="@+id/action_add_photo"
+                    android:layout_width="@dimen/gallery_inner_height"
+                    android:layout_height="@dimen/gallery_inner_height"
+                    android:background="@drawable/white_with_border"
+                    android:contentDescription="@string/action_add_photo"
+                    android:padding="10dp"
+                    android:src="@drawable/action_camera" />
+            </LinearLayout>
+        </HorizontalScrollView>
     </RelativeLayout>
 
 </ScrollView>

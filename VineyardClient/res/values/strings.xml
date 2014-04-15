@@ -10,7 +10,10 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="action_report_issue">Report</string>
     <string name="action_reset_settings">Restore default</string>
+    <string name="action_add_photo">Add photo</string>
+    <string name="action_delete_selected_photos">Delete selected photos</string>
     <string name="action_cancel">Cancel</string>
+    <string name="action_delete">Delete</string>
     <string name="action_send">Send</string>
     <string name="issue_title_label">Title</string>
     <string name="issue_title_hint">Issue title</string>
@@ -18,6 +21,21 @@
     <string name="issue_description_hint">Issue details</string>
     <string name="issue_photos_label">Photos</string>
     <string name="issue_place_label">Place</string>
-    <string name="add_photo">Add photo</string>
+    <string name="issue_priority_label">Priority</string>
 
+    <string-array name="priorities">
+        <item>--</item>
+        <item>Low</item>
+        <item>Medium</item>
+        <item>High</item>
+    </string-array>
+
+    <string-array name="places">
+        <item>Place 1</item>
+        <item>Place 2</item>
+        <item>Place 3</item>
+        <item>Place 4</item>
+        <item>Place 5</item>
+    </string-array>
+    
 </resources>
