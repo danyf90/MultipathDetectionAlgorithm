@@ -1,9 +1,9 @@
 package com.formichelli.vineyard;
 
-import java.util.ArrayList;
-
 import com.formichelli.vineyard.entities.Place;
 import com.formichelli.vineyard.utilities.PlaceAdapter;
+import com.formichelli.vineyard.utilities.Util;
+import com.formichelli.vineyard.utilities.VineyardServer;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,7 +16,6 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -36,7 +35,7 @@ public class PlacePickerActivity extends ActionBarActivity {
 		ancestorsList = (ViewGroup) findViewById(R.id.place_picker_ancestors_list);
 		currentLevelPlacesListView = (ListView) findViewById(R.id.place_picker_current_level_places);
 
-		selectPlace(getRootPlace());
+		selectPlace(VineyardServer.getRootPlace());
 	}
 
 	@Override
@@ -69,58 +68,6 @@ public class PlacePickerActivity extends ActionBarActivity {
 		}
 	}
 
-	private Place getRootPlace() {
-		// TODO get place hierarchy from server
-
-		// generate fake place hierarchy
-		Place root = new Place();
-		root.setName("root");
-		ArrayList<Place> children = root.getChildren();
-		int N = 10;
-
-		for (int i = 0; i < N; i++) {
-			Place p = new Place();
-			p.setName("p" + i);
-			ArrayList<Place> childChildren = p.getChildren();
-
-			for (int j = 0; j < i; j++) {
-				Place cp = new Place();
-				cp.setName(p.getName() + j);
-				childChildren.add(cp);
-			}
-			p.setChildren(childChildren);
-
-			children.add(p);
-		}
-
-		root.setChildren(children);
-
-		return root;
-	}
-
-	// Set the right height for the ListView since it collapse if it is placed
-	// inside a ScrollView
-	private void fixListHeight(ListView listView) {
-		ListAdapter listAdapter = listView.getAdapter();
-		if (listAdapter == null) {
-			// pre-condition
-			return;
-		}
-
-		int totalHeight = 0;
-		for (int i = 0; i < listAdapter.getCount(); i++) {
-			View listItem = listAdapter.getView(i, null, listView);
-			listItem.measure(0, 0);
-			totalHeight += listItem.getMeasuredHeight();
-		}
-
-		ViewGroup.LayoutParams params = listView.getLayoutParams();
-		params.height = totalHeight
-				+ (listView.getDividerHeight() * (listAdapter.getCount() - 1));
-		listView.setLayoutParams(params);
-		listView.requestLayout();
-	}
-
 	private void selectPlace(Place p) {
 		TextView t;
 
@@ -148,7 +95,7 @@ public class PlacePickerActivity extends ActionBarActivity {
 					.setOnItemClickListener(onChildClickListener);
 		}
 
-		fixListHeight(currentLevelPlacesListView);
+		Util.fixListHeight(currentLevelPlacesListView);
 
 		t = (TextView) getLayoutInflater()
 				.inflate(R.layout.ancestors_list_item,

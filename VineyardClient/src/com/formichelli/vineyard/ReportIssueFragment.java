@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import com.formichelli.vineyard.entities.IssueTask;
+import com.formichelli.vineyard.utilities.VineyardServer;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -35,7 +36,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 public class ReportIssueFragment extends Fragment {
 	public static final int REQUEST_TAKE_PHOTO = 1;
@@ -70,7 +70,6 @@ public class ReportIssueFragment extends Fragment {
 		super.onActivityCreated(savedInstanceState);
 
 		activity = (VineyardMainActivity) getActivity();
-		activity.reportIssueFragment = this;
 
 		addPhoto = (ImageView) activity.findViewById(R.id.action_add_photo);
 		addPhoto.setOnClickListener(dispatchTakePictureIntent);
@@ -128,8 +127,7 @@ public class ReportIssueFragment extends Fragment {
 			break;
 		case R.id.action_report_issue_send:
 			if (parseFields()) {
-				Toast.makeText(activity, "TODO: send issue to server",
-						Toast.LENGTH_LONG).show();
+				VineyardServer.sendIssue(i);
 				gallery.removeAllImages();
 				closeFragment();
 				break;
@@ -209,12 +207,10 @@ public class ReportIssueFragment extends Fragment {
 		String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss")
 				.format(new Date());
 		String imageFileName = "issue_" + timeStamp + "";
-		File storageDir = activity.getExternalFilesDir(null);
-		// File storageDir = Environment
-		// .getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+		
 		File image = File.createTempFile(imageFileName, /* prefix */
 				".jpg", /* suffix */
-				storageDir /* directory */
+				activity.getExternalFilesDir(null) /* directory */
 		);
 
 		// Save a file: path for use with ACTION_VIEW intents
@@ -244,7 +240,7 @@ public class ReportIssueFragment extends Fragment {
 				placeButton.setText(data.getExtras().getString("placename"));
 			}
 			else {
-				i.setPlaceId(-1); // TODO no place can have id = 0!
+				i.setPlaceId(-1);
 				placeButton.setText(getString(R.string.issue_place_button));
 			}
 			break;

@@ -17,6 +17,7 @@
     <string name="action_delete">Delete</string>
     <string name="action_send">Send</string>
     <string name="action_done">Done</string>
+    <string name="action_up">Up</string>
     <string name="issue_title_error">Title is mandatory</string>
     <string name="issue_title_label">Title</string>
     <string name="issue_title_hint">Issue title</string>
@@ -26,6 +27,9 @@
     <string name="issue_place_label">Place</string>
     <string name="issue_place_button">Select place</string>
     <string name="issue_priority_label">Priority</string>
+    <string name="issues_label">Issues: </string>
+    <string name="tasks_label">Tasks: </string>
+    <string name="children_label">Children: </string>
 
     <string-array name="priorities">
         <item>--</item>
@@ -33,7 +37,6 @@
         <item>Medium</item>
         <item>High</item>
     </string-array>
-
     <string-array name="places">
         <item>Place 1</item>
         <item>Place 2</item>
@@ -41,5 +44,5 @@
         <item>Place 4</item>
         <item>Place 5</item>
     </string-array>
-    
+
 </resources>

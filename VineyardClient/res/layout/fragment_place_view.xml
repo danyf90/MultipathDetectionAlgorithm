@@ -1,0 +1,77 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/place_view_scroll_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="10dp"
+    tools:context="com.formichelli.vineyard.MainFragment$PlaceholderFragment" >
+
+    <TextView
+        android:id="@+id/place_view_description"
+        android:layout_width="wrap_content"
+        android:layout_height="150dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:text="" />
+
+    <RelativeLayout
+        android:id="@+id/place_view_issues"
+        style="@style/PlaceViewButton"
+        android:layout_below="@id/place_view_description" >
+
+        <TextView
+            android:id="@+id/place_view_issues_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:text="@string/issues_label"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+
+        <TextView
+            android:id="@+id/place_view_issues_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:text=""
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/place_view_tasks"
+        style="@style/PlaceViewButton"
+        android:layout_below="@id/place_view_issues" >
+
+        <TextView
+            android:id="@+id/place_view_tasks_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:text="@string/tasks_label"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+
+        <TextView
+            android:id="@+id/place_view_tasks_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:text=""
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/place_view_children_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@id/place_view_tasks"
+        android:text="@string/children_label" />
+
+    <ListView
+        android:id="@+id/place_view_children"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@id/place_view_children_label" >
+    </ListView>
+
+</RelativeLayout>

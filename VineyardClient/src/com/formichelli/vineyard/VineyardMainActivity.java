@@ -12,8 +12,10 @@ public class VineyardMainActivity extends ActionBarActivity implements
 		NavigationDrawerFragment.NavigationDrawerCallbacks {
 	private static final String TAG = "VineyardMainActivity";
 
-	Fragment mainFragment, issuesFragment, tasksFragment, settingsFragment;
-	public ReportIssueFragment reportIssueFragment;
+	PlaceViewerFragment placeViewerFragment;
+	IssuesFragment issuesFragment;
+	TasksFragment tasksFragment;
+	SettingsFragment settingsFragment;
 	Menu menu;
 
 	/**
@@ -32,8 +34,7 @@ public class VineyardMainActivity extends ActionBarActivity implements
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-//		mainFragment = new PlacePickerFragment();
-		mainFragment = new MainFragment();
+		placeViewerFragment = new PlaceViewerFragment();
 		issuesFragment = new IssuesFragment();
 		tasksFragment = new TasksFragment();
 		settingsFragment = new SettingsFragment();
@@ -55,7 +56,7 @@ public class VineyardMainActivity extends ActionBarActivity implements
 		Fragment next = null;
 		switch (position) {
 		case 0:
-			next = mainFragment;
+			next = placeViewerFragment;
 			break;
 		case 1:
 			next = issuesFragment;

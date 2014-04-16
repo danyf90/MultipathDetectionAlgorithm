@@ -9,6 +9,7 @@ public class Place {
 	private String name;
 	private String description;
 	private Location location;
+	private Place parent;
 	private ArrayList<Place> children;
 	
 	public Place() {
@@ -47,6 +48,14 @@ public class Place {
 		this.location = location;
 	}
 
+	public Place getParent() {
+		return parent;
+	}
+
+	public void setParent(Place parent) {
+		this.parent = parent;
+	}
+	
 	@SuppressWarnings("unchecked")
 	public ArrayList<Place> getChildren() {
 		return (ArrayList<Place>) this.children.clone();
@@ -55,4 +64,5 @@ public class Place {
 	public void setChildren(ArrayList<Place> children) {
 		this.children = children;
 	}
+
 }
