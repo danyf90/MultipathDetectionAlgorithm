@@ -12,6 +12,10 @@ public class Place {
 	public String getName() {
 		return this.name;
 	}
+	
+	public String toString() {
+		return getName();
+	}
 
 	public void setName(String name) {
 		this.name = name;

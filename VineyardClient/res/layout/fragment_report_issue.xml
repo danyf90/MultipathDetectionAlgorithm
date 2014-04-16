@@ -87,7 +87,7 @@
             android:layout_height="@dimen/gallery_height"
             android:layout_below="@+id/report_issue_priority_label"
             android:layout_marginTop="30dp"
-            android:background="@drawable/wine_light" >
+            android:background="@color/wine_light" >
 
             <LinearLayout
                 android:id="@+id/report_issue_gallery"

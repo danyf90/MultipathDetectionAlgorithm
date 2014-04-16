@@ -32,7 +32,8 @@ public class VineyardMainActivity extends ActionBarActivity implements
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		mainFragment = new MainFragment();
+		mainFragment = new PlacePickerFragment();
+//		mainFragment = new MainFragment();
 		issuesFragment = new IssuesFragment();
 		tasksFragment = new TasksFragment();
 		settingsFragment = new SettingsFragment();
@@ -104,27 +105,10 @@ public class VineyardMainActivity extends ActionBarActivity implements
 		this.menu = menu;
 
 		if (!mNavigationDrawerFragment.isDrawerOpen()) {
-			// Only show items in the action bar relevant to this screen
-			// if the drawer is not showing. Otherwise, let the drawer
-			// decide what to show in the action bar.
-			// getMenuInflater().inflate(R.menu.vineyardmain, menu);
 			restoreActionBar();
 			return true;
 		}
 		return super.onCreateOptionsMenu(menu);
 	}
-
-	// @Override
-	// public boolean onOptionsItemSelected(MenuItem item) {
-	// // Handle action bar item clicks here. The action bar will
-	// // automatically handle clicks on the Home/Up button, so long
-	// // as you specify a parent activity in AndroidManifest.xml.
-	// int id = item.getItemId();
-	// if (id == R.id.action_settings) {
-	// return true;
-	// }
-	// return super.onOptionsItemSelected(item);
-	// }
-
 	
 }

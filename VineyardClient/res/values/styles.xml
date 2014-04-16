@@ -22,7 +22,7 @@
     <style name="WineActionBar" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
 
         <!-- Support library compatibility -->
-        <item name="background">@drawable/wine_dark</item>
+        <item name="background">@color/wine_dark</item>
     </style>
 
 </resources>

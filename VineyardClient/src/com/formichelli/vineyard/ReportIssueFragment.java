@@ -255,8 +255,8 @@ public class ReportIssueFragment extends Fragment {
 			selected = new HashSet<ImageView>();
 			images = new HashMap<ImageView, String>();
 
-			selectedColor = activity.getResources().getColor(R.drawable.white);
-			notSelectedColor = activity.getResources().getColor(R.drawable.wine_light);
+			selectedColor = activity.getResources().getColor(R.color.white);
+			notSelectedColor = activity.getResources().getColor(R.color.wine_light);
 		}
 
 		public ImageView addImage(String path) {

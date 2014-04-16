@@ -15,6 +15,7 @@
     <string name="action_cancel">Annulla</string>
     <string name="action_delete">Cancella</string>
     <string name="action_send">Invia</string>
+    <string name="action_done">Fatto</string>
     <string name="issue_title_error">Inserire il titolo</string>
     <string name="issue_title_label">Titolo</string>
     <string name="issue_title_hint">Titolo del problema</string>

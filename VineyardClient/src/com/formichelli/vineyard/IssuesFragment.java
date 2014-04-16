@@ -23,7 +23,6 @@ public class IssuesFragment extends Fragment {
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		inflater.inflate(R.menu.menu_issues, menu);
-		// showGlobalContextActionBar();
 
 		super.onCreateOptionsMenu(menu, inflater);
 	}

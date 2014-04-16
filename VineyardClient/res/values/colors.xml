@@ -1,8 +1,8 @@
 <resources>
 
-    <drawable name="wine_dark">#6d1653</drawable>
-    <drawable name="wine_medium">#d9c3cf</drawable>
-    <drawable name="wine_light">#e6dfe3</drawable>
-    <drawable name="white">#fff</drawable>
+    <color name="wine_dark">#6d1653</color>
+    <color name="wine_medium">#d9c3cf</color>
+    <color name="wine_light">#e6dfe3</color>
+    <color name="white">#fff</color>
 
 </resources>
