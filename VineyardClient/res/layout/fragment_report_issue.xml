@@ -58,12 +58,13 @@
             android:layout_marginTop="30dp"
             android:text="@string/issue_place_label" />
 
-        <Spinner
+        <Button
             android:id="@+id/report_issue_place"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignBaseline="@+id/report_issue_place_label"
-            android:layout_alignParentRight="true" />
+            android:layout_alignParentRight="true"
+            android:text="@string/issue_place_button" />
 
         <TextView
             android:id="@+id/report_issue_priority_label"

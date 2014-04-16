@@ -5,13 +5,10 @@ import java.util.Random;
 
 import com.formichelli.vineyard.entities.Place;
 
-import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.util.Log;
-import android.view.LayoutInflater;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,8 +19,9 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public class PlacePickerFragment extends Fragment {
-	Activity activity;
+// TODO use customadapter to bind views and places
+
+public class PlacePickerActivity extends ActionBarActivity {
 	ListView currentLevelPlacesListView;
 	ArrayAdapter<Place> arrayAdapter;
 	Place selectedPlace;
@@ -32,32 +30,20 @@ public class PlacePickerFragment extends Fragment {
 	int currentLevel;
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
-		setHasOptionsMenu(true);
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
 
-		// Inflate the layout for this fragment
-		return inflater.inflate(R.layout.fragment_place_picker, container,
-				false);
-	}
+		setContentView(R.layout.activity_place_picker);
 
-	@Override
-	public void onActivityCreated(Bundle savedInstanceState) {
-		super.onActivityCreated(savedInstanceState);
-
-		activity = getActivity();
-
-		linearLayout = (ViewGroup) activity
-				.findViewById(R.id.place_picker_linear_layout);
-		currentLevelPlacesListView = (ListView) activity
-				.findViewById(R.id.place_picker_current_level_places);
+		linearLayout = (ViewGroup) findViewById(R.id.place_picker_linear_layout);
+		currentLevelPlacesListView = (ListView) findViewById(R.id.place_picker_current_level_places);
 		currentLevel = 0;
 
 		selectedPlace = getChildrenPlaces(null).get(0);
+		currentLevelPlaces = getChildrenPlaces(selectedPlace);
 
-		arrayAdapter = new ArrayAdapter<Place>(activity,
-				R.layout.drawer_list_item, R.id.drawer_list_item,
-				getChildrenPlaces(selectedPlace));
+		arrayAdapter = new ArrayAdapter<Place>(this, R.layout.drawer_list_item,
+				R.id.drawer_list_item, currentLevelPlaces);
 		currentLevelPlacesListView.setAdapter(arrayAdapter);
 		currentLevelPlacesListView
 				.setOnItemClickListener(listViewOnItemClickListener);
@@ -66,31 +52,46 @@ public class PlacePickerFragment extends Fragment {
 	}
 
 	@Override
-	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		inflater.inflate(R.menu.menu_place_picker, menu);
-
-		super.onCreateOptionsMenu(menu, inflater);
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.menu_place_picker, menu);
+		return true;
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 
 		switch (item.getItemId()) {
-		case R.id.action_done:
-			// TODO
-			break;
+		case R.id.place_picker_action_done:
+			Intent resultIntent = new Intent();
+			resultIntent.putExtra("placename", selectedPlace.getName());
+			setResult(RESULT_OK, resultIntent);
+			finish();
+			this.setResult(RESULT_OK);
+			finish();
+			return true;
+		case R.id.place_picker_action_cancel:
+			this.setResult(RESULT_CANCELED);
+			finish();
+			return true;
 		default:
+			this.setResult(RESULT_CANCELED);
 			return false;
 		}
-
-		return true;
 	}
 
 	private ArrayList<Place> getChildrenPlaces(Place currentPlace) {
-		// TODOt
+		// TODO
 		Random r = new Random();
 		int N = 10;
 		ArrayList<Place> ret = new ArrayList<Place>();
+
+		if (currentPlace == null) {
+			Place p = new Place();
+			p.setName(String.valueOf(r.nextInt(1000)));
+			ret.add(p);
+			return ret;
+		}
 
 		for (int i = 0; i < N; i++) {
 			Place p = new Place();
@@ -128,11 +129,17 @@ public class PlacePickerFragment extends Fragment {
 		@Override
 		public void onItemClick(AdapterView<?> parent, View view, int position,
 				long id) {
-			Log.e("Place", ((TextView) view).getText().toString());
-			arrayAdapter.clear();
-			arrayAdapter.addAll(getChildrenPlaces(null));
+			String text = ((TextView) view).getText().toString();
 
-			TextView t = (TextView) activity.getLayoutInflater().inflate(
+			for (Place p : currentLevelPlaces)
+				if (p.getName().compareTo(text) == 0)
+					selectedPlace = p;
+			currentLevelPlaces = getChildrenPlaces(selectedPlace);
+
+			arrayAdapter.clear();
+			arrayAdapter.addAll(currentLevelPlaces);
+
+			TextView t = (TextView) getLayoutInflater().inflate(
 					R.layout.drawer_list_item, currentLevelPlacesListView,
 					false);
 
@@ -140,6 +147,7 @@ public class PlacePickerFragment extends Fragment {
 			t.setBackgroundColor(getResources().getColor(R.color.wine_light));
 			linearLayout.addView(t, currentLevel);
 			currentLevel++;
+
 		}
 
 		private String getStringForLevel(View v, int level) {

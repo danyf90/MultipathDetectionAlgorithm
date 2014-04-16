@@ -30,6 +30,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -39,12 +40,14 @@ import android.widget.Toast;
 public class ReportIssueFragment extends Fragment {
 	public static final int REQUEST_TAKE_PHOTO = 1;
 	public static final int REQUEST_SELECT_PHOTO = 2;
+	public static final int REQUEST_PLACE = 3;
 
 	VineyardMainActivity activity;
 	IssueTask i;
 	String currentPhotoPath;
 	Gallery gallery;
-	Spinner places, priorities;
+	Button placeButton;
+	Spinner priorities;
 	ImageView addPhoto;
 	boolean actionMode = false;
 	Menu menu;
@@ -80,9 +83,15 @@ public class ReportIssueFragment extends Fragment {
 				.findViewById(R.id.report_issue_priority);
 		setSpinnerAdapter(priorities, R.array.priorities);
 
-		// populate places spinner
-		places = (Spinner) activity.findViewById(R.id.report_issue_place);
-		setSpinnerAdapter(places, R.array.places);
+		placeButton = (Button) activity.findViewById(R.id.report_issue_place);
+		placeButton.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				startActivityForResult(new Intent(activity,
+						PlacePickerActivity.class), REQUEST_PLACE);
+			}
+		});
 	}
 
 	private void setSpinnerAdapter(Spinner s, int array) {
@@ -217,15 +226,24 @@ public class ReportIssueFragment extends Fragment {
 
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (requestCode == REQUEST_TAKE_PHOTO
-				&& resultCode == Activity.RESULT_OK) {
-			try {
-				i.addPhoto(new URL(currentPhotoPath));
-			} catch (MalformedURLException e) {
-			}
+		switch (requestCode) {
+		case REQUEST_TAKE_PHOTO:
+			if (resultCode == Activity.RESULT_OK) {
+				try {
+					i.addPhoto(new URL(currentPhotoPath));
+				} catch (MalformedURLException e) {
+				}
 
-			// create an image view and put it in the gallery
-			gallery.addImage(currentPhotoPath);
+				// create an image view and put it in the gallery
+				gallery.addImage(currentPhotoPath);
+			}
+			break;
+		case REQUEST_PLACE:
+			if (resultCode == Activity.RESULT_OK)
+				placeButton.setText(data.getExtras().getString("placename"));
+			else
+				placeButton.setText(getString(R.string.issue_place_button));
+			break;
 		}
 	}
 
@@ -256,7 +274,8 @@ public class ReportIssueFragment extends Fragment {
 			images = new HashMap<ImageView, String>();
 
 			selectedColor = activity.getResources().getColor(R.color.white);
-			notSelectedColor = activity.getResources().getColor(R.color.wine_light);
+			notSelectedColor = activity.getResources().getColor(
+					R.color.wine_light);
 		}
 
 		public ImageView addImage(String path) {

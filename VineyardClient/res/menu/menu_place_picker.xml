@@ -2,11 +2,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.formichelli.vit.VineyardMainActivity" >
+
+    <item
+        android:id="@+id/place_picker_action_cancel"
+        android:icon="@drawable/action_cancel"
+        android:title="@string/action_cancel"
+        app:showAsAction="ifRoom"/>
     
     <item
-        android:id="@+id/action_done"
-        android:title="@string/action_done"
+        android:id="@+id/place_picker_action_done"
         android:icon="@drawable/action_done"
-        app:showAsAction="withText|ifRoom"/>
-    
+        android:title="@string/action_done"
+        app:showAsAction="ifRoom"/>
+
 </menu>

@@ -32,8 +32,8 @@ public class VineyardMainActivity extends ActionBarActivity implements
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		mainFragment = new PlacePickerFragment();
-//		mainFragment = new MainFragment();
+//		mainFragment = new PlacePickerFragment();
+		mainFragment = new MainFragment();
 		issuesFragment = new IssuesFragment();
 		tasksFragment = new TasksFragment();
 		settingsFragment = new SettingsFragment();
