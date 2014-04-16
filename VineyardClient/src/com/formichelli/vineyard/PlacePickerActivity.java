@@ -24,7 +24,7 @@ public class PlacePickerActivity extends ActionBarActivity {
 	ListView currentLevelPlacesListView;
 	PlaceAdapter placeAdapter;
 	Place selectedPlace;
-	ViewGroup linearLayout;
+	ViewGroup ancestorsList;
 	int currentLevel = 0;
 
 	@Override
@@ -33,7 +33,7 @@ public class PlacePickerActivity extends ActionBarActivity {
 
 		setContentView(R.layout.activity_place_picker);
 
-		linearLayout = (ViewGroup) findViewById(R.id.place_picker_linear_layout);
+		ancestorsList = (ViewGroup) findViewById(R.id.place_picker_ancestors_list);
 		currentLevelPlacesListView = (ListView) findViewById(R.id.place_picker_current_level_places);
 
 		selectPlace(getRootPlace());
@@ -128,9 +128,9 @@ public class PlacePickerActivity extends ActionBarActivity {
 			return;
 
 		// check if the place is in the ancestors list
-		for (int i = 0, l = linearLayout.getChildCount(); i < l; i++)
-			if (linearLayout.getChildAt(i).getTag() == p) {
-				removeItemsAfter(linearLayout, linearLayout.getChildAt(i));
+		for (int i = 0, l = ancestorsList.getChildCount(); i < l; i++)
+			if (ancestorsList.getChildAt(i).getTag() == p) {
+				removeItemsAfter(ancestorsList, ancestorsList.getChildAt(i));
 				break;
 			}
 
@@ -157,22 +157,22 @@ public class PlacePickerActivity extends ActionBarActivity {
 		t.setTag(selectedPlace);
 		t.setOnClickListener(PlacePickerActivity.this.onAncestorClickListener);
 
-		linearLayout.addView(t, currentLevel);
+		ancestorsList.addView(t);
 		currentLevel++;
 	}
 
-	private void removeItemsAfter(ViewGroup linearLayout, View v) {
+	private void removeItemsAfter(ViewGroup ancestorsList, View v) {
 		// -1 because the last item is the listview
-		int i, childCount = linearLayout.getChildCount() - 1;
+		int i, childCount = ancestorsList.getChildCount();
 
 		// find TextView v and delete all its successors
 		for (i = 0; i < childCount; i++)
-			if (linearLayout.getChildAt(i) == v) {
+			if (ancestorsList.getChildAt(i) == v) {
 				currentLevel = i;
 				break;
 			}
 		for (int j = i; i < childCount; i++)
-			linearLayout.removeViewAt(j);
+			ancestorsList.removeViewAt(j);
 	}
 
 	private String getStringForLevel(String s, int level) {

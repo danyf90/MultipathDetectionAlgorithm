@@ -12,6 +12,12 @@
         android:layout_height="wrap_content"
         android:orientation="vertical" >
 
+        <LinearLayout
+            android:id="@+id/place_picker_ancestors_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+
         <ListView
             android:id="@+id/place_picker_current_level_places"
             android:layout_width="match_parent"
