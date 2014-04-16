@@ -1,33 +1,31 @@
 package com.formichelli.vineyard;
 
 import java.util.ArrayList;
-import java.util.Random;
 
 import com.formichelli.vineyard.entities.Place;
+import com.formichelli.vineyard.utilities.PlaceAdapter;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-// TODO use customadapter to bind views and places
-
 public class PlacePickerActivity extends ActionBarActivity {
 	ListView currentLevelPlacesListView;
-	ArrayAdapter<Place> arrayAdapter;
+	PlaceAdapter placeAdapter;
 	Place selectedPlace;
-	ArrayList<Place> currentLevelPlaces;
 	ViewGroup linearLayout;
-	int currentLevel;
+	int currentLevel = 0;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -37,18 +35,8 @@ public class PlacePickerActivity extends ActionBarActivity {
 
 		linearLayout = (ViewGroup) findViewById(R.id.place_picker_linear_layout);
 		currentLevelPlacesListView = (ListView) findViewById(R.id.place_picker_current_level_places);
-		currentLevel = 0;
 
-		selectedPlace = getChildrenPlaces(null).get(0);
-		currentLevelPlaces = getChildrenPlaces(selectedPlace);
-
-		arrayAdapter = new ArrayAdapter<Place>(this, R.layout.drawer_list_item,
-				R.id.drawer_list_item, currentLevelPlaces);
-		currentLevelPlacesListView.setAdapter(arrayAdapter);
-		currentLevelPlacesListView
-				.setOnItemClickListener(listViewOnItemClickListener);
-
-		fixListHeight(currentLevelPlacesListView);
+		selectPlace(getRootPlace());
 	}
 
 	@Override
@@ -64,6 +52,7 @@ public class PlacePickerActivity extends ActionBarActivity {
 		switch (item.getItemId()) {
 		case R.id.place_picker_action_done:
 			Intent resultIntent = new Intent();
+			resultIntent.putExtra("placeid", selectedPlace.getId());
 			resultIntent.putExtra("placename", selectedPlace.getName());
 			setResult(RESULT_OK, resultIntent);
 			finish();
@@ -80,29 +69,37 @@ public class PlacePickerActivity extends ActionBarActivity {
 		}
 	}
 
-	private ArrayList<Place> getChildrenPlaces(Place currentPlace) {
-		// TODO
-		Random r = new Random();
-		int N = 10;
-		ArrayList<Place> ret = new ArrayList<Place>();
+	private Place getRootPlace() {
+		// TODO get place hierarchy from server
 
-		if (currentPlace == null) {
-			Place p = new Place();
-			p.setName(String.valueOf(r.nextInt(1000)));
-			ret.add(p);
-			return ret;
-		}
+		// generate fake place hierarchy
+		Place root = new Place();
+		root.setName("root");
+		ArrayList<Place> children = root.getChildren();
+		int N = 10;
 
 		for (int i = 0; i < N; i++) {
 			Place p = new Place();
-			p.setName(String.valueOf(r.nextInt(1000)));
-			ret.add(p);
+			p.setName("p" + i);
+			ArrayList<Place> childChildren = p.getChildren();
+
+			for (int j = 0; j < i; j++) {
+				Place cp = new Place();
+				cp.setName(p.getName() + j);
+				childChildren.add(cp);
+			}
+			p.setChildren(childChildren);
+
+			children.add(p);
 		}
 
-		return ret;
+		root.setChildren(children);
+
+		return root;
 	}
 
-	// ListView collapse if it is put in a ScrollView
+	// Set the right height for the ListView since it collapse if it is placed
+	// inside a ScrollView
 	private void fixListHeight(ListView listView) {
 		ListAdapter listAdapter = listView.getAdapter();
 		if (listAdapter == null) {
@@ -124,42 +121,86 @@ public class PlacePickerActivity extends ActionBarActivity {
 		listView.requestLayout();
 	}
 
-	private OnItemClickListener listViewOnItemClickListener = new OnItemClickListener() {
+	private void selectPlace(Place p) {
+		TextView t;
+
+		if (p == null || selectedPlace == p)
+			return;
+
+		// check if the place is in the ancestors list
+		for (int i = 0, l = linearLayout.getChildCount(); i < l; i++)
+			if (linearLayout.getChildAt(i).getTag() == p) {
+				removeItemsAfter(linearLayout, linearLayout.getChildAt(i));
+				break;
+			}
+
+		selectedPlace = p;
+
+		Log.e("TAG", "children #: " + selectedPlace.getChildren().size());
+
+		if (placeAdapter != null)
+			placeAdapter.replaceItems(selectedPlace.getChildren());
+		else {
+			placeAdapter = new PlaceAdapter(this, R.layout.drawer_list_item,
+					selectedPlace.getChildren());
+			currentLevelPlacesListView.setAdapter(placeAdapter);
+			currentLevelPlacesListView
+					.setOnItemClickListener(onChildClickListener);
+		}
+
+		fixListHeight(currentLevelPlacesListView);
+
+		t = (TextView) getLayoutInflater()
+				.inflate(R.layout.ancestors_list_item,
+						currentLevelPlacesListView, false);
+		t.setText(getStringForLevel(p.getName(), currentLevel));
+		t.setTag(selectedPlace);
+		t.setOnClickListener(PlacePickerActivity.this.onAncestorClickListener);
+
+		linearLayout.addView(t, currentLevel);
+		currentLevel++;
+	}
+
+	private void removeItemsAfter(ViewGroup linearLayout, View v) {
+		// -1 because the last item is the listview
+		int i, childCount = linearLayout.getChildCount() - 1;
+
+		// find TextView v and delete all its successors
+		for (i = 0; i < childCount; i++)
+			if (linearLayout.getChildAt(i) == v) {
+				currentLevel = i;
+				break;
+			}
+		for (int j = i; i < childCount; i++)
+			linearLayout.removeViewAt(j);
+	}
+
+	private String getStringForLevel(String s, int level) {
+
+		String ret = "";
+		for (int i = 0; i < level; i++)
+			ret += "-";
+
+		ret += ((level > 0) ? " " : "") + s;
+
+		return ret;
+	}
+
+	private OnItemClickListener onChildClickListener = new OnItemClickListener() {
 
 		@Override
 		public void onItemClick(AdapterView<?> parent, View view, int position,
 				long id) {
-			String text = ((TextView) view).getText().toString();
-
-			for (Place p : currentLevelPlaces)
-				if (p.getName().compareTo(text) == 0)
-					selectedPlace = p;
-			currentLevelPlaces = getChildrenPlaces(selectedPlace);
-
-			arrayAdapter.clear();
-			arrayAdapter.addAll(currentLevelPlaces);
-
-			TextView t = (TextView) getLayoutInflater().inflate(
-					R.layout.drawer_list_item, currentLevelPlacesListView,
-					false);
-
-			t.setText(getStringForLevel(view, currentLevel));
-			t.setBackgroundColor(getResources().getColor(R.color.wine_light));
-			linearLayout.addView(t, currentLevel);
-			currentLevel++;
-
-		}
-
-		private String getStringForLevel(View v, int level) {
-
-			String s = "";
-			for (int i = 0; i < level; i++)
-				s += "-";
-
-			s += ((level > 0) ? " " : "") + ((TextView) v).getText();
-
-			return s;
+			selectPlace((Place) view.getTag());
 		}
 
 	};
+
+	OnClickListener onAncestorClickListener = new OnClickListener() {
+		@Override
+		public void onClick(View v) {
+			selectPlace((Place) v.getTag());
+		}
+	};
+
 }

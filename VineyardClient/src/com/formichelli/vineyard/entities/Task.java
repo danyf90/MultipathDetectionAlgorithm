@@ -25,9 +25,9 @@ public interface Task {
 
 	public void setPriority(Priority priority);
 
-	public Place getPlace();
+	public int getPlaceId();
 
-	public void setPlace(Place place);
+	public void setPlaceId(int placeId);
 
 	public String getTitle();
 

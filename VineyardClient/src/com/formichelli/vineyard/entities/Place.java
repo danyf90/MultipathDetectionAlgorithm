@@ -1,43 +1,30 @@
 package com.formichelli.vineyard.entities;
 
-import java.io.IOException;
-import java.io.ObjectInputStream.GetField;
-import java.io.ObjectOutputStream.PutField;
-import java.io.Serializable;
+import java.util.ArrayList;
 
 import android.location.Location;
 
-public class Place implements Serializable {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+public class Place {
+	private int id;
 	private String name;
 	private String description;
 	private Location location;
-	private Place[] children;
-
-	private void writeObject(java.io.ObjectOutputStream out) throws IOException {
-		PutField o = out.putFields();
-
-		o.put("name", name);
-		o.put("description", description);
+	private ArrayList<Place> children;
+	
+	public Place() {
+		children = new ArrayList<Place>();
+	}
+	
+	public int getId() {
+		return this.id;
 	}
 
-	private void readObject(java.io.ObjectInputStream in) throws IOException,
-			ClassNotFoundException {
-		GetField i = in.readFields();
-
-		name = i.get("name", "defaultName").toString();
-		description = i.get("name", "defaultName").toString();
+	public void setId(int id) {
+		this.id = id;
 	}
 
 	public String getName() {
 		return this.name;
-	}
-
-	public String toString() {
-		return getName();
 	}
 
 	public void setName(String name) {
@@ -60,11 +47,12 @@ public class Place implements Serializable {
 		this.location = location;
 	}
 
-	public Place[] getChildren() {
-		return this.children;
+	@SuppressWarnings("unchecked")
+	public ArrayList<Place> getChildren() {
+		return (ArrayList<Place>) this.children.clone();
 	}
 
-	public void setChildren(Place[] children) {
+	public void setChildren(ArrayList<Place> children) {
 		this.children = children;
 	}
 }

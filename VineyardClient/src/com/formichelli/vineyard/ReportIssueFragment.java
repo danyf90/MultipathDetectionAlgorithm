@@ -239,10 +239,14 @@ public class ReportIssueFragment extends Fragment {
 			}
 			break;
 		case REQUEST_PLACE:
-			if (resultCode == Activity.RESULT_OK)
+			if (resultCode == Activity.RESULT_OK) {
+				i.setPlaceId(data.getExtras().getInt("placeid"));
 				placeButton.setText(data.getExtras().getString("placename"));
-			else
+			}
+			else {
+				i.setPlaceId(-1); // TODO no place can have id = 0!
 				placeButton.setText(getString(R.string.issue_place_button));
+			}
 			break;
 		}
 	}
