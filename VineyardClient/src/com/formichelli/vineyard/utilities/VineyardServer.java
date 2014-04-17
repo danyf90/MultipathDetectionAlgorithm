@@ -46,13 +46,13 @@ public class VineyardServer {
 		// TODO
 	};
 
-	static public String getIssuesCount(Place p) {
+	static public int getIssuesCount(Place p) {
 		// TODO
-		return String.valueOf(new Random().nextInt(10));
+		return new Random().nextInt(10);
 	};
 
-	static public String getTasksCount(Place p) {
+	static public int getTasksCount(Place p) {
 		// TODO
-		return String.valueOf(new Random().nextInt(10));
+		return new Random().nextInt(10);
 	};
 }

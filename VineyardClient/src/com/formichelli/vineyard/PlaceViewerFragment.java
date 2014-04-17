@@ -4,6 +4,7 @@ import com.formichelli.vineyard.entities.Place;
 import com.formichelli.vineyard.utilities.PlaceAdapter;
 import com.formichelli.vineyard.utilities.VineyardServer;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -26,7 +27,8 @@ public class PlaceViewerFragment extends Fragment {
 	ListView children;
 	MenuItem upItem;
 	Place currentPlace;
-
+	Drawable redBorder, whiteBorder;
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -53,7 +55,8 @@ public class PlaceViewerFragment extends Fragment {
 		issues.setOnClickListener(startIssuesFragment);
 
 		tasks.setOnClickListener(startTasksFragment);
-
+		redBorder = getResources().getDrawable(R.drawable.white_with_red_border);
+		whiteBorder = getResources().getDrawable(R.drawable.white_with_wine_border);
 	}
 
 	@Override
@@ -79,9 +82,13 @@ public class PlaceViewerFragment extends Fragment {
 		return true;
 	}
 
+	// setBackgroundDrawable needed for compatibility with API 8
+	@SuppressWarnings("deprecation")
 	private void loadPlace(Place p) {
-		currentPlace = p;
+		int i, t;
 		
+		currentPlace = p;
+
 		if (p.getParent() == null)
 			upItem.setVisible(false);
 		else
@@ -89,12 +96,15 @@ public class PlaceViewerFragment extends Fragment {
 
 		this.desc.setText(p.getDescription());
 
-		if (placeAdapter != null)
+		if (placeAdapter != null) {
 			placeAdapter.replaceItems(p.getChildren());
-		else {
+			if (children.getAdapter() == null)
+				children.setAdapter(placeAdapter);
+		} else {
 			placeAdapter = new PlaceAdapter(activity,
 					R.layout.drawer_list_item, p.getChildren());
 			children.setAdapter(placeAdapter);
+
 			children.setOnItemClickListener(new OnItemClickListener() {
 				@Override
 				public void onItemClick(AdapterView<?> parent, View view,
@@ -104,8 +114,20 @@ public class PlaceViewerFragment extends Fragment {
 			});
 		}
 
-		issuesCount.setText(VineyardServer.getIssuesCount(p));
-		tasksCount.setText(VineyardServer.getTasksCount(p));
+		i = VineyardServer.getIssuesCount(p);
+		issuesCount.setText(String.valueOf(i));
+		if (i != 0)
+			issues.setBackgroundDrawable(redBorder);
+		else
+			issues.setBackgroundDrawable(whiteBorder);
+		
+		t = VineyardServer.getTasksCount(p);
+		tasksCount.setText(String.valueOf(t));
+		if (t != 0)
+			tasks.setBackgroundDrawable(redBorder);
+		else
+			tasks.setBackgroundDrawable(whiteBorder);
+		
 	}
 
 	OnClickListener startIssuesFragment = new OnClickListener() {
