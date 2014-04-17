@@ -17,6 +17,7 @@
     <style name="AppTheme" parent="AppBaseTheme">
         <item name="actionBarStyle">@style/WineActionBar</item>
         <item name="actionMenuTextColor">#fff</item>
+        <item name="calendarViewStyle">@style/Widget.Holo.Light.CalendarView</item>
     </style>
 
     <!-- ActionBar styles -->
