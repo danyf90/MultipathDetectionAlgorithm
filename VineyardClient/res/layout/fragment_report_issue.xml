@@ -104,7 +104,7 @@
                     android:background="@drawable/white_with_wine_border"
                     android:contentDescription="@string/action_add_photo"
                     android:padding="10dp"
-                    android:src="@drawable/action_camera" />
+                    android:src="@drawable/action_camera_dark" />
             </LinearLayout>
         </HorizontalScrollView>
     </RelativeLayout>

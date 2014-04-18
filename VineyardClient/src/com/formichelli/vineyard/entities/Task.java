@@ -6,10 +6,37 @@ import android.location.Location;
 
 public interface Task {
 
-	public enum Status {NEW, ASSIGNED, DONE};
-	public enum Priority {LOW, MEDIUM, HIGH};
-	
-	public String getDescription();
+	public enum Status {
+		NEW, ASSIGNED, DONE;
+		public String toString() {
+			switch (this) {
+			case ASSIGNED:
+				return "Assigned";
+			case DONE:
+				return "Done";
+			case NEW:
+				return "New";
+			}
+			return null;
+		}
+	};
+
+	public enum Priority {
+		LOW, MEDIUM, HIGH;
+		public String toString() {
+			switch (this) {
+			case LOW:
+				return "Low";
+			case MEDIUM:
+				return "Medium";
+			case HIGH:
+				return "High";
+			}
+			return null;
+		}
+	};
+
+	public abstract String getDescription();
 
 	public void setDescription(String description);
 

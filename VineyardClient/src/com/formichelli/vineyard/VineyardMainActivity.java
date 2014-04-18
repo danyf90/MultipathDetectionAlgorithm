@@ -1,5 +1,7 @@
 package com.formichelli.vineyard;
 
+import com.formichelli.vineyard.entities.Place;
+
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
@@ -17,6 +19,7 @@ public class VineyardMainActivity extends ActionBarActivity implements
 	TasksFragment tasksFragment;
 	SettingsFragment settingsFragment;
 	Menu menu;
+	Place currentPlace;
 
 	/**
 	 * Fragment managing the behaviors, interactions and presentation of the
@@ -109,7 +112,16 @@ public class VineyardMainActivity extends ActionBarActivity implements
 			restoreActionBar();
 			return true;
 		}
+		
 		return super.onCreateOptionsMenu(menu);
 	}
-	
+
+	public Place getCurrentPlace() {
+		return currentPlace;
+	}
+
+	public void setCurrentPlace(Place place) {
+		currentPlace = place;
+	}
+
 }

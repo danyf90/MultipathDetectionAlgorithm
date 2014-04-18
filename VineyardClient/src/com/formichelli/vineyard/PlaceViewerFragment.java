@@ -28,7 +28,7 @@ public class PlaceViewerFragment extends Fragment {
 	MenuItem upItem;
 	Place currentPlace;
 	Drawable redBorder, whiteBorder;
-	
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -55,8 +55,10 @@ public class PlaceViewerFragment extends Fragment {
 		issues.setOnClickListener(startIssuesFragment);
 
 		tasks.setOnClickListener(startTasksFragment);
-		redBorder = getResources().getDrawable(R.drawable.white_with_red_border);
-		whiteBorder = getResources().getDrawable(R.drawable.white_with_wine_border);
+		redBorder = getResources()
+				.getDrawable(R.drawable.white_with_red_border);
+		whiteBorder = getResources().getDrawable(
+				R.drawable.white_with_wine_border);
 	}
 
 	@Override
@@ -86,7 +88,7 @@ public class PlaceViewerFragment extends Fragment {
 	@SuppressWarnings("deprecation")
 	private void loadPlace(Place p) {
 		int i, t;
-		
+
 		currentPlace = p;
 
 		if (p.getParent() == null)
@@ -120,21 +122,21 @@ public class PlaceViewerFragment extends Fragment {
 			issues.setBackgroundDrawable(redBorder);
 		else
 			issues.setBackgroundDrawable(whiteBorder);
-		
+
 		t = VineyardServer.getTasksCount(p);
 		tasksCount.setText(String.valueOf(t));
 		if (t != 0)
 			tasks.setBackgroundDrawable(redBorder);
 		else
 			tasks.setBackgroundDrawable(whiteBorder);
-		
+
 	}
 
 	OnClickListener startIssuesFragment = new OnClickListener() {
 
 		@Override
 		public void onClick(View v) {
-			activity.issuesFragment.setPlace(currentPlace);
+			activity.setCurrentPlace(currentPlace);
 			getActivity().getSupportFragmentManager().beginTransaction()
 					.replace(R.id.container, activity.issuesFragment).commit();
 		}
@@ -144,7 +146,7 @@ public class PlaceViewerFragment extends Fragment {
 
 		@Override
 		public void onClick(View v) {
-			activity.tasksFragment.setPlace(currentPlace);
+			activity.setCurrentPlace(currentPlace);
 			getActivity().getSupportFragmentManager().beginTransaction()
 					.replace(R.id.container, activity.tasksFragment).commit();
 		}

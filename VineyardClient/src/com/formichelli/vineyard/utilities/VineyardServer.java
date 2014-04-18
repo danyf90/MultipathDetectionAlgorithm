@@ -5,6 +5,9 @@ import java.util.Random;
 
 import com.formichelli.vineyard.entities.IssueTask;
 import com.formichelli.vineyard.entities.Place;
+import com.formichelli.vineyard.entities.SimpleTask;
+import com.formichelli.vineyard.entities.Task;
+import com.formichelli.vineyard.entities.Worker;
 
 public class VineyardServer {
 
@@ -54,5 +57,31 @@ public class VineyardServer {
 	static public int getTasksCount(Place p) {
 		// TODO
 		return new Random().nextInt(10);
+	};
+
+	static public ArrayList<IssueTask> getIssues(Place p){
+		ArrayList<IssueTask> issues = new ArrayList<IssueTask>();
+		Worker w = new Worker();
+		IssueTask i = new IssueTask();
+		
+		w.setEmail("asd@asd.asd");
+		w.setName("Employee #1");
+		
+		i.setAssignedWorker(w);
+		i.setAssignedGroup(null);
+		i.setTitle("Problem");
+		i.setDescription("There is a big problem!");
+		i.setPlaceId(3);
+		i.setPriority(Task.Priority.HIGH);
+
+		issues.add(i);
+		issues.add(i);
+		
+		return issues;
+	};
+
+	static public ArrayList<SimpleTask> getTasks(Place p){
+		ArrayList<SimpleTask> issues = new ArrayList<SimpleTask>();
+		return issues;
 	};
 }

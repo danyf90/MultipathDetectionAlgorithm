@@ -34,7 +34,7 @@ public class PlaceAdapter extends ArrayAdapter<Place> {
 
 		View item = inflater.inflate(resource, parent, false);
 
-		t = (TextView) item.findViewById(R.id.drawer_list_item);
+		t = (TextView) item.findViewById(R.id.drawer_list_item_label);
 		t.setText(object.getName());
 		t.setTag(object);
 
