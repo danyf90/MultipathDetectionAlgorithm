@@ -3,25 +3,30 @@ package com.formichelli.vineyard.utilities;
 import java.util.ArrayList;
 
 import com.formichelli.vineyard.R;
+import com.formichelli.vineyard.ReportIssueFragment;
 import com.formichelli.vineyard.entities.IssueTask;
 
 import android.app.Activity;
 import android.content.Context;
+import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class IssueExpandableAdapter extends BaseExpandableListAdapter {
-	private final Context context;
+	private final FragmentActivity context;
 	ArrayList<IssueTask> objects;
 	int groupResource, childResource;
 
 	public IssueExpandableAdapter(Activity context, int groupResource,
 			int childResource, ArrayList<IssueTask> objects) {
 
-		this.context = context;
+		this.context = (FragmentActivity) context;
 		this.groupResource = groupResource;
 		this.childResource = childResource;
 		this.objects = objects;
@@ -31,14 +36,31 @@ public class IssueExpandableAdapter extends BaseExpandableListAdapter {
 	public View getGroupView(int groupPosition, boolean isExpanded,
 			View convertView, ViewGroup parent) {
 		TextView t;
-		IssueTask object = objects.get(groupPosition);
 		LayoutInflater inflater = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		View item = inflater.inflate(groupResource, parent, false);
-
 		t = (TextView) item.findViewById(R.id.drawer_list_item_label);
-		t.setText(object.getTitle());
-		t.setTag(object);
+
+		if (groupPosition == 0) {
+			// First item is report issue
+			t.setCompoundDrawablesWithIntrinsicBounds(
+					R.drawable.action_add_dark, 0, 0, 0);
+			t.setText(context.getString(R.string.action_report_issue));
+			t.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					context.getSupportFragmentManager().beginTransaction()
+							.replace(R.id.container, new ReportIssueFragment())
+							.commit();
+				}
+			});
+
+		} else {
+			IssueTask object = objects.get(groupPosition - 1);
+
+			t.setText(object.getTitle());
+			t.setTag(object);
+		}
 
 		return item;
 	}
@@ -46,7 +68,7 @@ public class IssueExpandableAdapter extends BaseExpandableListAdapter {
 	@Override
 	public View getChildView(int groupPosition, int childPosition,
 			boolean isLastChild, View convertView, ViewGroup parent) {
-		IssueTask object = objects.get(groupPosition);
+		IssueTask object = objects.get(groupPosition - 1);
 		LayoutInflater inflater = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		View childView = inflater.inflate(childResource, parent, false);
@@ -61,22 +83,47 @@ public class IssueExpandableAdapter extends BaseExpandableListAdapter {
 
 		// TODO add photos
 
+		((ImageButton) childView.findViewById(R.id.issue_view_edit))
+				.setOnClickListener(new OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						Toast.makeText(context,
+								"TODO: launch edit activity/fragment",
+								Toast.LENGTH_SHORT).show();
+					}
+				});
+		((ImageButton) childView.findViewById(R.id.issue_view_delete))
+				.setOnClickListener(new OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						Toast.makeText(context, "TODO: delete issue",
+								Toast.LENGTH_SHORT).show();
+					}
+				});
+		;
+
 		return childView;
 	}
 
 	@Override
 	public int getGroupCount() {
-		return objects.size();
+		return objects.size() + 1;
 	}
 
 	@Override
 	public int getChildrenCount(int groupPosition) {
+		if (groupPosition == 0)
+			return 0;
+
 		return 1;
 	}
 
 	@Override
 	public Object getGroup(int groupPosition) {
-		return objects.get(groupPosition);
+		if (groupPosition == 0)
+			return null;
+
+		return objects.get(groupPosition - 1);
 	}
 
 	@Override
@@ -84,7 +131,7 @@ public class IssueExpandableAdapter extends BaseExpandableListAdapter {
 		if (childPosition > 0)
 			return null;
 
-		return objects.get(groupPosition);
+		return objects.get(groupPosition - 1);
 	}
 
 	@Override

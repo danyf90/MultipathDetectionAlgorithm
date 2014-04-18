@@ -91,6 +91,8 @@ public class ReportIssueFragment extends Fragment {
 						PlacePickerActivity.class), REQUEST_PLACE);
 			}
 		});
+		i.setPlaceId(activity.getCurrentPlace().getId());
+		placeButton.setText(activity.getCurrentPlace().getName());
 	}
 
 	private void setSpinnerAdapter(Spinner s, int array) {
@@ -238,10 +240,6 @@ public class ReportIssueFragment extends Fragment {
 			if (resultCode == Activity.RESULT_OK) {
 				i.setPlaceId(data.getExtras().getInt("placeid"));
 				placeButton.setText(data.getExtras().getString("placename"));
-			}
-			else {
-				i.setPlaceId(-1);
-				placeButton.setText(getString(R.string.issue_place_button));
 			}
 			break;
 		}

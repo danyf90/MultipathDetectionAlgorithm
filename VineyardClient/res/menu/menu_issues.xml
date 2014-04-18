@@ -3,9 +3,4 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.formichelli.vit.VineyardMainActivity" >
 
-    <item
-        android:id="@+id/action_report_issue"
-        android:title="@string/action_report_issue"
-        app:showAsAction="withText|ifRoom"/>
-    
 </menu>
