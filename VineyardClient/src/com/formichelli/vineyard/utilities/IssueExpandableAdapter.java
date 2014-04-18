@@ -7,7 +7,6 @@ import com.formichelli.vineyard.entities.IssueTask;
 
 import android.app.Activity;
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,8 +37,6 @@ public class IssueExpandableAdapter extends BaseExpandableListAdapter {
 		View item = inflater.inflate(groupResource, parent, false);
 
 		t = (TextView) item.findViewById(R.id.drawer_list_item_label);
-		if (t == null)
-			Log.e("ASD","IS NULL!");
 		t.setText(object.getTitle());
 		t.setTag(object);
 
@@ -56,10 +53,10 @@ public class IssueExpandableAdapter extends BaseExpandableListAdapter {
 
 		((TextView) childView.findViewById(R.id.issue_view_description))
 				.setText(object.getDescription());
-		((TextView) childView.findViewById(R.id.issue_view_priority_label))
+		((TextView) childView.findViewById(R.id.issue_view_priority_value))
 				.setText(object.getPriority().toString());
 		((TextView) childView
-				.findViewById(R.id.issue_view_assigned_worker_label))
+				.findViewById(R.id.issue_view_assigned_worker_name))
 				.setText(object.getAssignedWorker().getName());
 
 		// TODO add photos

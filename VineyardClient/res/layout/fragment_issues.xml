@@ -11,6 +11,7 @@
     <ExpandableListView
         android:id="@+id/issues_list_view"
         android:layout_width="wrap_content"
+        android:groupIndicator="@null"
         android:layout_height="wrap_content" />
 
 </RelativeLayout>

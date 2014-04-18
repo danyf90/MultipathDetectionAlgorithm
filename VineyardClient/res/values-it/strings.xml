@@ -2,7 +2,8 @@
 <resources>
 
     <string name="app_name">Vigneto</string>
-    <string name="title_section_main">Main</string>
+    <string name="place_picker_name">Seleziona Posto</string>
+    <string name="title_section_main">Riepilogo</string>
     <string name="title_section_issues">Problemi</string>
     <string name="title_section_tasks">Lavori</string>
     <string name="title_section_settings">Impostazioni</string>
@@ -16,14 +17,20 @@
     <string name="action_delete">Cancella</string>
     <string name="action_send">Invia</string>
     <string name="action_done">Fatto</string>
+    <string name="action_up">Su</string>
     <string name="issue_title_error">Inserire il titolo</string>
-    <string name="issue_title_label">Titolo</string>
+    <string name="issue_title_label">Titolo: </string>
     <string name="issue_title_hint">Titolo del problema</string>
-    <string name="issue_description_label">Descrizione</string>
+    <string name="issue_description_label">Descrizione: </string>
     <string name="issue_description_hint">Dettagli del problema</string>
     <string name="issue_photos_label">Foto</string>
-    <string name="issue_place_label">Luogo</string>
-    <string name="issue_priority_label">Priorità</string>
+    <string name="issue_place_label">Luogo: </string>
+    <string name="issue_place_button">Seleziona posto</string>
+    <string name="issue_priority_label">Priorità: </string>
+    <string name="issue_assigned_worker_label">Operatore: </string>
+    <string name="issues_label">Problemi: </string>
+    <string name="tasks_label">Lavori: </string>
+    <string name="children_label">Figli: </string>
 
     <string-array name="priorities">
         <item>--</item>

@@ -18,6 +18,7 @@
     <RelativeLayout
         android:id="@+id/place_view_issues"
         style="@style/PlaceViewButton"
+        android:layout_width="120dp"
         android:layout_below="@id/place_view_description" >
 
         <TextView
@@ -40,6 +41,7 @@
     <RelativeLayout
         android:id="@+id/place_view_tasks"
         style="@style/PlaceViewButton"
+        android:layout_width="120dp"
         android:layout_below="@id/place_view_issues" >
 
         <TextView

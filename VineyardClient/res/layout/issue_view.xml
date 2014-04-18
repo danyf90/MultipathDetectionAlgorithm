@@ -17,6 +17,7 @@
 
     <RelativeLayout
         android:id="@+id/issue_view_priority"
+        android:layout_width="wrap_content"
         style="@style/PlaceViewButton"
         android:layout_below="@id/issue_view_description" >
 
@@ -26,20 +27,21 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:text="@string/issue_priority_label"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
+            android:textAppearance="?android:attr/textAppearanceSmall" 
+            android:layout_marginRight="5dp" />
 
         <TextView
             android:id="@+id/issue_view_priority_value"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:text="Low"
+            android:layout_toRightOf="@id/issue_view_priority_label"
             android:textAppearance="?android:attr/textAppearanceSmall" />
     </RelativeLayout>
 
     <RelativeLayout
         android:id="@+id/issue_view_assigned_worker"
         style="@style/PlaceViewButton"
+        android:layout_width="wrap_content"
         android:layout_below="@id/issue_view_priority" >
 
         <TextView
@@ -48,15 +50,15 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:text="@string/issue_assigned_worker_label"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
+            android:textAppearance="?android:attr/textAppearanceSmall" 
+            android:layout_marginRight="5dp"  />
 
         <TextView
-            android:id="@+id/issue_view_assignee_name"
+            android:id="@+id/issue_view_assigned_worker_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:text="Gigi"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
+            android:layout_toRightOf="@id/issue_view_assigned_worker_label"
+            android:textAppearance="?android:attr/textAppearanceSmall"  />
     </RelativeLayout>
     
     <HorizontalScrollView

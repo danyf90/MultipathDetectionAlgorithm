@@ -39,7 +39,7 @@ public class IssuesFragment extends Fragment {
 		issuesList = (ExpandableListView) activity.findViewById(R.id.issues_list_view);
 		ArrayList<IssueTask> issues = VineyardServer.getIssues(activity.getCurrentPlace());
 		Log.e("ASD", "size: " + issues.size());
-		issueAdapter = new IssueExpandableAdapter(activity, R.layout.drawer_list_item, R.layout.issue_view, issues);
+		issueAdapter = new IssueExpandableAdapter(activity, R.layout.issues_list_item, R.layout.issue_view, issues);
 		issuesList.setAdapter(issueAdapter);
 	}
 	
