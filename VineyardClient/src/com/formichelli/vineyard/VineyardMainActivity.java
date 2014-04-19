@@ -1,6 +1,7 @@
 package com.formichelli.vineyard;
 
 import com.formichelli.vineyard.entities.Place;
+import com.formichelli.vineyard.utilities.VineyardServer;
 
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
@@ -19,7 +20,7 @@ public class VineyardMainActivity extends ActionBarActivity implements
 	TasksFragment tasksFragment;
 	SettingsFragment settingsFragment;
 	Menu menu;
-	Place currentPlace;
+	Place currentPlace, rootPlace;
 
 	/**
 	 * Fragment managing the behaviors, interactions and presentation of the
@@ -48,10 +49,11 @@ public class VineyardMainActivity extends ActionBarActivity implements
 				.findFragmentById(R.id.navigation_drawer);
 		mTitle = getTitle();
 
+		currentPlace = rootPlace = VineyardServer.getRootPlace();
+		
 		// Set up the drawer.
 		mNavigationDrawerFragment.setUp(R.id.navigation_drawer,
 				(DrawerLayout) findViewById(R.id.drawer_layout));
-
 	}
 
 	@Override

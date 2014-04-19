@@ -153,4 +153,10 @@ public class IssueExpandableAdapter extends BaseExpandableListAdapter {
 	public long getChildId(int groupPosition, int childPosition) {
 		return childPosition;
 	}
+
+	public void replaceItems(ArrayList<IssueTask> objects) {
+		this.objects.clear();
+		this.objects.addAll(objects);
+		notifyDataSetChanged();
+	}
 }

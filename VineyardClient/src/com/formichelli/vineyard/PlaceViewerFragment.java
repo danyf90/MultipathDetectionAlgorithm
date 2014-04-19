@@ -26,7 +26,6 @@ public class PlaceViewerFragment extends Fragment {
 	PlaceAdapter placeAdapter;
 	ListView children;
 	MenuItem upItem;
-	Place currentPlace;
 	Drawable redBorder, whiteBorder;
 
 	@Override
@@ -66,7 +65,7 @@ public class PlaceViewerFragment extends Fragment {
 		inflater.inflate(R.menu.menu_place_viewer, menu);
 
 		upItem = menu.findItem(R.id.action_place_viewer_up);
-		loadPlace(VineyardServer.getRootPlace());
+		loadPlace(activity.getCurrentPlace());
 		super.onCreateOptionsMenu(menu, inflater);
 	}
 
@@ -75,7 +74,7 @@ public class PlaceViewerFragment extends Fragment {
 
 		switch (item.getItemId()) {
 		case R.id.action_place_viewer_up:
-			loadPlace(currentPlace.getParent());
+			loadPlace(activity.getCurrentPlace().getParent());
 			break;
 		default:
 			return false;
@@ -89,7 +88,7 @@ public class PlaceViewerFragment extends Fragment {
 	private void loadPlace(Place p) {
 		int i, t;
 
-		currentPlace = p;
+		activity.setCurrentPlace(p);
 
 		if (p.getParent() == null)
 			upItem.setVisible(false);
@@ -137,7 +136,6 @@ public class PlaceViewerFragment extends Fragment {
 	OnClickListener startIssuesFragment = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
-			activity.setCurrentPlace(currentPlace);
 			getActivity().getSupportFragmentManager().beginTransaction()
 					.replace(R.id.container, activity.issuesFragment).commit();
 		}
@@ -146,7 +144,6 @@ public class PlaceViewerFragment extends Fragment {
 	OnClickListener startTasksFragment = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
-			activity.setCurrentPlace(currentPlace);
 			getActivity().getSupportFragmentManager().beginTransaction()
 					.replace(R.id.container, activity.tasksFragment).commit();
 		}

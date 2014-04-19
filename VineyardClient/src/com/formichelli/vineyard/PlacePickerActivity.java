@@ -49,6 +49,10 @@ public class PlacePickerActivity extends ActionBarActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 
 		switch (item.getItemId()) {
+		case R.id.action_issues_up:
+			selectedPlace = selectedPlace.getParent();
+			placeAdapter.replaceItems(selectedPlace.getChildren());
+			return true;
 		case R.id.place_picker_action_done:
 			Intent resultIntent = new Intent();
 			resultIntent.putExtra("placeid", selectedPlace.getId());
