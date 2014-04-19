@@ -100,13 +100,16 @@ public class PlaceViewerFragment extends Fragment {
 
 		if (placeAdapter != null) {
 			placeAdapter.replaceItems(p.getChildren());
-			if (children.getAdapter() == null)
-				children.setAdapter(placeAdapter);
 		} else {
 			placeAdapter = new PlaceAdapter(activity,
 					R.layout.drawer_list_item, p.getChildren());
 			children.setAdapter(placeAdapter);
+		}
 
+		if (children.getAdapter() == null)
+			children.setAdapter(placeAdapter);
+
+		if (children.getOnItemClickListener() == null)
 			children.setOnItemClickListener(new OnItemClickListener() {
 				@Override
 				public void onItemClick(AdapterView<?> parent, View view,
@@ -114,7 +117,6 @@ public class PlaceViewerFragment extends Fragment {
 					loadPlace((Place) view.getTag());
 				}
 			});
-		}
 
 		i = VineyardServer.getIssuesCount(p);
 		issuesCount.setText(String.valueOf(i));
@@ -133,7 +135,6 @@ public class PlaceViewerFragment extends Fragment {
 	}
 
 	OnClickListener startIssuesFragment = new OnClickListener() {
-
 		@Override
 		public void onClick(View v) {
 			activity.setCurrentPlace(currentPlace);
@@ -143,7 +144,6 @@ public class PlaceViewerFragment extends Fragment {
 	};
 
 	OnClickListener startTasksFragment = new OnClickListener() {
-
 		@Override
 		public void onClick(View v) {
 			activity.setCurrentPlace(currentPlace);
