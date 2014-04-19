@@ -9,8 +9,7 @@
          https://developer.android.com/design/patterns/navigation-drawer.html
     -->
     <dimen name="navigation_drawer_width">240dp</dimen>
-    <dimen name="gallery_height">150dp</dimen>
+    <dimen name="gallery_height">140dp</dimen>
     <dimen name="gallery_padding">5dp</dimen>
-    <dimen name="gallery_inner_height">140dp</dimen>
 
 </resources>

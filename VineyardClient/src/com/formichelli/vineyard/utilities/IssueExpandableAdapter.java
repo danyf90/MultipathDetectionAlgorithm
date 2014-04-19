@@ -1,20 +1,24 @@
 package com.formichelli.vineyard.utilities;
 
+import java.net.URL;
 import java.util.ArrayList;
 
 import com.formichelli.vineyard.R;
 import com.formichelli.vineyard.ReportIssueFragment;
+import com.formichelli.vineyard.VineyardMainActivity;
 import com.formichelli.vineyard.entities.IssueTask;
 
 import android.app.Activity;
 import android.content.Context;
 import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -81,7 +85,23 @@ public class IssueExpandableAdapter extends BaseExpandableListAdapter {
 				.findViewById(R.id.issue_view_assigned_worker_name))
 				.setText(object.getAssignedWorker().getName());
 
-		// TODO add photos
+		ArrayList<URL> photos = object.getPhotos();
+		if (photos == null || photos.size() == 0) {
+			// TODO remove the white space
+			childView.findViewById(R.id.issue_view_gallery_container).setVisibility(View.INVISIBLE);
+		} else {
+			LinearLayout galleryLayout = (LinearLayout) childView
+					.findViewById(R.id.issue_view_gallery);
+			MenuItem deleteItem = ((VineyardMainActivity) context).getMenu()
+					.findItem(R.id.action_issues_up);
+
+			Gallery gallery = new Gallery(context, deleteItem, galleryLayout,
+					false);
+
+			for (URL p : photos) {
+				gallery.addImage(p.getPath());
+			}
+		}
 
 		((ImageButton) childView.findViewById(R.id.issue_view_edit))
 				.setOnClickListener(new OnClickListener() {

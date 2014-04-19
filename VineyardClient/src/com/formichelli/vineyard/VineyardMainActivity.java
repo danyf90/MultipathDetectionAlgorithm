@@ -126,4 +126,7 @@ public class VineyardMainActivity extends ActionBarActivity implements
 		currentPlace = place;
 	}
 
+	public Menu getMenu() {
+		return menu;
+	}
 }

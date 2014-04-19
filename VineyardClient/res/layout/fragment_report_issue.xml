@@ -99,8 +99,8 @@
 
                 <ImageView
                     android:id="@+id/action_add_photo"
-                    android:layout_width="@dimen/gallery_inner_height"
-                    android:layout_height="@dimen/gallery_inner_height"
+                    android:layout_width="@dimen/gallery_height"
+                    android:layout_height="@dimen/gallery_height"
                     android:background="@drawable/white_with_wine_border"
                     android:contentDescription="@string/action_add_photo"
                     android:padding="10dp"
