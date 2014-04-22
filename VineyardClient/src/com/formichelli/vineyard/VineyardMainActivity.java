@@ -3,8 +3,8 @@ package com.formichelli.vineyard;
 import com.formichelli.vineyard.entities.Place;
 import com.formichelli.vineyard.utilities.VineyardServer;
 
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
 import android.support.v4.app.Fragment;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -24,18 +24,13 @@ public class VineyardMainActivity extends ActionBarActivity implements
 	Fragment currentFragment;
 	Menu menu;
 	Place currentPlace, rootPlace;
+	ActionBar actionBar;
 
 	/**
 	 * Fragment managing the behaviors, interactions and presentation of the
 	 * navigation drawer.
 	 */
 	private NavigationDrawerFragment mNavigationDrawerFragment;
-
-	/**
-	 * Used to store the last screen title. For use in
-	 * {@link #restoreActionBar()}.
-	 */
-	private CharSequence mTitle;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -50,13 +45,15 @@ public class VineyardMainActivity extends ActionBarActivity implements
 
 		mNavigationDrawerFragment = (NavigationDrawerFragment) getSupportFragmentManager()
 				.findFragmentById(R.id.navigation_drawer);
-		mTitle = getTitle();
 
-		currentPlace = rootPlace = VineyardServer.getRootPlace();
+		rootPlace = VineyardServer.getRootPlace();
+		setCurrentPlace(rootPlace);
 
 		// Set up the drawer.
 		mNavigationDrawerFragment.setUp(R.id.navigation_drawer,
 				(DrawerLayout) findViewById(R.id.drawer_layout));
+		
+		actionBar = getSupportActionBar();
 	}
 
 	@Override
@@ -113,48 +110,13 @@ public class VineyardMainActivity extends ActionBarActivity implements
 		;
 	}
 
-	public void onSectionAttached(int number) {
-		switch (number) {
-		case 1:
-			mTitle = getString(R.string.title_section_main);
-			break;
-		case 2:
-			mTitle = getString(R.string.title_section_issues);
-			break;
-		case 3:
-			mTitle = getString(R.string.title_section_tasks);
-			break;
-		case 4:
-			mTitle = getString(R.string.title_section_settings);
-			break;
-		}
-	}
-
-	public void restoreActionBar() {
-		ActionBar actionBar = getSupportActionBar();
-		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-		actionBar.setDisplayShowTitleEnabled(true);
-		actionBar.setTitle(mTitle);
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		this.menu = menu;
-
-		if (!mNavigationDrawerFragment.isDrawerOpen()) {
-			restoreActionBar();
-			return true;
-		}
-
-		return super.onCreateOptionsMenu(menu);
-	}
-
 	public Place getCurrentPlace() {
 		return currentPlace;
 	}
 
 	public void setCurrentPlace(Place place) {
 		currentPlace = place;
+		setTitle(place.getName());
 	}
 
 	public Menu getMenu() {
@@ -166,5 +128,9 @@ public class VineyardMainActivity extends ActionBarActivity implements
 
 		getSupportFragmentManager().beginTransaction()
 				.replace(R.id.container, currentFragment).commit();
+	}
+	
+	public void setTitle(String title) {
+		getSupportActionBar().setTitle(title);
 	}
 }

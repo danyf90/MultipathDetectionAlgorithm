@@ -36,6 +36,8 @@ public class PlacePickerActivity extends ActionBarActivity {
 		currentLevelPlacesListView = (ListView) findViewById(R.id.place_picker_current_level_places);
 
 		selectPlace(VineyardServer.getRootPlace());
+		
+		getSupportActionBar().setTitle(R.string.title_place_picker);
 	}
 
 	@Override

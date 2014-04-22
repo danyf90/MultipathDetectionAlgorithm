@@ -60,27 +60,30 @@ public class ReportIssueFragment extends Fragment {
 		return inflater.inflate(R.layout.fragment_report_issue, container,
 				false);
 	}
+	
+	@Override
+	public void onAttach(Activity activity){
+		super.onAttach(activity);
+		
+		VineyardMainActivity vmactivity = (VineyardMainActivity) activity;
+		((VineyardMainActivity) vmactivity).setTitle(getString(R.string.title_report_issue));
+	}
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 
 		activity = (VineyardMainActivity) getActivity();
-
 		addPhoto = (ImageView) activity.findViewById(R.id.action_add_photo);
-		addPhoto.setOnClickListener(dispatchTakePictureIntent);
-
 		imagePadding = getResources().getDimensionPixelSize(
 				R.dimen.gallery_padding);
-
-		// populate priorities spinner
 		priorities = (Spinner) activity
 				.findViewById(R.id.report_issue_priority);
-		setSpinnerAdapter(priorities, R.array.priorities);
-
 		placeButton = (Button) activity.findViewById(R.id.report_issue_place);
-		placeButton.setOnClickListener(new OnClickListener() {
 
+		addPhoto.setOnClickListener(dispatchTakePictureIntent);
+		setSpinnerAdapter(priorities, R.array.priorities);
+		placeButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				startActivityForResult(new Intent(activity,
@@ -89,6 +92,7 @@ public class ReportIssueFragment extends Fragment {
 		});
 		i.setPlaceId(activity.getCurrentPlace().getId());
 		placeButton.setText(activity.getCurrentPlace().getName());
+		
 	}
 
 	private void setSpinnerAdapter(Spinner s, int array) {
