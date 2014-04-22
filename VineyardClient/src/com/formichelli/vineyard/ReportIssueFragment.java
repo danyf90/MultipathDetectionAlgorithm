@@ -120,17 +120,15 @@ public class ReportIssueFragment extends Fragment {
 		case R.id.action_report_issue_delete_selected_photos:
 			// remove selected images from gallery
 			gallery.removeSelectedImages();
-
 			break;
 		case R.id.action_report_issue_cancel:
-			closeFragment();
-
+			activity.switchFragment(activity.issuesFragment);
 			break;
 		case R.id.action_report_issue_send:
 			if (parseFields()) {
 				VineyardServer.sendIssue(i);
 				gallery.removeAllImages();
-				closeFragment();
+				activity.switchFragment(activity.issuesFragment);
 				break;
 			}
 		default:
@@ -138,15 +136,6 @@ public class ReportIssueFragment extends Fragment {
 		}
 
 		return true;
-	}
-
-	// Navigate back to issuesFragment
-	private void closeFragment() {
-		activity.getSupportFragmentManager()
-				.beginTransaction()
-				.replace(R.id.container,
-						((VineyardMainActivity) getActivity()).issuesFragment)
-				.commit();
 	}
 
 	// Checks if the fields are valid and populates issueTask

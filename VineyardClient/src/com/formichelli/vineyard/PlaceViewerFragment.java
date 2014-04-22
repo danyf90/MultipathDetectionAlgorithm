@@ -51,9 +51,20 @@ public class PlaceViewerFragment extends Fragment {
 				.findViewById(R.id.place_view_tasks_count);
 		children = (ListView) activity.findViewById(R.id.place_view_children);
 
-		issues.setOnClickListener(startIssuesFragment);
+		issues.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				activity.switchFragment(activity.issuesFragment);
+			}
+		});
 
-		tasks.setOnClickListener(startTasksFragment);
+		tasks.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				activity.switchFragment(activity.tasksFragment);
+			}
+		});
+		
 		redBorder = getResources()
 				.getDrawable(R.drawable.white_with_red_border);
 		whiteBorder = getResources().getDrawable(
@@ -132,21 +143,4 @@ public class PlaceViewerFragment extends Fragment {
 			tasks.setBackgroundDrawable(whiteBorder);
 
 	}
-
-	OnClickListener startIssuesFragment = new OnClickListener() {
-		@Override
-		public void onClick(View v) {
-			getActivity().getSupportFragmentManager().beginTransaction()
-					.replace(R.id.container, activity.issuesFragment).commit();
-		}
-	};
-
-	OnClickListener startTasksFragment = new OnClickListener() {
-		@Override
-		public void onClick(View v) {
-			getActivity().getSupportFragmentManager().beginTransaction()
-					.replace(R.id.container, activity.tasksFragment).commit();
-		}
-	};
-
 }

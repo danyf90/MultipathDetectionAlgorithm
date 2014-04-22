@@ -6,6 +6,8 @@ import com.formichelli.vineyard.utilities.VineyardServer;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -19,6 +21,7 @@ public class VineyardMainActivity extends ActionBarActivity implements
 	IssuesFragment issuesFragment;
 	TasksFragment tasksFragment;
 	SettingsFragment settingsFragment;
+	Fragment currentFragment;
 	Menu menu;
 	Place currentPlace, rootPlace;
 
@@ -50,7 +53,7 @@ public class VineyardMainActivity extends ActionBarActivity implements
 		mTitle = getTitle();
 
 		currentPlace = rootPlace = VineyardServer.getRootPlace();
-		
+
 		// Set up the drawer.
 		mNavigationDrawerFragment.setUp(R.id.navigation_drawer,
 				(DrawerLayout) findViewById(R.id.drawer_layout));
@@ -58,28 +61,56 @@ public class VineyardMainActivity extends ActionBarActivity implements
 
 	@Override
 	public void onNavigationDrawerItemSelected(int position) {
-		Fragment next = null;
 		switch (position) {
 		case 0:
-			next = placeViewerFragment;
+			currentFragment = placeViewerFragment;
 			break;
 		case 1:
-			next = issuesFragment;
+			currentFragment = issuesFragment;
 			break;
 		case 2:
-			next = tasksFragment;
+			currentFragment = tasksFragment;
 			break;
 		case 3:
-			next = settingsFragment;
+			currentFragment = settingsFragment;
 			break;
 		default:
 			Log.e(TAG, "onNavigationDrawerItemSelected: Unexpected position");
 			return;
 		}
 
-		// update the main content by replacing fragments
-		getSupportFragmentManager().beginTransaction()
-				.replace(R.id.container, next).commit();
+		switchFragment(currentFragment);
+	}
+
+	@Override
+	public void onBackPressed() {
+		if (currentFragment == placeViewerFragment)
+			askExit();
+		else if (currentFragment == issuesFragment)
+			switchFragment(placeViewerFragment);
+		else if (currentFragment == tasksFragment)
+			switchFragment(placeViewerFragment);
+		else if (currentFragment == settingsFragment)
+			switchFragment(placeViewerFragment);
+		return;
+	}
+
+	private void askExit() {
+		new AlertDialog.Builder(this)
+				.setMessage(R.string.dialog_confirm_exit)
+				.setPositiveButton(R.string.dialog_confirm_exit_confirm,
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog, int id) {
+								finish();
+							}
+						})
+				.setNegativeButton(R.string.dialog_confirm_exit_cancel,
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog, int id) {
+								return;
+							}
+						}).create().show();
+		;
 	}
 
 	public void onSectionAttached(int number) {
@@ -114,7 +145,7 @@ public class VineyardMainActivity extends ActionBarActivity implements
 			restoreActionBar();
 			return true;
 		}
-		
+
 		return super.onCreateOptionsMenu(menu);
 	}
 
@@ -128,5 +159,12 @@ public class VineyardMainActivity extends ActionBarActivity implements
 
 	public Menu getMenu() {
 		return menu;
+	}
+
+	public void switchFragment(Fragment nextFragment) {
+		currentFragment = nextFragment;
+
+		getSupportFragmentManager().beginTransaction()
+				.replace(R.id.container, currentFragment).commit();
 	}
 }

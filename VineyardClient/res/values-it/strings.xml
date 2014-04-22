@@ -31,6 +31,9 @@
     <string name="issues_label">Problemi: </string>
     <string name="tasks_label">Lavori: </string>
     <string name="children_label">Figli: </string>
+    <string name="dialog_confirm_exit">Sei sicuro di voler uscire?</string>
+    <string name="dialog_confirm_exit_confirm">Sì</string>
+    <string name="dialog_confirm_exit_cancel">No</string>
 
     <string-array name="priorities">
         <item>--</item>

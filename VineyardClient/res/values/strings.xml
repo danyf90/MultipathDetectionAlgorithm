@@ -31,19 +31,14 @@
     <string name="issues_label">Issues: </string>
     <string name="tasks_label">Tasks: </string>
     <string name="children_label">Children: </string>
-
+    <string name="dialog_confirm_exit">Are you sure you want to exit?</string>
+    <string name="dialog_confirm_exit_confirm">Yes</string>
+    <string name="dialog_confirm_exit_cancel">No</string>
     <string-array name="priorities">
         <item>--</item>
         <item>Low</item>
         <item>Medium</item>
         <item>High</item>
-    </string-array>
-    <string-array name="places">
-        <item>Place 1</item>
-        <item>Place 2</item>
-        <item>Place 3</item>
-        <item>Place 4</item>
-        <item>Place 5</item>
     </string-array>
 
 </resources>
