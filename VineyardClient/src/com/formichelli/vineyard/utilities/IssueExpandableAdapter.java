@@ -75,7 +75,7 @@ public class IssueExpandableAdapter extends BaseExpandableListAdapter {
 		IssueTask object = objects.get(groupPosition - 1);
 		LayoutInflater inflater = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		View childView = inflater.inflate(childResource, parent, false);
+		ViewGroup childView = (ViewGroup) inflater.inflate(childResource, parent, false);
 
 		((TextView) childView.findViewById(R.id.issue_view_description))
 				.setText(object.getDescription());
@@ -88,7 +88,7 @@ public class IssueExpandableAdapter extends BaseExpandableListAdapter {
 		ArrayList<URL> photos = object.getPhotos();
 		if (photos == null || photos.size() == 0) {
 			// TODO remove the white space
-			childView.findViewById(R.id.issue_view_gallery_container).setVisibility(View.INVISIBLE);
+			childView.removeView(childView.findViewById(R.id.issue_view_gallery_container));
 		} else {
 			LinearLayout galleryLayout = (LinearLayout) childView
 					.findViewById(R.id.issue_view_gallery);
