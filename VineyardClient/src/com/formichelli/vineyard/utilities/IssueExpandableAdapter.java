@@ -64,6 +64,13 @@ public class IssueExpandableAdapter extends BaseExpandableListAdapter {
 
 			t.setText(object.getTitle());
 			t.setTag(object);
+
+			if (isExpanded)
+				t.setCompoundDrawablesWithIntrinsicBounds(
+						R.drawable.action_up_dark, 0, 0, 0);
+			else
+				t.setCompoundDrawablesWithIntrinsicBounds(
+						R.drawable.action_expand_dark, 0, 0, 0);
 		}
 
 		return item;
@@ -75,7 +82,8 @@ public class IssueExpandableAdapter extends BaseExpandableListAdapter {
 		IssueTask object = objects.get(groupPosition - 1);
 		LayoutInflater inflater = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		ViewGroup childView = (ViewGroup) inflater.inflate(childResource, parent, false);
+		ViewGroup childView = (ViewGroup) inflater.inflate(childResource,
+				parent, false);
 
 		((TextView) childView.findViewById(R.id.issue_view_description))
 				.setText(object.getDescription());
@@ -87,8 +95,8 @@ public class IssueExpandableAdapter extends BaseExpandableListAdapter {
 
 		ArrayList<URL> photos = object.getPhotos();
 		if (photos == null || photos.size() == 0) {
-			// TODO remove the white space
-			childView.removeView(childView.findViewById(R.id.issue_view_gallery_container));
+			childView.removeView(childView
+					.findViewById(R.id.issue_view_gallery_container));
 		} else {
 			LinearLayout galleryLayout = (LinearLayout) childView
 					.findViewById(R.id.issue_view_gallery);
