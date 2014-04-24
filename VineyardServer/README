@@ -1,0 +1,13 @@
+## How to set up apache virtual site
+
+1. Edit "vineyard.site" file and enter correct root path in DocumentRoot and <Directory> entries
+
+2. Copy "vineyard.site" in /etc/apache2/sites-available
+
+3. Add "vineyard.dev" as alias of localhost (127.0.0.1) in /etc/hosts
+
+4. Enable Apache site: sudo a2ensite vineyard.site
+
+5. Visit http://vineyard.dev/
+
+6. Enjoy!
