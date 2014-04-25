@@ -85,7 +85,7 @@
         <HorizontalScrollView
             android:id="@+id/report_issue_gallery_container"
             android:layout_width="fill_parent"
-            android:layout_height="@dimen/gallery_height"
+            android:layout_height="wrap_content"
             android:layout_below="@+id/report_issue_priority_label"
             android:layout_marginTop="30dp"
             android:background="@color/wine_light" >
@@ -93,7 +93,7 @@
             <LinearLayout
                 android:id="@+id/report_issue_gallery"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:padding="5dp" >
 
