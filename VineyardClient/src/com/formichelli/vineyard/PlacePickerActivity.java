@@ -1,5 +1,7 @@
 package com.formichelli.vineyard;
 
+import org.json.JSONException;
+
 import com.formichelli.vineyard.entities.Place;
 import com.formichelli.vineyard.utilities.PlaceAdapter;
 import com.formichelli.vineyard.utilities.Util;
@@ -35,8 +37,13 @@ public class PlacePickerActivity extends ActionBarActivity {
 		ancestorsList = (ViewGroup) findViewById(R.id.place_picker_ancestors_list);
 		currentLevelPlacesListView = (ListView) findViewById(R.id.place_picker_current_level_places);
 
-		selectPlace(VineyardServer.getRootPlace());
-		
+		try {
+			selectPlace(VineyardServer.getRootPlace());
+		} catch (JSONException e) {
+			Log.e("PLACEPICKER", "JSON exception: " + e.getLocalizedMessage());
+			finish();
+		}
+
 		getSupportActionBar().setTitle(R.string.title_place_picker);
 	}
 

@@ -1,5 +1,7 @@
 package com.formichelli.vineyard;
 
+import org.json.JSONException;
+
 import com.formichelli.vineyard.entities.Place;
 import com.formichelli.vineyard.utilities.VineyardServer;
 
@@ -46,13 +48,18 @@ public class VineyardMainActivity extends ActionBarActivity implements
 		mNavigationDrawerFragment = (NavigationDrawerFragment) getSupportFragmentManager()
 				.findFragmentById(R.id.navigation_drawer);
 
-		rootPlace = VineyardServer.getRootPlace();
+		try {
+			rootPlace = VineyardServer.getRootPlace();
+		} catch (JSONException e) {
+			Log.e("PLACEPICKER", "JSON exception: " + e.getLocalizedMessage());
+			finish();
+		}
 		setCurrentPlace(rootPlace);
 
 		// Set up the drawer.
 		mNavigationDrawerFragment.setUp(R.id.navigation_drawer,
 				(DrawerLayout) findViewById(R.id.drawer_layout));
-		
+
 		actionBar = getSupportActionBar();
 	}
 
@@ -115,6 +122,11 @@ public class VineyardMainActivity extends ActionBarActivity implements
 	}
 
 	public void setCurrentPlace(Place place) {
+		if (place == null) {
+			Log.e("TAG", "rootPlace is null");
+			finish();
+		}
+		
 		currentPlace = place;
 		setTitle(place.getName());
 	}
@@ -129,7 +141,7 @@ public class VineyardMainActivity extends ActionBarActivity implements
 		getSupportFragmentManager().beginTransaction()
 				.replace(R.id.container, currentFragment).commit();
 	}
-	
+
 	public void setTitle(String title) {
 		getSupportActionBar().setTitle(title);
 	}

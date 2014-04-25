@@ -76,6 +76,10 @@ public class PlaceViewerFragment extends Fragment {
 				activity.switchFragment(activity.tasksFragment);
 			}
 		});
+		
+		// loadPlace must be called after both onActivityCreated and onCreateOptionsMenu
+		if (upItem != null)
+			loadPlace(activity.getCurrentPlace());
 	}
 
 	@Override
@@ -83,7 +87,11 @@ public class PlaceViewerFragment extends Fragment {
 		inflater.inflate(R.menu.menu_place_viewer, menu);
 
 		upItem = menu.findItem(R.id.action_place_viewer_up);
-		loadPlace(activity.getCurrentPlace());
+
+		// loadPlace must be called after both onActivityCreated and onCreateOptionsMenu
+		if (activity != null)
+			loadPlace(activity.getCurrentPlace());
+		
 		super.onCreateOptionsMenu(menu, inflater);
 	}
 
