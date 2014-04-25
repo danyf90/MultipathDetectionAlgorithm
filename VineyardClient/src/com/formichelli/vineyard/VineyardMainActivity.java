@@ -89,7 +89,11 @@ public class VineyardMainActivity extends ActionBarActivity implements
 	@Override
 	public void onBackPressed() {
 		if (currentFragment == placeViewerFragment)
-			askExit();
+			if (currentPlace == rootPlace)
+				askExit();
+			else {
+				placeViewerFragment.loadPlace(currentPlace.getParent());
+			}
 		else if (currentFragment == issuesFragment)
 			switchFragment(placeViewerFragment);
 		else if (currentFragment == tasksFragment)
@@ -126,7 +130,7 @@ public class VineyardMainActivity extends ActionBarActivity implements
 			Log.e("TAG", "rootPlace is null");
 			finish();
 		}
-		
+
 		currentPlace = place;
 		setTitle(place.getName());
 	}

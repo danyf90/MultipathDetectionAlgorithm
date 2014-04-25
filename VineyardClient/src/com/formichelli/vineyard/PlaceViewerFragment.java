@@ -111,7 +111,7 @@ public class PlaceViewerFragment extends Fragment {
 
 	// setBackgroundDrawable needed for compatibility with API 8
 	@SuppressWarnings("deprecation")
-	private void loadPlace(Place p) {
+	public void loadPlace(Place p) {
 		int i, t;
 
 		activity.setCurrentPlace(p);
