@@ -2,37 +2,51 @@ package com.formichelli.vineyard.entities;
 
 import java.util.Date;
 
+import com.formichelli.vineyard.R;
+
 import android.location.Location;
 
 public interface Task {
 
 	public enum Status {
 		NEW, ASSIGNED, DONE;
-		public String toString() {
+		public int getStringId() {
 			switch (this) {
-			case ASSIGNED:
-				return "Assigned";
-			case DONE:
-				return "Done";
 			case NEW:
-				return "New";
+				return R.string.status_new;
+			case ASSIGNED:
+				return R.string.status_assigned;
+			case DONE:
+				return R.string.status_done;
 			}
-			return null;
+			return -1;
 		}
 	};
 
 	public enum Priority {
 		LOW, MEDIUM, HIGH;
-		public String toString() {
+		public int getStringId() {
 			switch (this) {
 			case LOW:
-				return "Low";
+				return R.string.priority_low;
 			case MEDIUM:
-				return "Medium";
+				return R.string.priority_medium;
 			case HIGH:
-				return "High";
+				return R.string.priority_high;
 			}
-			return null;
+			return -1;
+		}
+
+		public int toInt() {
+			switch (this) {
+			case LOW:
+				return 0;
+			case MEDIUM:
+				return 1;
+			case HIGH:
+				return 2;
+			}
+			return -1;
 		}
 	};
 
@@ -54,7 +68,9 @@ public interface Task {
 
 	public int getPlaceId();
 
-	public void setPlaceId(int placeId);
+	public String getPlaceName();
+
+	public void setPlace(Place p);
 
 	public String getTitle();
 

@@ -17,8 +17,9 @@
     <string name="action_delete_selected_photos">Delete selected photos</string>
     <string name="action_cancel">Cancel</string>
     <string name="action_delete">Delete</string>
-    <string name="action_send">Send</string>
     <string name="action_done">Done</string>
+    <string name="action_edit">Edit</string>
+    <string name="action_send">Send</string>
     <string name="action_up">Up</string>
     <string name="issue_title_error">Title is mandatory</string>
     <string name="issue_title_label">Title: </string>
@@ -36,6 +37,12 @@
     <string name="dialog_confirm_exit">Are you sure you want to exit?</string>
     <string name="dialog_confirm_exit_confirm">Yes</string>
     <string name="dialog_confirm_exit_cancel">No</string>
+    <string name="status_new">New</string>
+    <string name="status_assigned">Assigned</string>
+    <string name="status_done">Done</string>
+    <string name="priority_low">Low</string>
+    <string name="priority_medium">Medium</string>
+    <string name="priority_high">High</string>
     <string-array name="priorities">
         <item>--</item>
         <item>Low</item>

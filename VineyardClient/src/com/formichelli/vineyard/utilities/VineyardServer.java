@@ -71,7 +71,7 @@ public class VineyardServer {
 		i.setAssignedGroup(null);
 		i.setTitle("Problem");
 		i.setDescription("There is a big problem!");
-		i.setPlaceId(3);
+		i.setPlace(p);
 		i.setPriority(Task.Priority.HIGH);
 
 		issues.add(i);

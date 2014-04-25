@@ -4,7 +4,6 @@ import java.net.URL;
 import java.util.ArrayList;
 
 import com.formichelli.vineyard.R;
-import com.formichelli.vineyard.ReportIssueFragment;
 import com.formichelli.vineyard.VineyardMainActivity;
 import com.formichelli.vineyard.entities.IssueTask;
 
@@ -17,23 +16,29 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class IssueExpandableAdapter extends BaseExpandableListAdapter {
 	private final FragmentActivity context;
 	ArrayList<IssueTask> objects;
 	int groupResource, childResource;
+	OnClickListener reportIssueOnClickListener, editOnClickListener,
+			deleteOnClickListener;
 
 	public IssueExpandableAdapter(Activity context, int groupResource,
-			int childResource, ArrayList<IssueTask> objects) {
+			int childResource, ArrayList<IssueTask> objects,
+			OnClickListener reportIssueOnClickListener,
+			OnClickListener editOnClickListener,
+			OnClickListener deleteOnClickListener) {
 
 		this.context = (FragmentActivity) context;
 		this.groupResource = groupResource;
 		this.childResource = childResource;
 		this.objects = objects;
+		this.reportIssueOnClickListener = reportIssueOnClickListener;
+		this.editOnClickListener = editOnClickListener;
+		this.deleteOnClickListener = deleteOnClickListener;
 	}
 
 	@Override
@@ -50,14 +55,7 @@ public class IssueExpandableAdapter extends BaseExpandableListAdapter {
 			t.setCompoundDrawablesWithIntrinsicBounds(
 					R.drawable.action_add_dark, 0, 0, 0);
 			t.setText(context.getString(R.string.action_report_issue));
-			t.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					context.getSupportFragmentManager().beginTransaction()
-							.replace(R.id.container, new ReportIssueFragment())
-							.commit();
-				}
-			});
+			t.setOnClickListener(reportIssueOnClickListener);
 
 		} else {
 			IssueTask object = objects.get(groupPosition - 1);
@@ -88,7 +86,7 @@ public class IssueExpandableAdapter extends BaseExpandableListAdapter {
 		((TextView) childView.findViewById(R.id.issue_view_description))
 				.setText(object.getDescription());
 		((TextView) childView.findViewById(R.id.issue_view_priority_value))
-				.setText(object.getPriority().toString());
+				.setText(context.getString(object.getPriority().getStringId()));
 		((TextView) childView
 				.findViewById(R.id.issue_view_assigned_worker_name))
 				.setText(object.getAssignedWorker().getName());
@@ -111,24 +109,14 @@ public class IssueExpandableAdapter extends BaseExpandableListAdapter {
 			}
 		}
 
-		((ImageButton) childView.findViewById(R.id.issue_view_edit))
-				.setOnClickListener(new OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						Toast.makeText(context,
-								"TODO: launch edit activity/fragment",
-								Toast.LENGTH_SHORT).show();
-					}
-				});
-		((ImageButton) childView.findViewById(R.id.issue_view_delete))
-				.setOnClickListener(new OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						Toast.makeText(context, "TODO: delete issue",
-								Toast.LENGTH_SHORT).show();
-					}
-				});
-		;
+		childView.findViewById(R.id.issue_view_edit).setOnClickListener(
+				editOnClickListener);
+		childView.findViewById(R.id.issue_view_delete).setOnClickListener(
+				deleteOnClickListener);
+
+		// add the issue as tag of the button
+		childView.findViewById(R.id.issue_view_edit).setTag(object);
+		childView.findViewById(R.id.issue_view_delete).setTag(object);
 
 		return childView;
 	}

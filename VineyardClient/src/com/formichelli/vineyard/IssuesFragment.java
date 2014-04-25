@@ -15,7 +15,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.View.OnClickListener;
 import android.widget.ExpandableListView;
+import android.widget.Toast;
 
 public class IssuesFragment extends Fragment {
 	VineyardMainActivity activity;
@@ -31,13 +33,14 @@ public class IssuesFragment extends Fragment {
 		// Inflate the layout for this fragment
 		return inflater.inflate(R.layout.fragment_issues, container, false);
 	}
-	
+
 	@Override
-	public void onAttach(Activity activity){
+	public void onAttach(Activity activity) {
 		super.onAttach(activity);
-		
+
 		VineyardMainActivity vmactivity = (VineyardMainActivity) activity;
-		((VineyardMainActivity) vmactivity).setTitle(vmactivity.getCurrentPlace().getName());
+		((VineyardMainActivity) vmactivity).setTitle(vmactivity
+				.getCurrentPlace().getName());
 	}
 
 	@Override
@@ -50,7 +53,9 @@ public class IssuesFragment extends Fragment {
 		ArrayList<IssueTask> issues = VineyardServer.getIssues(activity
 				.getCurrentPlace());
 		issueAdapter = new IssueExpandableAdapter(activity,
-				R.layout.issues_list_item, R.layout.issue_view, issues);
+				R.layout.issues_list_item, R.layout.issue_view, issues,
+				reportIssueOnClickListener, editOnClickListener,
+				deleteOnClickListener);
 		issuesList.setAdapter(issueAdapter);
 	}
 
@@ -84,4 +89,30 @@ public class IssuesFragment extends Fragment {
 		}
 	}
 
+	OnClickListener reportIssueOnClickListener = new OnClickListener() {
+		@Override
+		public void onClick(View v) {
+			activity.getSupportFragmentManager().beginTransaction()
+					.replace(R.id.container, new ReportIssueFragment())
+					.commit();
+		}
+	};
+
+	OnClickListener editOnClickListener = new OnClickListener() {
+		@Override
+		public void onClick(View v) {
+			ReportIssueFragment r = new ReportIssueFragment();
+			r.setEditMode((IssueTask) v.getTag());
+			activity.getSupportFragmentManager().beginTransaction()
+					.replace(R.id.container, r).commit();
+		}
+	};
+
+	OnClickListener deleteOnClickListener = new OnClickListener() {
+		@Override
+		public void onClick(View v) {
+			Toast.makeText(activity, "TODO: launch delete activity/fragment",
+					Toast.LENGTH_SHORT).show();
+		}
+	};
 }

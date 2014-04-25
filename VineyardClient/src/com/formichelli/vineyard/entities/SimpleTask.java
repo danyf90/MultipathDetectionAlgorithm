@@ -13,6 +13,7 @@ public class SimpleTask implements Task {
 	private Status status;
 	private Priority priority;
 	private int placeId;
+	private String placeName;
 	private String title;
 	private String description;
 	private Location location;
@@ -71,8 +72,13 @@ public class SimpleTask implements Task {
 		return placeId;
 	}
 
-	public void setPlaceId(int placeId) {
-		this.placeId = placeId;
+	public String getPlaceName() {
+		return placeName;
+	}
+
+	public void setPlace(Place p) {
+		this.placeId = p.getId();
+		this.placeName = p.getName();
 	}
 
 	public String getTitle() {
@@ -114,5 +120,4 @@ public class SimpleTask implements Task {
 	public void setAssignedGroup(WorkGroup assignedGroup) {
 		this.assignedGroup = assignedGroup;
 	}
-
 }

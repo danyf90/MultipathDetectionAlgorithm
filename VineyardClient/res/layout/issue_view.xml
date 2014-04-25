@@ -85,6 +85,15 @@
         android:orientation="horizontal" >
 
         <ImageButton
+            android:id="@+id/issue_view_edit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:background="#0000"
+            android:contentDescription="@string/action_edit"
+            android:src="@drawable/action_edit_dark" />
+        
+        <ImageButton
             android:id="@+id/issue_view_delete"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -93,14 +102,6 @@
             android:contentDescription="@string/action_delete"
             android:src="@drawable/action_delete_dark" />
 
-        <ImageButton
-            android:id="@+id/issue_view_edit"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:background="#0000"
-            android:contentDescription="@string/action_delete"
-            android:src="@drawable/action_edit_dark" />
     </LinearLayout>
 
 </LinearLayout>

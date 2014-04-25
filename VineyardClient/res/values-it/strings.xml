@@ -17,8 +17,9 @@
     <string name="action_delete_selected_photos">Cancella foto selezionate</string>
     <string name="action_cancel">Annulla</string>
     <string name="action_delete">Cancella</string>
-    <string name="action_send">Invia</string>
     <string name="action_done">Fatto</string>
+    <string name="action_edit">Modifica</string>
+    <string name="action_send">Invia</string>
     <string name="action_up">Su</string>
     <string name="issue_title_error">Inserire il titolo</string>
     <string name="issue_title_label">Titolo: </string>
@@ -36,7 +37,12 @@
     <string name="dialog_confirm_exit">Sei sicuro di voler uscire?</string>
     <string name="dialog_confirm_exit_confirm">Sì</string>
     <string name="dialog_confirm_exit_cancel">No</string>
-
+    <string name="status_new">Nuovo</string>
+    <string name="status_assigned">Assegnato</string>
+    <string name="status_done">Completato</string>
+    <string name="priority_low">Bassa</string>
+    <string name="priority_medium">Media</string>
+    <string name="priority_high">Alta</string>
     <string-array name="priorities">
         <item>--</item>
         <item>Bassa</item>

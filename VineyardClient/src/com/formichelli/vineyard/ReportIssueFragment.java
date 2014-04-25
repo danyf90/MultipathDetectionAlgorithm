@@ -8,6 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import com.formichelli.vineyard.entities.IssueTask;
+import com.formichelli.vineyard.entities.Place;
 import com.formichelli.vineyard.utilities.VineyardServer;
 import com.formichelli.vineyard.utilities.Gallery;
 
@@ -45,28 +46,31 @@ public class ReportIssueFragment extends Fragment {
 	Button placeButton;
 	Spinner priorities;
 	ImageView addPhoto;
-	boolean actionMode = false;
+	EditText title, description;
 	Menu menu;
 	int imagePadding;
+
+	public void setEditMode(IssueTask i) {
+		this.i = i;
+	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		setHasOptionsMenu(true);
 
-		i = new IssueTask();
-
 		// Inflate the layout for this fragment
 		return inflater.inflate(R.layout.fragment_report_issue, container,
 				false);
 	}
-	
+
 	@Override
-	public void onAttach(Activity activity){
+	public void onAttach(Activity activity) {
 		super.onAttach(activity);
-		
+
 		VineyardMainActivity vmactivity = (VineyardMainActivity) activity;
-		((VineyardMainActivity) vmactivity).setTitle(getString(R.string.title_report_issue));
+		((VineyardMainActivity) vmactivity)
+				.setTitle(getString(R.string.title_report_issue));
 	}
 
 	@Override
@@ -80,6 +84,9 @@ public class ReportIssueFragment extends Fragment {
 		priorities = (Spinner) activity
 				.findViewById(R.id.report_issue_priority);
 		placeButton = (Button) activity.findViewById(R.id.report_issue_place);
+		title = (EditText) activity.findViewById(R.id.report_issue_title);
+		description = (EditText) activity
+				.findViewById(R.id.report_issue_description);
 
 		addPhoto.setOnClickListener(dispatchTakePictureIntent);
 		setSpinnerAdapter(priorities, R.array.priorities);
@@ -90,9 +97,19 @@ public class ReportIssueFragment extends Fragment {
 						PlacePickerActivity.class), REQUEST_PLACE);
 			}
 		});
-		i.setPlaceId(activity.getCurrentPlace().getId());
 		placeButton.setText(activity.getCurrentPlace().getName());
-		
+
+		if (i == null) {
+			i = new IssueTask();
+			i.setPlace(activity.getCurrentPlace());
+		} else {
+			title.setText(i.getTitle());
+			description.setText(i.getDescription());
+			placeButton.setText(i.getPlaceName());
+			if (i.getPriority() != null)
+				priorities.setSelection(i.getPriority().toInt() + 1);
+			// TODO add photos
+		}
 	}
 
 	private void setSpinnerAdapter(Spinner s, int array) {
@@ -110,9 +127,11 @@ public class ReportIssueFragment extends Fragment {
 
 		this.menu = menu;
 
-		gallery = new Gallery(activity,
+		gallery = new Gallery(
+				activity,
 				menu.findItem(R.id.action_report_issue_delete_selected_photos),
-				(LinearLayout) activity.findViewById(R.id.report_issue_gallery), true);
+				(LinearLayout) activity.findViewById(R.id.report_issue_gallery),
+				true);
 
 		super.onCreateOptionsMenu(menu, inflater);
 	}
@@ -230,8 +249,11 @@ public class ReportIssueFragment extends Fragment {
 			break;
 		case REQUEST_PLACE:
 			if (resultCode == Activity.RESULT_OK) {
-				i.setPlaceId(data.getExtras().getInt("placeid"));
-				placeButton.setText(data.getExtras().getString("placename"));
+				// TODO serialize Place?
+				Place p = new Place();
+				p.setId(data.getExtras().getInt("placeid"));
+				p.setName(data.getExtras().getString("placename"));
+				i.setPlace(p);
 			}
 			break;
 		}
