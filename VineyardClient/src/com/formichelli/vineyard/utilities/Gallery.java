@@ -16,7 +16,9 @@ import android.widget.LinearLayout;
 
 import com.formichelli.vineyard.R;
 
-// Class that manages the gallery
+/**
+ * A Gallery is an horizontal LinearLayout that can contain zero or more photos
+ */
 public class Gallery {
 	Activity activity;
 	MenuItem deleteItem;
@@ -28,12 +30,24 @@ public class Gallery {
 	HashSet<ImageView> selected;
 	HashMap<ImageView, String> images;
 
-	public Gallery(Activity context, MenuItem deleteItem, LinearLayout gallery,
-			boolean deletable) {
+	/**
+	 * Create a gallery object
+	 * 
+	 * @param context
+	 *            Activity context
+	 * @param gallery
+	 *            LinearLayout associated to the Gallery
+	 * @param deletable
+	 *            whether the photos are deletable or not
+	 * @param deleteItem
+	 *            menuItem associated with the deletion of a photo
+	 */
+	public Gallery(Activity context, LinearLayout gallery, boolean deletable,
+			MenuItem deleteItem) {
 		this.activity = context;
-		this.deleteItem = deleteItem;
 		this.gallery = gallery;
 		this.deletable = deletable;
+		this.deleteItem = deleteItem;
 
 		this.size = activity.getResources().getDimensionPixelSize(
 				R.dimen.gallery_height);
@@ -47,6 +61,13 @@ public class Gallery {
 		notSelectedColor = activity.getResources().getColor(R.color.wine_light);
 	}
 
+	/**
+	 * Add an image to the gallery
+	 * 
+	 * @param path
+	 *            location of the image
+	 * @return view of the added image
+	 */
 	public ImageView addImage(String path) {
 		ImageView v;
 		Bitmap b;
@@ -58,7 +79,7 @@ public class Gallery {
 		v = new ImageView(activity);
 		v.setImageBitmap(b);
 		v.setPadding(0, padding, 0, padding);
-		
+
 		if (deletable)
 			v.setOnClickListener(new OnClickListener() {
 				@Override
@@ -73,6 +94,12 @@ public class Gallery {
 		return v;
 	}
 
+	/**
+	 * Remove an image from the gallery
+	 * 
+	 * @param v
+	 *            image to be removed
+	 */
 	public void removeImage(ImageView v) {
 		selected.remove(v);
 
@@ -87,6 +114,9 @@ public class Gallery {
 		}
 	}
 
+	/**
+	 * Removes the images that are currently selected
+	 */
 	public void removeSelectedImages() {
 		for (ImageView v : selected) {
 			gallery.removeView(v);
@@ -104,6 +134,9 @@ public class Gallery {
 		deleteItem.setVisible(false);
 	}
 
+	/**
+	 * Remove all the images from the gallery
+	 */
 	public void removeAllImages() {
 		for (ImageView v : images.keySet()) {
 			gallery.removeView(v);

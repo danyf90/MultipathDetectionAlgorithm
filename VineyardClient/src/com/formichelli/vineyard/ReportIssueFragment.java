@@ -129,9 +129,9 @@ public class ReportIssueFragment extends Fragment {
 
 		gallery = new Gallery(
 				activity,
-				menu.findItem(R.id.action_report_issue_delete_selected_photos),
 				(LinearLayout) activity.findViewById(R.id.report_issue_gallery),
-				true);
+				true,
+				menu.findItem(R.id.action_report_issue_delete_selected_photos));
 
 		super.onCreateOptionsMenu(menu, inflater);
 	}

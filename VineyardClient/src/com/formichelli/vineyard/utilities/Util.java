@@ -7,8 +7,10 @@ import android.widget.ListView;
 
 public class Util {
 
-	// Set the right height for the ListView since it collapse if it is placed
-	// inside a ScrollView
+	/**
+	 * Set the height of the ListView to its maximum size since it collapse if
+	 * it is placed inside a ScrollView
+	 */
 	public static void fixListHeight(ListView listView) {
 		ListAdapter listAdapter = listView.getAdapter();
 		if (listAdapter == null) {

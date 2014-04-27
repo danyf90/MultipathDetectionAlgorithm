@@ -4,14 +4,12 @@ import java.net.URL;
 import java.util.ArrayList;
 
 import com.formichelli.vineyard.R;
-import com.formichelli.vineyard.VineyardMainActivity;
 import com.formichelli.vineyard.entities.IssueTask;
 
 import android.app.Activity;
 import android.content.Context;
 import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -19,6 +17,10 @@ import android.widget.BaseExpandableListAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+/**
+ * ExpandableAdapter that shows issues titles and when expandend shows issue
+ * details
+ */
 public class IssueExpandableAdapter extends BaseExpandableListAdapter {
 	private final FragmentActivity context;
 	ArrayList<IssueTask> objects;
@@ -26,6 +28,36 @@ public class IssueExpandableAdapter extends BaseExpandableListAdapter {
 	OnClickListener reportIssueOnClickListener, editOnClickListener,
 			deleteOnClickListener;
 
+	/**
+	 * 
+	 * @param context
+	 *            Activity context
+	 * @param groupResource
+	 *            resource representing the issue title, it must contain a
+	 *            TextView with id drawer_list_item_label that will contain the
+	 *            issue title
+	 * @param childResource
+	 *            resource representing the issue details, it must contain a
+	 *            TextView with id issue_view_description that will contain the
+	 *            issue description, a TextView with id
+	 *            issue_view_priority_value that will contain the priority, a
+	 *            TextView with id issue_view_worker_name that will contain the
+	 *            name of the assigned worker, LinearLayout with id
+	 *            issue_view_gallery that will contain the images, a View with
+	 *            id issue_view_edit that will be associated to the
+	 *            editOnClickListener and a View with id issue_view_delete that
+	 *            will be associated to the deleteOnClickListener
+	 * @param objects
+	 *            issues to be added to the adapter
+	 * @param reportIssueOnClickListener
+	 *            onClickListener of the report issue button
+	 * @param editOnClickListener
+	 *            onClickListener of the edit issue button, the related issue
+	 *            will be added as a tag to the associated view
+	 * @param deleteOnClickListener
+	 *            onClickListener of the delete issue button, the related issue
+	 *            will be added as a tag to the associated view
+	 */
 	public IssueExpandableAdapter(Activity context, int groupResource,
 			int childResource, ArrayList<IssueTask> objects,
 			OnClickListener reportIssueOnClickListener,
@@ -98,11 +130,8 @@ public class IssueExpandableAdapter extends BaseExpandableListAdapter {
 		} else {
 			LinearLayout galleryLayout = (LinearLayout) childView
 					.findViewById(R.id.issue_view_gallery);
-			MenuItem deleteItem = ((VineyardMainActivity) context).getMenu()
-					.findItem(R.id.action_issues_up);
 
-			Gallery gallery = new Gallery(context, deleteItem, galleryLayout,
-					false);
+			Gallery gallery = new Gallery(context, galleryLayout, false, null);
 
 			for (URL p : photos) {
 				gallery.addImage(p.getPath());
@@ -170,6 +199,10 @@ public class IssueExpandableAdapter extends BaseExpandableListAdapter {
 		return childPosition;
 	}
 
+	/**
+	 * Replace all items of the ExpandableListView
+	 * @param objects new objects of the ExpandableListView
+	 */
 	public void replaceItems(ArrayList<IssueTask> objects) {
 		this.objects.clear();
 		this.objects.addAll(objects);

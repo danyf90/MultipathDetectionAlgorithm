@@ -147,6 +147,6 @@ public class VineyardMainActivity extends ActionBarActivity implements
 	}
 
 	public void setTitle(String title) {
-		getSupportActionBar().setTitle(title);
+		actionBar.setTitle(title);
 	}
 }
