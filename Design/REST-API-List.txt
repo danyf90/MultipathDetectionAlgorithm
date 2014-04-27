@@ -55,12 +55,13 @@ POST http://vineyard-server.org/place/
 PUT/DELETE http://vineyard-server.org/place/<id>/
 
 # add/remove/update place attribute
-POST http://vineyard-server.org/place/<id>/attribute/<key>/<value>
-PUT http://vineyard-server.org/place/<id>/attribute/<key>/<newValue>
+POST http://vineyard-server.org/place/<id>/attribute/			<key, value in body URL encoded>
+PUT http://vineyard-server.org/place/<id>/attribute/<key>/		<newValue in body URL encoded>
 DELETE http://vineyard-server.org/place/<id>/attribute/<key>
 
 # add/remove child from place hierarchy
-PUT/DELETE http://vineyard-server.org/place/<id>/child/<id>
+# PUT/DELETE http://vineyard-server.org/place/<id>/child/<id>
+# Implemented with PUT on place modifying "parent" field
 
 # Get issues of place <id>
 GET http://vineyard-server.org/place/<id>/issues

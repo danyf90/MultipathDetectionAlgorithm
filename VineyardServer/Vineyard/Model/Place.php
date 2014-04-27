@@ -2,65 +2,126 @@
 
 namespace Vineyard\Model;
 
+use \PDO;
+use \PDOException;
+use \Vineyard\Utility\DB;
 use \Vineyard\Utility\IResource;
-use \Vineyard\Utility\TGetSet;
-use \JsonSerializable;
+use \Vineyard\Utility\AbstractORM;
+use \Vineyard\Utility\TCrudRequestHandlers;
 
-class Place implements IResource, JsonSerializable {
+class Place extends AbstractORM implements IResource {
     
-    use TGetSet; // uses a trait, it defines accessors (standard getter and setter) and json serialization of properties
+    use TCrudRequestHandlers; // introduces handleRequestToBaseUri() and handleRequestToUriWithId()
+    
+    public function check() { return array(); }
+    public static function getTableName() { return 'place'; }
     
     public static function handleRequest($method, array $requestParameters) {
         
-        if (empty($requestParameters)) { // api/place/
-        
-            if ($method == 'GET') { // places list requested
-                // Place list example
-                $place = new self;
-                $place->id = 4;
-                $place->parent = null;
-                $place->name = "Vigna A";
-                $place->description = "La prima vigna, piantata di traverso";
-                $place->location = [52.593800, 21.448850];
-
-                $place2 = new self;
-                $place2->id = 6;
-                $place2->parent = null;
-                $place2->name = "Vigna B";
-                $place2->description = "La seconda vigna, piantata di sghimbescio";
-                $place2->location = [21.448850, 52.593800];
-
-                $place3 = new self;
-                $place3->id = 8;
-                $place3->parent = 6;
-                $place3->name = "Filare B.1";
-                $place3->description = "Il primo filare della vigna B";
-                $place3->location = [21.448850, 52.593800];
-
-                // json-serialize it!
-                return json_encode([$place, $place2, $place3]);
-            }
+        switch (count($requestParameters)) {
+            case 0: // api/place/
+                static::handleRequestsToBaseUri($method, $requestParameters);
+                return;
+            break;
             
-            if ($method == 'POST') { // new place insertion requested
-                // ...
-            }
+            case 1: // api/place/<id>
+                static::handleRequestsToUriWithId($method, $requestParameters);
+                return;
+            break;
             
+            case 2: // api/place/<id>/attribute
+                if ($requestParameters[1] != "attribute") {
+                    http_response_code(400); // Bad Request
+                    return;
+                }
             
-        } else { // api/place/<id>
+                $id = array_shift($requestParameters);
+                    
+                switch ($method) {
+                    // the only one implemented
+                    case "POST":
+                        static::insertAttribute($id);
+                        return;
+                    break;
+                    // case "GET":
+                    // case "PUT":
+                    // case "DELETE":
+                    default:
+                        http_response_code(501); // Not Implemented
+                        return;
+                }
             
-            if ($method == "GET") {
-                // particular place example
-                $place = new self;
-                $place->id = array_shift($requestParameters);
-                $place->parent = null;
-                $place->name = "Vigna A";
-                $place->description = "La prima vigna, piantata di traverso";
-                $place->location = [52.593800, 21.448850];
-
-                return json_encode($place);
-            }
+            break;
+            
+            case 3: // api/place/<id>/attribute/<key>
+                if ($requestParameters[1] != "attribute") {
+                    http_response_code(400); // Bad Request
+                    return;
+                }
+            
+                $id = array_shift($requestParameters);
+                /* "attribute" = */ array_shift($requestParameters);
+                $key = array_shift($requestParameters);
+            
+                switch ($method) {
+                    // the only one implemented
+                    case "PUT":
+                        static::updateAttribute($id, $key);
+                        return;
+                    break;
+                    
+                    case "DELETE":
+                        static::deleteAttribute($id, $key);
+                        return;
+                    break;
+                    
+                    case "GET": // get particular attribute? surely not used, all attributes are retrieved together with the place
+                    case "POST": // create with given ID? Not implemented
+                    default:
+                        http_response_code(501); // Not Implemented
+                        return;
+                }
+            
+            break;
+            
         }
     }
+        
+    public static function insertAttribute($id) {
+        $pdo = DB::getConnection();
+
+        if (!isset($_POST['key']) || !isset($_POST['value'])) {
+            http_response_code(400); // Bad Request
+            return;
+        }
+        
+        try {
+            $sql = $pdo->prepare("INSERT INTO `place_attribute` (`place`, `key`, `value`) VALUES (?, ?, ?)");
+            $sql->execute(array($id, $_POST['key'], $_POST['value']));
+            http_response_code(201); // Created
+            return;
+        } catch (PDOException $e) {
+            // check which SQL error occured
+            switch ($e->getCode()) {
+                case 23000: // SQL ERROR: Duplicate entry
+                    http_response_code(406); // Not Acceptable
+                break;
+                
+                default:
+                    http_response_code(400); // Bad Request
+            }
+        }
+
+    }
+
+    public static function updateAttribute($id, $key) {
+        // TODO
+    }
+
+    public static function deleteAttribute($id, $key) {
+        // TODO
+    }
+        
 }
 
 ?>

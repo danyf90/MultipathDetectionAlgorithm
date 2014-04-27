@@ -20,8 +20,7 @@ class RequestRouter {
 		if (!class_exists($requestedClass) || // if class doesn't exist ...
             !in_array("Vineyard\\Utility\\IResource", class_implements($requestedClass))) { // ... or it doesn't implement IResource
             
-            echo "<h1>No implementing class found.. This should be a 404!</h1>",
-            "<p>404 error is not triggered for debugging purposes.</p>",
+            echo "<h1>No implementing class found.. This is a 404!</h1>",
             "<p> Your request: <strong>", $_SERVER['REQUEST_URI'], "</strong></p>";
             
 			http_response_code(404);
