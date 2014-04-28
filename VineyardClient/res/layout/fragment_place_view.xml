@@ -3,9 +3,10 @@
     android:id="@+id/place_view_scroll_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/background"
     android:orientation="vertical"
     android:padding="10dp"
-    tools:context="com.formichelli.vineyard.MainFragment$PlaceholderFragment">
+    tools:context="com.formichelli.vineyard.MainFragment$PlaceholderFragment" >
 
     <TextView
         android:id="@+id/place_view_description"

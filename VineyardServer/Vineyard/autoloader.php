@@ -2,7 +2,7 @@
     // autoloads classes and interfaces
 	spl_autoload_register(function($className) {
         $path = $_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . str_replace('\\', DIRECTORY_SEPARATOR, $className) . '.php';
-        
+
         if (file_exists($path))
             require_once $path;
 	});
