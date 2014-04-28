@@ -4,7 +4,6 @@ import com.formichelli.vineyard.entities.Place;
 import com.formichelli.vineyard.utilities.PlaceAdapter;
 import com.formichelli.vineyard.utilities.VineyardServer;
 
-import android.app.Activity;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -37,14 +36,6 @@ public class PlaceViewerFragment extends Fragment {
 		// Inflate the layout for this fragment
 		return inflater.inflate(R.layout.fragment_place_view, container, false);
 	}
-	
-	@Override
-	public void onAttach(Activity activity){
-		super.onAttach(activity);
-		
-		VineyardMainActivity vmactivity = (VineyardMainActivity) activity;
-		((VineyardMainActivity) vmactivity).setTitle(vmactivity.getCurrentPlace().getName());
-	}
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
@@ -63,7 +54,8 @@ public class PlaceViewerFragment extends Fragment {
 				.getDrawable(R.drawable.white_with_red_border);
 		whiteBorder = getResources().getDrawable(
 				R.drawable.white_with_wine_border);
-		
+
+		activity.setTitle(activity.getCurrentPlace().getName());
 		issues.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {

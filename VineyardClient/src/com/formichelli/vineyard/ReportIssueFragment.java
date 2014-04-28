@@ -65,15 +65,6 @@ public class ReportIssueFragment extends Fragment {
 	}
 
 	@Override
-	public void onAttach(Activity activity) {
-		super.onAttach(activity);
-
-		VineyardMainActivity vmactivity = (VineyardMainActivity) activity;
-		((VineyardMainActivity) vmactivity)
-				.setTitle(getString(R.string.title_report_issue));
-	}
-
-	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 
@@ -88,6 +79,7 @@ public class ReportIssueFragment extends Fragment {
 		description = (EditText) activity
 				.findViewById(R.id.report_issue_description);
 
+		activity.setTitle(getString(R.string.title_report_issue));
 		addPhoto.setOnClickListener(dispatchTakePictureIntent);
 		setSpinnerAdapter(priorities, R.array.priorities);
 		placeButton.setOnClickListener(new OnClickListener() {
@@ -110,6 +102,15 @@ public class ReportIssueFragment extends Fragment {
 				priorities.setSelection(i.getPriority().toInt() + 1);
 			// TODO add photos
 		}
+
+		if (menu != null) {
+			gallery = new Gallery(
+					activity,
+					(LinearLayout) activity
+							.findViewById(R.id.report_issue_gallery),
+					true,
+					menu.findItem(R.id.action_report_issue_delete_selected_photos));
+		}
 	}
 
 	private void setSpinnerAdapter(Spinner s, int array) {
@@ -118,6 +119,15 @@ public class ReportIssueFragment extends Fragment {
 
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
+		if (activity != null) {
+			gallery = new Gallery(
+					activity,
+					(LinearLayout) activity
+							.findViewById(R.id.report_issue_gallery),
+					true,
+					menu.findItem(R.id.action_report_issue_delete_selected_photos));
+		}
+		
 		s.setAdapter(adapter);
 	}
 
@@ -126,12 +136,6 @@ public class ReportIssueFragment extends Fragment {
 		inflater.inflate(R.menu.menu_report_issue, menu);
 
 		this.menu = menu;
-
-		gallery = new Gallery(
-				activity,
-				(LinearLayout) activity.findViewById(R.id.report_issue_gallery),
-				true,
-				menu.findItem(R.id.action_report_issue_delete_selected_photos));
 
 		super.onCreateOptionsMenu(menu, inflater);
 	}

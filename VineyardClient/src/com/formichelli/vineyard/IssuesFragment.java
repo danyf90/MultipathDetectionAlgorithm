@@ -57,6 +57,13 @@ public class IssuesFragment extends Fragment {
 				reportIssueOnClickListener, editOnClickListener,
 				deleteOnClickListener);
 		issuesList.setAdapter(issueAdapter);
+
+		if (upItem == null) {
+			if (activity.getCurrentPlace().getParent() != null)
+				upItem.setVisible(true);
+			else
+				upItem.setVisible(false);
+		}
 	}
 
 	@Override
@@ -64,10 +71,13 @@ public class IssuesFragment extends Fragment {
 		inflater.inflate(R.menu.menu_issues, menu);
 
 		upItem = menu.findItem(R.id.action_issues_up);
-		if (activity.getCurrentPlace().getParent() != null)
-			upItem.setVisible(true);
-		else
-			upItem.setVisible(false);
+
+		if (activity != null) {
+			if (activity.getCurrentPlace().getParent() != null)
+				upItem.setVisible(true);
+			else
+				upItem.setVisible(false);
+		}
 
 		super.onCreateOptionsMenu(menu, inflater);
 	}

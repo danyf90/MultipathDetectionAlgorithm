@@ -48,6 +48,8 @@ public class VineyardMainActivity extends ActionBarActivity implements
 		mNavigationDrawerFragment = (NavigationDrawerFragment) getSupportFragmentManager()
 				.findFragmentById(R.id.navigation_drawer);
 
+		actionBar = getSupportActionBar();
+
 		try {
 			rootPlace = VineyardServer.getRootPlace();
 		} catch (JSONException e) {
@@ -59,8 +61,6 @@ public class VineyardMainActivity extends ActionBarActivity implements
 		// Set up the drawer.
 		mNavigationDrawerFragment.setUp(R.id.navigation_drawer,
 				(DrawerLayout) findViewById(R.id.drawer_layout));
-
-		actionBar = getSupportActionBar();
 	}
 
 	@Override
