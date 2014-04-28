@@ -1,7 +1,5 @@
 package com.formichelli.vineyard;
 
-import org.json.JSONException;
-
 import com.formichelli.vineyard.entities.Place;
 import com.formichelli.vineyard.utilities.VineyardServer;
 
@@ -50,12 +48,10 @@ public class VineyardMainActivity extends ActionBarActivity implements
 
 		actionBar = getSupportActionBar();
 
-		try {
-			rootPlace = VineyardServer.getRootPlace();
-		} catch (JSONException e) {
-			Log.e("PLACEPICKER", "JSON exception: " + e.getLocalizedMessage());
+		rootPlace = VineyardServer.getRootPlace();
+		if (rootPlace == null)
 			finish();
-		}
+
 		setCurrentPlace(rootPlace);
 
 		// Set up the drawer.

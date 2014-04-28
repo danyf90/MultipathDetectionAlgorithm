@@ -1,6 +1,6 @@
 package com.formichelli.vineyard;
 
-import org.json.JSONException;
+import java.util.ArrayList;
 
 import com.formichelli.vineyard.entities.Place;
 import com.formichelli.vineyard.utilities.PlaceAdapter;
@@ -10,7 +10,6 @@ import com.formichelli.vineyard.utilities.VineyardServer;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -37,11 +36,26 @@ public class PlacePickerActivity extends ActionBarActivity {
 		ancestorsList = (ViewGroup) findViewById(R.id.place_picker_ancestors_list);
 		currentLevelPlacesListView = (ListView) findViewById(R.id.place_picker_current_level_places);
 
-		try {
-			selectPlace(VineyardServer.getRootPlace());
-		} catch (JSONException e) {
-			Log.e("PLACEPICKER", "JSON exception: " + e.getLocalizedMessage());
+		Place rootPlace = VineyardServer.getRootPlace();
+
+		if (rootPlace == null) {
+			setResult(RESULT_CANCELED); // TODO distinguish between json
+										// exception and cancel by user
 			finish();
+		}
+
+		selectPlace(rootPlace);
+
+		ArrayList<Integer> ids = getIntent().getExtras().getIntegerArrayList(
+				"selectedPlaceParents");
+
+		// Navigate from root to selected place, root is already selected
+		for (int i = ids.size() - 2; i >= 0; i--) {
+			for (Place p : selectedPlace.getChildren())
+				if (p.getId() == ids.get(i)) {
+					selectPlace(p);
+					break;
+				}
 		}
 
 		getSupportActionBar().setTitle(R.string.title_place_picker);
@@ -58,25 +72,23 @@ public class PlacePickerActivity extends ActionBarActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 
 		switch (item.getItemId()) {
-		case R.id.action_issues_up:
-			selectedPlace = selectedPlace.getParent();
-			placeAdapter.replaceItems(selectedPlace.getChildren());
-			return true;
 		case R.id.place_picker_action_done:
+			// TODO
 			Intent resultIntent = new Intent();
-			resultIntent.putExtra("placeid", selectedPlace.getId());
-			resultIntent.putExtra("placename", selectedPlace.getName());
+
+			ArrayList<Integer> ids = new ArrayList<Integer>();
+			for (; selectedPlace != null; selectedPlace = selectedPlace
+					.getParent())
+				ids.add(selectedPlace.getId());
+			resultIntent.putExtra("selectedPlaceParents", ids);
+
 			setResult(RESULT_OK, resultIntent);
-			finish();
-			this.setResult(RESULT_OK);
 			finish();
 			return true;
 		case R.id.place_picker_action_cancel:
-			this.setResult(RESULT_CANCELED);
-			finish();
-			return true;
 		default:
-			this.setResult(RESULT_CANCELED);
+			setResult(RESULT_CANCELED);
+			finish();
 			return false;
 		}
 	}
@@ -95,8 +107,6 @@ public class PlacePickerActivity extends ActionBarActivity {
 			}
 
 		selectedPlace = p;
-
-		Log.e("TAG", "children #: " + selectedPlace.getChildren().size());
 
 		if (placeAdapter != null)
 			placeAdapter.replaceItems(selectedPlace.getChildren());

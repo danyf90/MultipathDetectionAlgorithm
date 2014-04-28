@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 import com.formichelli.vineyard.entities.IssueTask;
@@ -85,8 +86,17 @@ public class ReportIssueFragment extends Fragment {
 		placeButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				startActivityForResult(new Intent(activity,
-						PlacePickerActivity.class), REQUEST_PLACE);
+				Intent placePicker = new Intent(activity,
+						PlacePickerActivity.class);
+
+				// Pass the selected hierarchy to the intent
+				ArrayList<Integer> ids = new ArrayList<Integer>();
+				for (Place currentPlace = activity.getCurrentPlace(); currentPlace != null; currentPlace = currentPlace
+						.getParent())
+					ids.add(currentPlace.getId());
+				placePicker.putExtra("selectedPlaceParents", ids);
+
+				startActivityForResult(placePicker, REQUEST_PLACE);
 			}
 		});
 		placeButton.setText(activity.getCurrentPlace().getName());
@@ -136,7 +146,7 @@ public class ReportIssueFragment extends Fragment {
 				activity, array, android.R.layout.simple_spinner_item);
 
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		
+
 		s.setAdapter(adapter);
 	}
 
@@ -253,11 +263,22 @@ public class ReportIssueFragment extends Fragment {
 			break;
 		case REQUEST_PLACE:
 			if (resultCode == Activity.RESULT_OK) {
-				// TODO serialize Place?
-				Place p = new Place();
-				p.setId(data.getExtras().getInt("placeid"));
-				p.setName(data.getExtras().getString("placename"));
-				i.setPlace(p);
+				Place selectedPlace = VineyardServer.getRootPlace();
+				ArrayList<Integer> ids = data.getExtras().getIntegerArrayList(
+						"selectedPlaceParents");
+
+				// Navigate from root to selected place, root is already
+				// selected
+				for (int i = ids.size() - 2; i >= 0; i--) {
+					for (Place p : selectedPlace.getChildren())
+						if (p.getId() == ids.get(i)) {
+							selectedPlace = p;
+							break;
+						}
+				}
+
+				placeButton.setText(selectedPlace.getName());
+				i.setPlace(selectedPlace);
 			}
 			break;
 		}
