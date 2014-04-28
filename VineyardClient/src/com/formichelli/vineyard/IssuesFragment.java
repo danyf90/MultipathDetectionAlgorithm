@@ -55,10 +55,10 @@ public class IssuesFragment extends Fragment {
 		issueAdapter = new IssueExpandableAdapter(activity,
 				R.layout.issues_list_item, R.layout.issue_view, issues,
 				reportIssueOnClickListener, editOnClickListener,
-				deleteOnClickListener);
+				doneOnClickListener);
 		issuesList.setAdapter(issueAdapter);
 
-		if (upItem == null) {
+		if (upItem != null) {
 			if (activity.getCurrentPlace().getParent() != null)
 				upItem.setVisible(true);
 			else
@@ -118,10 +118,10 @@ public class IssuesFragment extends Fragment {
 		}
 	};
 
-	OnClickListener deleteOnClickListener = new OnClickListener() {
+	OnClickListener doneOnClickListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
-			Toast.makeText(activity, "TODO: launch delete activity/fragment",
+			Toast.makeText(activity, "TODO: mark the issue as resolved",
 					Toast.LENGTH_SHORT).show();
 		}
 	};

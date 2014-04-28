@@ -26,7 +26,7 @@ public class IssueExpandableAdapter extends BaseExpandableListAdapter {
 	ArrayList<IssueTask> objects;
 	int groupResource, childResource;
 	OnClickListener reportIssueOnClickListener, editOnClickListener,
-			deleteOnClickListener;
+			doneOnClickListener;
 
 	/**
 	 * 
@@ -55,14 +55,14 @@ public class IssueExpandableAdapter extends BaseExpandableListAdapter {
 	 *            onClickListener of the edit issue button, the related issue
 	 *            will be added as a tag to the associated view
 	 * @param deleteOnClickListener
-	 *            onClickListener of the delete issue button, the related issue
+	 *            onClickListener of the done issue button, the related issue
 	 *            will be added as a tag to the associated view
 	 */
 	public IssueExpandableAdapter(Activity context, int groupResource,
 			int childResource, ArrayList<IssueTask> objects,
 			OnClickListener reportIssueOnClickListener,
 			OnClickListener editOnClickListener,
-			OnClickListener deleteOnClickListener) {
+			OnClickListener doneOnClickListener) {
 
 		this.context = (FragmentActivity) context;
 		this.groupResource = groupResource;
@@ -70,7 +70,7 @@ public class IssueExpandableAdapter extends BaseExpandableListAdapter {
 		this.objects = objects;
 		this.reportIssueOnClickListener = reportIssueOnClickListener;
 		this.editOnClickListener = editOnClickListener;
-		this.deleteOnClickListener = deleteOnClickListener;
+		this.doneOnClickListener = doneOnClickListener;
 	}
 
 	@Override
@@ -140,12 +140,12 @@ public class IssueExpandableAdapter extends BaseExpandableListAdapter {
 
 		childView.findViewById(R.id.issue_view_edit).setOnClickListener(
 				editOnClickListener);
-		childView.findViewById(R.id.issue_view_delete).setOnClickListener(
-				deleteOnClickListener);
+		childView.findViewById(R.id.issue_view_done).setOnClickListener(
+				doneOnClickListener);
 
 		// add the issue as tag of the button
 		childView.findViewById(R.id.issue_view_edit).setTag(object);
-		childView.findViewById(R.id.issue_view_delete).setTag(object);
+		childView.findViewById(R.id.issue_view_done).setTag(object);
 
 		return childView;
 	}
@@ -201,7 +201,9 @@ public class IssueExpandableAdapter extends BaseExpandableListAdapter {
 
 	/**
 	 * Replace all items of the ExpandableListView
-	 * @param objects new objects of the ExpandableListView
+	 * 
+	 * @param objects
+	 *            new objects of the ExpandableListView
 	 */
 	public void replaceItems(ArrayList<IssueTask> objects) {
 		this.objects.clear();
