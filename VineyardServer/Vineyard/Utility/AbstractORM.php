@@ -188,14 +188,12 @@ abstract class AbstractORM implements JsonSerializable {
 		$sql = $pdo->prepare("SELECT id FROM `" . $tableName . "` " . $whereClause);
 		$sql->execute($whereParams);
 		
-		$s = new static();
-		
 		while($id = $sql->fetchColumn()) {
-			$s->load($id);
+            // TODO check memory alloc/dealloc performances vs memory allocation size
+			$s = static::getById($id);
 			$scopedFunc($s);
+            unset($s);
 		}
-		
-		unset($s);
 	}
 		
 	static public function getById($id) {

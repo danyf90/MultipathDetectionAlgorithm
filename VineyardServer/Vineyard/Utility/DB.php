@@ -18,9 +18,13 @@ class DB {
 			
 			self::$credentials = include($credentialsFile);
 			
-			$db_uri = 'mysql:host=' . self::$credentials['host'] . ';dbname=' . self::$credentials['db_name'];
+			$db_uri = 'mysql:host=' . self::$credentials['host'] . ';dbname=' . self::$credentials['db_name'] . ';charset=utf8';
 			self::$instance = new PDO($db_uri , self::$credentials['user'], self::$credentials['password']);
 			self::$instance->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            
+            // connection charset for PHP versions < 5.3.6
+            self::$instance->exec("SET NAMES utf8");
+            
 		}
 		
 		return self::$instance;
