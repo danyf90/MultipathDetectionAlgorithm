@@ -43,6 +43,7 @@
     <string name="priority_low">Low</string>
     <string name="priority_medium">Medium</string>
     <string name="priority_high">High</string>
+    <string name="place_view_photo">Place photo</string>
     <string-array name="priorities">
         <item>--</item>
         <item>Low</item>

@@ -5,22 +5,22 @@
     android:layout_height="match_parent"
     android:background="@drawable/background"
     android:orientation="vertical"
-    android:padding="10dp"
     tools:context="com.formichelli.vineyard.MainFragment$PlaceholderFragment" >
 
-    <TextView
-        android:id="@+id/place_view_description"
-        android:layout_width="wrap_content"
-        android:layout_height="150dp"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:text="" />
+    <ImageView
+        android:id="@+id/place_view_photo"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:background="@color/wine_light"
+        android:contentDescription="@string/place_view_photo" />
 
     <RelativeLayout
         android:id="@+id/place_view_issues"
         style="@style/PlaceViewButton"
         android:layout_width="120dp"
-        android:layout_below="@id/place_view_description" >
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="20dp"
+        android:layout_alignParentTop="true" >
 
         <TextView
             android:id="@+id/place_view_issues_label"
@@ -43,6 +43,7 @@
         android:id="@+id/place_view_tasks"
         style="@style/PlaceViewButton"
         android:layout_width="120dp"
+        android:layout_alignParentRight="true"
         android:layout_below="@id/place_view_issues" >
 
         <TextView
@@ -63,11 +64,21 @@
     </RelativeLayout>
 
     <TextView
+        android:id="@+id/place_view_description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@id/place_view_photo"
+        android:padding="10dp"
+        android:text="" />
+
+    <TextView
         android:id="@+id/place_view_children_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_below="@id/place_view_tasks"
+        android:paddingLeft="10dp"
+        android:layout_below="@id/place_view_description"
         android:text="@string/children_label" />
 
     <ListView
