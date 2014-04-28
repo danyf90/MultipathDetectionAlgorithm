@@ -113,11 +113,11 @@ public class ReportIssueFragment extends Fragment {
 		}
 	}
 
-	private void setSpinnerAdapter(Spinner s, int array) {
-		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
-				activity, array, android.R.layout.simple_spinner_item);
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		inflater.inflate(R.menu.menu_report_issue, menu);
 
-		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		this.menu = menu;
 
 		if (activity != null) {
 			gallery = new Gallery(
@@ -127,17 +127,17 @@ public class ReportIssueFragment extends Fragment {
 					true,
 					menu.findItem(R.id.action_report_issue_delete_selected_photos));
 		}
-		
-		s.setAdapter(adapter);
-	}
-
-	@Override
-	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		inflater.inflate(R.menu.menu_report_issue, menu);
-
-		this.menu = menu;
 
 		super.onCreateOptionsMenu(menu, inflater);
+	}
+
+	private void setSpinnerAdapter(Spinner s, int array) {
+		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
+				activity, array, android.R.layout.simple_spinner_item);
+
+		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		
+		s.setAdapter(adapter);
 	}
 
 	@Override
