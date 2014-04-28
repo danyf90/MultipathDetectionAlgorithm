@@ -8,12 +8,12 @@ trait TCrudRequestHandlers {
                 
                 case 'GET': // get list of all resource instance
                     $places = static::listAll();
-                    echo json_encode($places);
+                    return json_encode($places);
                 break;
                 
                 case 'POST': // create a new resource instance
-                    $response = self::insert();
-                    echo $response; // the new id or an error message
+                    $response = static::insert();
+                    return $response; // the new id or an error message
                 break;
                 
                 case 'PUT':
@@ -42,7 +42,7 @@ trait TCrudRequestHandlers {
                 $resource = static::getById($resourceId);
 
                 if (isset($resource->id))
-                    echo json_encode($resource);
+                    return json_encode($resource);
                 else http_response_code(404); // Not Found
             break;
 
@@ -51,11 +51,11 @@ trait TCrudRequestHandlers {
             break;
 
             case 'PUT':
-                echo static::update($resourceId);
+                return static::update($resourceId);
             break;
 
             case 'DELETE':
-                echo static::delete($resourceId);
+                return static::delete($resourceId);
             break;
 
             default:

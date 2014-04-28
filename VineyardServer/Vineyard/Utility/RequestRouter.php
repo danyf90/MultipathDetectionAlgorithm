@@ -27,19 +27,8 @@ class RequestRouter {
 			return;
         }
         
-        /*
-		if (!method_exists($requestedClass, "SERVICE_" . $params[0])) {
-			http_response_code(405);
-			return;
-		}
-		
-		$requestedMethod = "SERVICE_" . array_shift($params);
-		*/
-        
-		$p = $requestedClass::handleRequest($_SERVER['REQUEST_METHOD'], $requestParams);
-		$code = http_response_code();
-		if ($code == 200)
-			echo $p;
+        // http_response_code is set inside handleRequest
+		echo $requestedClass::handleRequest($_SERVER['REQUEST_METHOD'], $requestParams);
 	}
 }
 

@@ -20,13 +20,11 @@ class Place extends AbstractORM implements IResource {
 
         switch (count($requestParameters)) {
             case 0: // api/place/
-                static::handleRequestsToBaseUri($method, $requestParameters);
-                return;
+                return static::handleRequestsToBaseUri($method, $requestParameters);
             break;
 
             case 1: // api/place/<id>
-                static::handleRequestsToUriWithId($method, $requestParameters);
-                return;
+                return static::handleRequestsToUriWithId($method, $requestParameters);
             break;
 
             case 2: // api/place/<id>/attribute
@@ -40,8 +38,7 @@ class Place extends AbstractORM implements IResource {
                 switch ($method) {
                     // the only one implemented
                     case "POST":
-                        static::insertAttribute($id);
-                        return;
+                        return static::insertAttribute($id);
                     break;
                     // case "GET":
                     // case "PUT":
@@ -66,13 +63,11 @@ class Place extends AbstractORM implements IResource {
                 switch ($method) {
                     // the only one implemented
                     case "PUT":
-                        static::updateAttribute($id, $key);
-                        return;
+                        return static::updateAttribute($id, $key);
                     break;
 
                     case "DELETE":
-                        static::deleteAttribute($id, $key);
-                        return;
+                        return static::deleteAttribute($id, $key);
                     break;
 
                     case "GET": // get particular attribute? surely not used, all attributes are retrieved together with the place
@@ -115,11 +110,50 @@ class Place extends AbstractORM implements IResource {
     }
 
     public static function updateAttribute($id, $key) {
-        // TODO
+        $pdo = DB::getConnection();
+        
+        // access PUT variables and put them in $_PUT for omogeinity
+        parse_str(file_get_contents("php://input"), $_PUT);
+        
+        if (!isset($_PUT['value'])) {
+            http_response_code(400); // Bad Request
+            return;
+        }
+        
+        try {
+            $sql = $pdo->prepare("UPDATE `place_attribute` SET `value` = ? WHERE `place` = ? AND `key` = ?");
+            $sql->execute(array($_PUT['value'], $id, $key));
+            if ($sql->rowCount() == 1)
+                http_response_code(202); // Accepted
+            else http_response_code(406); // Not Acceptable
+            return;
+        } catch (PDOException $e) {
+            // check which SQL error occured
+            switch ($e->getCode()) {
+                default:
+                    http_response_code(400); // Bad Request
+            }
+        }
     }
 
     public static function deleteAttribute($id, $key) {
-        // TODO
+        $pdo = DB::getConnection();
+        
+         try {
+            $sql = $pdo->prepare("DELETE FROM `place_attribute` WHERE `place` = ? AND `key` = ?");
+            $sql->execute(array($id, $key));
+            if ($sql->rowCount() == 1)
+                http_response_code(202); // Accepted
+            else http_response_code(406); // Not Acceptable
+            return;
+        } catch (PDOException $e) {
+            // check which SQL error occured
+            switch ($e->getCode()) {
+                default:
+                    http_response_code(400); // Bad Request
+            }
+        }
+        
     }
 
 }
