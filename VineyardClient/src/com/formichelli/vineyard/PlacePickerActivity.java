@@ -2,10 +2,12 @@ package com.formichelli.vineyard;
 
 import java.util.ArrayList;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import com.formichelli.vineyard.entities.Place;
 import com.formichelli.vineyard.utilities.PlaceAdapter;
 import com.formichelli.vineyard.utilities.Util;
-import com.formichelli.vineyard.utilities.VineyardServer;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -21,6 +23,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 public class PlacePickerActivity extends ActionBarActivity {
+	public final static String HIERARCHY= "placeHierarchy";
+	public final static String ANCESTORS= "selectedPlaceAncestors";
+	
 	ListView currentLevelPlacesListView;
 	PlaceAdapter placeAdapter;
 	Place selectedPlace;
@@ -36,18 +41,19 @@ public class PlacePickerActivity extends ActionBarActivity {
 		ancestorsList = (ViewGroup) findViewById(R.id.place_picker_ancestors_list);
 		currentLevelPlacesListView = (ListView) findViewById(R.id.place_picker_current_level_places);
 
-		Place rootPlace = VineyardServer.getRootPlace();
-
-		if (rootPlace == null) {
+		Place rootPlace;
+		try {
+			rootPlace = new Place(new JSONObject(getIntent().getExtras()
+					.getString(HIERARCHY)));
+			selectPlace(rootPlace);
+		} catch (JSONException e) {
 			setResult(RESULT_CANCELED); // TODO distinguish between json
 										// exception and cancel by user
 			finish();
 		}
 
-		selectPlace(rootPlace);
-
 		ArrayList<Integer> ids = getIntent().getExtras().getIntegerArrayList(
-				"selectedPlaceParents");
+				ANCESTORS);
 
 		// Navigate from root to selected place, root is already selected
 		for (int i = ids.size() - 2; i >= 0; i--) {
@@ -73,14 +79,14 @@ public class PlacePickerActivity extends ActionBarActivity {
 
 		switch (item.getItemId()) {
 		case R.id.place_picker_action_done:
-			// TODO
 			Intent resultIntent = new Intent();
 
 			ArrayList<Integer> ids = new ArrayList<Integer>();
 			for (; selectedPlace != null; selectedPlace = selectedPlace
 					.getParent())
 				ids.add(selectedPlace.getId());
-			resultIntent.putExtra("selectedPlaceParents", ids);
+
+			resultIntent.putExtra(ANCESTORS, ids);
 
 			setResult(RESULT_OK, resultIntent);
 			finish();

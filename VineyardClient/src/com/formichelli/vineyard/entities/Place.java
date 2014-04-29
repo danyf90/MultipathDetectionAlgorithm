@@ -1,19 +1,22 @@
 package com.formichelli.vineyard.entities;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.location.Location;
-import android.util.SparseArray;
+import android.util.Log;
 
 public class Place {
 	private final static String ID = "id";
 	private final static String NAME = "name";
 	private final static String DESCRIPTION = "description";
-	private final static String PARENT = "parent";
+	private final static String ATTRIBUTES = "attributes";
+	private final static String CHILDREN = "children";
 
 	private int id;
 	private String name;
@@ -21,53 +24,49 @@ public class Place {
 	private Location location;
 	private Place parent;
 	private ArrayList<Place> children;
+	private HashMap<String, String> attributes;
 
 	public Place() {
+		attributes = new HashMap<String, String>();
 		children = new ArrayList<Place>();
 	}
 
 	public Place(int id, String name, String description, Location location,
-			Place parent, ArrayList<Place> children) {
+			Place parent, ArrayList<Place> children,
+			HashMap<String, String> attributes) {
 		setId(id);
 		setName(name);
 		setDescription(description);
 		setLocation(location);
 		setParent(parent);
+		if (children == null)
+			children = new ArrayList<Place>();
 		setChildren(children);
+		if (attributes == null)
+			attributes = new HashMap<String, String>();
+		setAttributes(attributes);
 	}
 
-	public Place(String placesString) throws JSONException {
-		JSONObject placeObject;
-		SparseArray<Place> places = new SparseArray<Place>();
-
-		JSONArray placeObjects = new JSONArray(placesString);
-
-		// First place is root
-		placeObject = placeObjects.getJSONObject(0);
-		setId(placeObject.getInt(ID));
-		setName(placeObject.getString(NAME));
-		setDescription(placeObject.getString(DESCRIPTION));
-		children = new ArrayList<Place>();
-		places.append(getId(), this);
-
-		for (int i = 1, l = placeObjects.length(); i < l; i++) {
-			placeObject = placeObjects.getJSONObject(i);
-
-			Place p = new Place();
-
-			p.setId(placeObject.getInt(ID));
-
-			p.setName(placeObject.getString(NAME));
-
-			p.setDescription(placeObject.getString(DESCRIPTION));
-
-			// TODO Location
-
-			int parentId = placeObject.getInt(PARENT);
-			p.setParent(places.get(parentId));
-			places.get(parentId).addChild(p);
-
-			places.append(p.getId(), p);
+	public Place(JSONObject rootPlaceObject) throws JSONException {
+		Log.e("Place(JSON)", "Creating Place: " + rootPlaceObject.getInt(ID)
+				+ " " + rootPlaceObject.getString(NAME));
+		
+		setId(rootPlaceObject.getInt(ID));
+		
+		setName(rootPlaceObject.getString(NAME));
+		
+		setDescription(rootPlaceObject.getString(DESCRIPTION));
+		
+		try {
+			setAttributes(rootPlaceObject.getJSONObject(ATTRIBUTES));
+		} catch (JSONException e) {
+			attributes = new HashMap<String, String>();
+		}
+		
+		try {
+			setChildren(rootPlaceObject.getJSONArray(CHILDREN));
+		} catch (JSONException e) {
+			children = new ArrayList<Place>();
 		}
 	}
 
@@ -123,10 +122,54 @@ public class Place {
 			this.children = children;
 	}
 
-	public void addChild(Place child) {
-		if (children == null)
-			children = new ArrayList<Place>();
+	public void setChildren(JSONArray childrenArray) {
+		children = new ArrayList<Place>();
 
+		for (int i = 0, l = childrenArray.length(); i < l; i++) {
+			Place p;
+			try {
+				p = new Place(childrenArray.getJSONObject(i));
+				p.setParent(this);
+			} catch (JSONException e) {
+				Log.e("setChildren", "Error parsing children " + i);
+				break;
+			}
+			children.add(p);
+		}
+
+	}
+
+	public void addChild(Place child) {
 		children.add(child);
 	}
+
+	public HashMap<String, String> getAttributes() {
+		return attributes;
+	}
+
+	public void setAttributes(HashMap<String, String> attributes) {
+		if (attributes == null)
+			this.attributes = new HashMap<String, String>();
+		this.attributes = attributes;
+	}
+
+	public void setAttributes(JSONObject attributesObject) {
+		attributes = new HashMap<String, String>();
+
+		Iterator<?> i = attributesObject.keys();
+		while (i.hasNext()) {
+			String key = (String) i.next();
+
+			try {
+				attributes.put(key, attributesObject.getString(key));
+			} catch (JSONException e) {
+				Log.e("Place.setAttributes", "This should never happen");
+			}
+		}
+	}
+
+	public void addAttribute(String key, String value) {
+		attributes.put(key, value);
+	}
+
 }

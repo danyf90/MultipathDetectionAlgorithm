@@ -1,10 +1,21 @@
 package com.formichelli.vineyard.utilities;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.concurrent.ExecutionException;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.StatusLine;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONException;
+import org.json.JSONObject;
 
+import android.os.AsyncTask;
 import android.util.Log;
 
 import com.formichelli.vineyard.entities.IssueTask;
@@ -14,37 +25,56 @@ import com.formichelli.vineyard.entities.Task;
 import com.formichelli.vineyard.entities.Worker;
 
 public class VineyardServer {
-	static Place rootPlace = null;
+	private final static String placeHierarchyAPI = "api/place/hierarchy";
+
+	
+	private String serverURL;
+	static Place rootPlace;
+
+	public VineyardServer(String serverURL) {
+		this.serverURL = serverURL;
+	}
 
 	/**
 	 * Obtain the entire tree of the places
 	 * 
 	 * @return root place
 	 */
-	static public Place getRootPlace() {
-		if (rootPlace == null) {
-			try {
-				rootPlace = new Place(
-						"[{\"id\":\"13\",\"name\":\"Vigneto Acino Fresco\",\"parent\":null,\"description\":null,\"location\":null},{\"id\":\"1\",\"name\":\"Vigna A\",\"parent\":\"13\",\"description\":\"Prima vigna\",\"location\":\"\"},{\"id\":\"2\",\"name\":\"Vigna B\",\"parent\":\"13\",\"description\":\"Seconda vigna\",\"location\":\"\"},{\"id\":\"3\",\"name\":\"Vigna C\",\"parent\":\"13\",\"description\":\"Terza vigna\",\"location\":\"\"},{\"id\":\"14\",\"name\":\"Vigna E\",\"parent\":\"13\",\"description\":\"Ancora una vigna...\",\"location\":null},{\"id\":\"4\",\"name\":\"Filare A1\",\"parent\":\"1\",\"description\":\"Primo filare prima vigna\",\"location\":null},{\"id\":\"5\",\"name\":\"Filare A2\",\"parent\":\"1\",\"description\":\"Secondo filare prima vigna\",\"location\":null},{\"id\":\"6\",\"name\":\"Filare A3\",\"parent\":\"1\",\"description\":\"Terzo filare seconda vigna\",\"location\":null},{\"id\":\"7\",\"name\":\"Filare B1\",\"parent\":\"2\",\"description\":\"Primo filare seconda vigna\",\"location\":null},{\"id\":\"8\",\"name\":\"Filare C1\",\"parent\":\"3\",\"description\":\"Primo filare terza vigna\",\"location\":null},{\"id\":\"9\",\"name\":\"Filare C2\",\"parent\":\"3\",\"description\":\"Secondo filare terza vigna\",\"location\":null},{\"id\":\"10\",\"name\":\"Filare C3\",\"parent\":\"3\",\"description\":\"Terzo filare terza vigna\",\"location\":null},{\"id\":\"11\",\"name\":\"Fila C21\",\"parent\":\"8\",\"description\":\"Fila 1 Filare C2\",\"location\":null},{\"id\":\"12\",\"name\":\"Fila C22\",\"parent\":\"8\",\"description\":\"Fila 2 Filare C2\",\"location\":null}]");
-			} catch (JSONException e) {
-				Log.e("PLACEPICKER", "JSON exception: " + e.getLocalizedMessage());
-				rootPlace = null;
-			}
-		}
-
-		return rootPlace;
+	public Place getRootPlace() {
+					try {
+						JSONObject rootPlaceObject = new JSONObject(new getPlaceHierarchy().execute(
+								serverURL + placeHierarchyAPI).get());
+						return new Place(rootPlaceObject);
+					} catch (JSONException | InterruptedException
+							| ExecutionException e) {
+						return null;
+					}
 	}
 
-	static public void sendIssue(IssueTask i) {
+	/**
+	 * Obtain the entire tree of the places
+	 * 
+	 * @return JSON representation of the root place
+	 */
+	public String getRootPlaceJSON() {
+			try {
+				return new getPlaceHierarchy().execute(
+						serverURL + placeHierarchyAPI).get();
+			} catch (InterruptedException | ExecutionException e) {
+				return null;
+			}
+	}
+
+	public void sendIssue(IssueTask i) {
 		// TODO
 	};
 
-	static public int getIssuesCount(Place p) {
+	public int getIssuesCount(Place p) {
 		// TODO
 		return new Random().nextInt(10);
 	};
 
-	static public int getTasksCount(Place p) {
+	public int getTasksCount(Place p) {
 		// TODO
 		return new Random().nextInt(10);
 	};
@@ -56,7 +86,7 @@ public class VineyardServer {
 	 *            query place
 	 * @return list of issues
 	 */
-	static public ArrayList<IssueTask> getIssues(Place p) {
+	public ArrayList<IssueTask> getIssues(Place p) {
 		ArrayList<IssueTask> issues = new ArrayList<IssueTask>();
 		Worker w = new Worker();
 		IssueTask i = new IssueTask();
@@ -84,8 +114,36 @@ public class VineyardServer {
 	 *            query place
 	 * @return list of tasks
 	 */
-	static public ArrayList<SimpleTask> getTasks(Place p) {
+	public ArrayList<SimpleTask> getTasks(Place p) {
 		ArrayList<SimpleTask> issues = new ArrayList<SimpleTask>();
 		return issues;
+	};
+
+	private class getPlaceHierarchy extends AsyncTask<String, Void, String> {
+
+		@Override
+		protected String doInBackground(String... params) {
+
+			try {
+				HttpClient httpclient = new DefaultHttpClient();
+				HttpResponse response = httpclient.execute(new HttpGet(
+						params[0]));
+				StatusLine statusLine = response.getStatusLine();
+				if (statusLine.getStatusCode() == HttpStatus.SC_OK) {
+					ByteArrayOutputStream out = new ByteArrayOutputStream();
+					response.getEntity().writeTo(out);
+					out.close();
+					return out.toString();
+				} else {
+					// Closes the connection.
+					response.getEntity().getContent().close();
+					Log.e("http error", statusLine.getReasonPhrase());
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			} 
+
+			return null;
+		}
 	};
 }

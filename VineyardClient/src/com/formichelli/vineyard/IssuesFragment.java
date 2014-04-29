@@ -21,6 +21,7 @@ import android.widget.Toast;
 
 public class IssuesFragment extends Fragment {
 	VineyardMainActivity activity;
+	VineyardServer vineyardServer;
 	ExpandableListView issuesList;
 	IssueExpandableAdapter issueAdapter;
 	MenuItem upItem;
@@ -48,9 +49,10 @@ public class IssuesFragment extends Fragment {
 		super.onActivityCreated(savedInstanceState);
 
 		activity = (VineyardMainActivity) getActivity();
+		vineyardServer = activity.getServer();
 		issuesList = (ExpandableListView) activity
 				.findViewById(R.id.issues_list_view);
-		ArrayList<IssueTask> issues = VineyardServer.getIssues(activity
+		ArrayList<IssueTask> issues = vineyardServer.getIssues(activity
 				.getCurrentPlace());
 		issueAdapter = new IssueExpandableAdapter(activity,
 				R.layout.issues_list_item, R.layout.issue_view, issues,
@@ -87,7 +89,7 @@ public class IssuesFragment extends Fragment {
 		switch (item.getItemId()) {
 		case R.id.action_issues_up:
 			activity.setCurrentPlace(activity.getCurrentPlace().getParent());
-			issueAdapter.replaceItems(VineyardServer.getIssues(activity
+			issueAdapter.replaceItems(vineyardServer.getIssues(activity
 					.getCurrentPlace()));
 
 			if (activity.getCurrentPlace().getParent() == null)
@@ -102,9 +104,7 @@ public class IssuesFragment extends Fragment {
 	OnClickListener reportIssueOnClickListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
-			activity.getSupportFragmentManager().beginTransaction()
-					.replace(R.id.container, new ReportIssueFragment())
-					.commit();
+			activity.switchFragment(new ReportIssueFragment());
 		}
 	};
 
@@ -112,9 +112,8 @@ public class IssuesFragment extends Fragment {
 		@Override
 		public void onClick(View v) {
 			ReportIssueFragment r = new ReportIssueFragment();
-			r.setEditMode((IssueTask) v.getTag());
-			activity.getSupportFragmentManager().beginTransaction()
-					.replace(R.id.container, r).commit();
+			r.setIssue((IssueTask) v.getTag());
+			activity.switchFragment(r);
 		}
 	};
 

@@ -12,8 +12,7 @@ public class SimpleTask implements Task {
 	private Worker assignee;
 	private Status status;
 	private Priority priority;
-	private int placeId;
-	private String placeName;
+	private Place place;
 	private String title;
 	private String description;
 	private Location location;
@@ -68,17 +67,12 @@ public class SimpleTask implements Task {
 		this.priority = priority;
 	}
 
-	public int getPlaceId() {
-		return placeId;
+	public Place getPlace() {
+		return place;
 	}
 
-	public String getPlaceName() {
-		return placeName;
-	}
-
-	public void setPlace(Place p) {
-		this.placeId = p.getId();
-		this.placeName = p.getName();
+	public void setPlace(Place place) {
+		this.place = place;
 	}
 
 	public String getTitle() {

@@ -16,15 +16,20 @@ import android.support.v4.widget.DrawerLayout;
 public class VineyardMainActivity extends ActionBarActivity implements
 		NavigationDrawerFragment.NavigationDrawerCallbacks {
 	private static final String TAG = "VineyardMainActivity";
+	
+	static private final String SERVER_URL = "http://vineyard-server.no-ip.org/";
 
 	PlaceViewerFragment placeViewerFragment;
 	IssuesFragment issuesFragment;
 	TasksFragment tasksFragment;
 	SettingsFragment settingsFragment;
+	
 	Fragment currentFragment;
 	Menu menu;
 	Place currentPlace, rootPlace;
+	String rootPlaceJSON;
 	ActionBar actionBar;
+	VineyardServer vineyardServer;
 
 	/**
 	 * Fragment managing the behaviors, interactions and presentation of the
@@ -40,7 +45,9 @@ public class VineyardMainActivity extends ActionBarActivity implements
 		issuesFragment = new IssuesFragment();
 		tasksFragment = new TasksFragment();
 		settingsFragment = new SettingsFragment();
-
+		
+		vineyardServer = new VineyardServer(SERVER_URL);
+		
 		setContentView(R.layout.activity_vineyardmain);
 
 		mNavigationDrawerFragment = (NavigationDrawerFragment) getSupportFragmentManager()
@@ -48,7 +55,8 @@ public class VineyardMainActivity extends ActionBarActivity implements
 
 		actionBar = getSupportActionBar();
 
-		rootPlace = VineyardServer.getRootPlace();
+		rootPlaceJSON = vineyardServer.getRootPlaceJSON();
+		rootPlace = vineyardServer.getRootPlace();
 		if (rootPlace == null)
 			finish();
 
@@ -88,7 +96,9 @@ public class VineyardMainActivity extends ActionBarActivity implements
 			if (currentPlace == rootPlace)
 				askExit();
 			else {
-				placeViewerFragment.loadPlace(currentPlace.getParent());
+				Place parent = currentPlace.getParent();
+				if (parent != null)
+					placeViewerFragment.loadPlace(parent);
 			}
 		else if (currentFragment == issuesFragment)
 			switchFragment(placeViewerFragment);
@@ -115,6 +125,10 @@ public class VineyardMainActivity extends ActionBarActivity implements
 							}
 						}).create().show();
 		;
+	}
+
+	public Place getRootPlace() {
+		return rootPlace;
 	}
 
 	public Place getCurrentPlace() {
@@ -144,5 +158,13 @@ public class VineyardMainActivity extends ActionBarActivity implements
 
 	public void setTitle(String title) {
 		actionBar.setTitle(title);
+	}
+	
+	public VineyardServer getServer() {
+		return vineyardServer;
+	}
+
+	public String getRootPlaceJSON() {
+		return rootPlaceJSON;
 	}
 }

@@ -2,7 +2,6 @@ package com.formichelli.vineyard;
 
 import com.formichelli.vineyard.entities.Place;
 import com.formichelli.vineyard.utilities.PlaceAdapter;
-import com.formichelli.vineyard.utilities.VineyardServer;
 
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -135,14 +134,14 @@ public class PlaceViewerFragment extends Fragment {
 				}
 			});
 
-		i = VineyardServer.getIssuesCount(p);
+		i = activity.getServer().getIssuesCount(p);
 		issuesCount.setText(String.valueOf(i));
 		if (i != 0)
 			issues.setBackgroundDrawable(redBorder);
 		else
 			issues.setBackgroundDrawable(whiteBorder);
 
-		t = VineyardServer.getTasksCount(p);
+		t = activity.getServer().getTasksCount(p);
 		tasksCount.setText(String.valueOf(t));
 		if (t != 0)
 			tasks.setBackgroundDrawable(redBorder);

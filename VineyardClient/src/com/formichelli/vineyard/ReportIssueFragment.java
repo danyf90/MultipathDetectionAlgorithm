@@ -41,6 +41,7 @@ public class ReportIssueFragment extends Fragment {
 	public static final int REQUEST_PLACE = 3;
 
 	VineyardMainActivity activity;
+	VineyardServer vineyardServer;
 	IssueTask i;
 	String currentPhotoPath;
 	Gallery gallery;
@@ -51,8 +52,16 @@ public class ReportIssueFragment extends Fragment {
 	Menu menu;
 	int imagePadding;
 
-	public void setEditMode(IssueTask i) {
+	public void setIssue(IssueTask i) {
 		this.i = i;
+	}
+
+	public void setIssuePlace(Place p) {
+		i.setPlace(p);
+	}
+
+	public Place getIssuePlace() {
+		return i.getPlace();
 	}
 
 	@Override
@@ -89,12 +98,17 @@ public class ReportIssueFragment extends Fragment {
 				Intent placePicker = new Intent(activity,
 						PlacePickerActivity.class);
 
-				// Pass the selected hierarchy to the intent
+				// Put the place hierarchy to the intent
+				placePicker.putExtra(PlacePickerActivity.HIERARCHY,
+						activity.getRootPlaceJSON());
+
+				// Put the id of the selected place and of all its ancestors
 				ArrayList<Integer> ids = new ArrayList<Integer>();
 				for (Place currentPlace = activity.getCurrentPlace(); currentPlace != null; currentPlace = currentPlace
 						.getParent())
 					ids.add(currentPlace.getId());
-				placePicker.putExtra("selectedPlaceParents", ids);
+
+				placePicker.putExtra(PlacePickerActivity.ANCESTORS, ids);
 
 				startActivityForResult(placePicker, REQUEST_PLACE);
 			}
@@ -107,7 +121,7 @@ public class ReportIssueFragment extends Fragment {
 		} else {
 			title.setText(i.getTitle());
 			description.setText(i.getDescription());
-			placeButton.setText(i.getPlaceName());
+			placeButton.setText(i.getPlace().getName());
 			if (i.getPriority() != null)
 				priorities.setSelection(i.getPriority().toInt() + 1);
 			// TODO add photos
@@ -163,7 +177,7 @@ public class ReportIssueFragment extends Fragment {
 			break;
 		case R.id.action_report_issue_send:
 			if (parseFields()) {
-				VineyardServer.sendIssue(i);
+				vineyardServer.sendIssue(i);
 				gallery.removeAllImages();
 				activity.switchFragment(activity.issuesFragment);
 				break;
@@ -172,6 +186,7 @@ public class ReportIssueFragment extends Fragment {
 			return false;
 		}
 
+		setIssue(null);
 		return true;
 	}
 
@@ -263,12 +278,12 @@ public class ReportIssueFragment extends Fragment {
 			break;
 		case REQUEST_PLACE:
 			if (resultCode == Activity.RESULT_OK) {
-				Place selectedPlace = VineyardServer.getRootPlace();
-				ArrayList<Integer> ids = data.getExtras().getIntegerArrayList(
-						"selectedPlaceParents");
+				Place selectedPlace = activity.getRootPlace();
 
-				// Navigate from root to selected place, root is already
-				// selected
+				// Navigate from root to selected place (root is already
+				// selected)
+				ArrayList<Integer> ids = data.getExtras().getIntegerArrayList(
+						PlacePickerActivity.ANCESTORS);
 				for (int i = ids.size() - 2; i >= 0; i--) {
 					for (Place p : selectedPlace.getChildren())
 						if (p.getId() == ids.get(i)) {
