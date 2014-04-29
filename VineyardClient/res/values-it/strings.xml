@@ -12,7 +12,7 @@
     <string name="navigation_drawer_open">Apri il navigation drawer</string>
     <string name="navigation_drawer_close">Chiudi il navigation drawer</string>
     <string name="action_report_issue">Segnala</string>
-    <string name="action_reset_settings">Ripristina predefiniti</string>
+    <string name="action_settings_restore">Ripristina predefiniti</string>
     <string name="action_add_photo">Aggiungi foto</string>
     <string name="action_delete_selected_photos">Cancella foto selezionate</string>
     <string name="action_cancel">Annulla</string>
@@ -44,6 +44,14 @@
     <string name="priority_low">Bassa</string>
     <string name="priority_medium">Media</string>
     <string name="priority_high">Alta</string>
+    <string name="preference_settings_restore_title">Sei sicuro di voler ripristinare le impostazioni iniziale??</string>
+    <string name="preference_settings_restore_confirm">Sì</string>
+    <string name="preference_settings_restore_cancel">No</string>
+    <string name="preference_settings_restored">Le impostazioni sono state ripristinate</string>
+    <string name="preference_server_settings">Configurazione server</string>
+    <string name="preference_server_url_label">URL del server</string>
+    <string name="preference_server_port_label">Porta del server</string>
+
     <string-array name="priorities">
         <item>--</item>
         <item>Bassa</item>

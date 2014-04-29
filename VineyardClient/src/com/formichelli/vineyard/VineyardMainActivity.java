@@ -8,7 +8,10 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v4.app.Fragment;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.support.v4.widget.DrawerLayout;
@@ -16,20 +19,21 @@ import android.support.v4.widget.DrawerLayout;
 public class VineyardMainActivity extends ActionBarActivity implements
 		NavigationDrawerFragment.NavigationDrawerCallbacks {
 	private static final String TAG = "VineyardMainActivity";
-	
-	static private final String SERVER_URL = "http://vineyard-server.no-ip.org/";
 
 	PlaceViewerFragment placeViewerFragment;
 	IssuesFragment issuesFragment;
 	TasksFragment tasksFragment;
-	SettingsFragment settingsFragment;
-	
+	SettingsActivity settingsActivity;
+
 	Fragment currentFragment;
 	Menu menu;
 	Place currentPlace, rootPlace;
 	String rootPlaceJSON;
+	String serverURL = "http://vineyard-server.no-ip.org/";
+	int serverPort;
 	ActionBar actionBar;
 	VineyardServer vineyardServer;
+	SharedPreferences sp;
 
 	/**
 	 * Fragment managing the behaviors, interactions and presentation of the
@@ -44,16 +48,55 @@ public class VineyardMainActivity extends ActionBarActivity implements
 		placeViewerFragment = new PlaceViewerFragment();
 		issuesFragment = new IssuesFragment();
 		tasksFragment = new TasksFragment();
-		settingsFragment = new SettingsFragment();
-		
-		vineyardServer = new VineyardServer(SERVER_URL);
-		
+		settingsActivity = new SettingsActivity();
+
 		setContentView(R.layout.activity_vineyardmain);
 
 		mNavigationDrawerFragment = (NavigationDrawerFragment) getSupportFragmentManager()
 				.findFragmentById(R.id.navigation_drawer);
 
+		// Set up the drawer.
+		mNavigationDrawerFragment.setUp(R.id.navigation_drawer,
+				(DrawerLayout) findViewById(R.id.drawer_layout));
+
 		actionBar = getSupportActionBar();
+
+		sp = PreferenceManager.getDefaultSharedPreferences(this);
+		
+		serverInit();
+	}
+
+	@Override
+	protected void onStart() {
+		super.onStart();
+
+		// if the server settings have been changed reload places
+		if (serverSettingsAreChanged())
+			serverInit();
+	}
+
+	private boolean serverSettingsAreChanged() {
+		if (serverURL != sp.getString(
+				getString(R.string.preference_server_url),
+				getString(R.string.preference_server_url_default)))
+			return true;
+		
+		if (serverPort != Integer.parseInt(sp.getString(
+				getString(R.string.preference_server_port),
+				getString(R.string.preference_server_port_default))))
+			return true;
+
+		return false;
+	}
+
+	private void serverInit() {
+		serverURL = sp.getString(getString(R.string.preference_server_url),
+				getString(R.string.preference_server_url_default));
+		serverPort = Integer.parseInt(sp.getString(
+				getString(R.string.preference_server_port),
+				getString(R.string.preference_server_port_default)));
+
+		vineyardServer = new VineyardServer(serverURL);
 
 		rootPlaceJSON = vineyardServer.getRootPlaceJSON();
 		rootPlace = vineyardServer.getRootPlace();
@@ -61,10 +104,6 @@ public class VineyardMainActivity extends ActionBarActivity implements
 			finish();
 
 		setCurrentPlace(rootPlace);
-
-		// Set up the drawer.
-		mNavigationDrawerFragment.setUp(R.id.navigation_drawer,
-				(DrawerLayout) findViewById(R.id.drawer_layout));
 	}
 
 	@Override
@@ -80,8 +119,8 @@ public class VineyardMainActivity extends ActionBarActivity implements
 			currentFragment = tasksFragment;
 			break;
 		case 3:
-			currentFragment = settingsFragment;
-			break;
+			startActivity(new Intent(this, SettingsActivity.class));
+			return;
 		default:
 			Log.e(TAG, "onNavigationDrawerItemSelected: Unexpected position");
 			return;
@@ -103,8 +142,6 @@ public class VineyardMainActivity extends ActionBarActivity implements
 		else if (currentFragment == issuesFragment)
 			switchFragment(placeViewerFragment);
 		else if (currentFragment == tasksFragment)
-			switchFragment(placeViewerFragment);
-		else if (currentFragment == settingsFragment)
 			switchFragment(placeViewerFragment);
 		return;
 	}
@@ -159,7 +196,7 @@ public class VineyardMainActivity extends ActionBarActivity implements
 	public void setTitle(String title) {
 		actionBar.setTitle(title);
 	}
-	
+
 	public VineyardServer getServer() {
 		return vineyardServer;
 	}

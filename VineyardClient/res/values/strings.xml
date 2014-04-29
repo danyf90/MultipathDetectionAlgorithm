@@ -3,6 +3,7 @@
 
     <string name="app_name">Vineyard</string>
     <string name="place_picker_name">Place Picker</string>
+    <string name="settings_name">Settings</string>
     <string name="title_section_main">Main</string>
     <string name="title_section_issues">Issue Tracker</string>
     <string name="title_section_tasks">Tasks</string>
@@ -12,7 +13,7 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="action_report_issue">Report</string>
-    <string name="action_reset_settings">Restore default</string>
+    <string name="action_settings_restore">Restore default</string>
     <string name="action_add_photo">Add photo</string>
     <string name="action_delete_selected_photos">Delete selected photos</string>
     <string name="action_cancel">Cancel</string>
@@ -45,6 +46,20 @@
     <string name="priority_medium">Medium</string>
     <string name="priority_high">High</string>
     <string name="place_view_photo">Place photo</string>
+    <string name="preference_settings_restored">Settings has been restored</string>
+    <string name="preference_settings_restore_title">Are you sure you want to restore default settings?</string>
+    <string name="preference_settings_restore_confirm">Yes</string>
+    <string name="preference_settings_restore_cancel">No</string>
+    <string name="preference_server_settings">Server settings</string>
+    <string name="preference_server_url">server_url</string>
+    <string name="preference_server_url_label">Server URL</string>
+    <string name="preference_server_url_default">http://vineyard-server.no-ip.org/</string>
+    <string name="preference_server_url_error">Invalid server URL</string>
+    <string name="preference_server_port">server_port</string>
+    <string name="preference_server_port_label">Server port:</string>
+    <string name="preference_server_port_default">80</string>
+    <string name="preference_server_port_error">Server port must be in the range [1, 65535]</string>
+
     <string-array name="priorities">
         <item>--</item>
         <item>Low</item>

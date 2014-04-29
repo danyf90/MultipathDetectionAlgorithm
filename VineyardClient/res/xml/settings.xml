@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <PreferenceCategory android:title="@string/preference_server_settings" >
+        <EditTextPreference
+            android:defaultValue="@string/preference_server_url_default"
+            android:key="@string/preference_server_url"
+            android:title="@string/preference_server_url_label" />
+        <EditTextPreference
+            android:defaultValue="@string/preference_server_port_default"
+            android:key="@string/preference_server_port"
+            android:title="@string/preference_server_port_label"/>
+    </PreferenceCategory>
+
+</PreferenceScreen>

@@ -33,6 +33,10 @@ public class VineyardServer {
 
 	public VineyardServer(String serverURL) {
 		this.serverURL = serverURL;
+		
+		//serverURL must end with '/'
+		if (serverURL.charAt(serverURL.length()-1) != '/')
+			this.serverURL += "/";
 	}
 
 	/**

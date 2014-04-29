@@ -4,9 +4,9 @@
     tools:context="com.formichelli.vit.VineyardMainActivity" >
 
     <item
-        android:id="@+id/action_reset_settings"
-        android:title="@string/action_reset_settings"
+        android:id="@+id/action_settings_restore"
+        android:title="@string/action_settings_restore"
         android:icon="@android:drawable/stat_notify_sync"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="always" />
     
 </menu>
