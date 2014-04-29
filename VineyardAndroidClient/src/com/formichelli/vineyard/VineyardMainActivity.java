@@ -15,17 +15,16 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.Menu;
 import android.support.v4.widget.DrawerLayout;
 
 public class VineyardMainActivity extends ActionBarActivity implements
 		NavigationDrawerFragment.NavigationDrawerCallbacks {
-	private static final String TAG = "VineyardMainActivity";
 
-	PlaceViewerFragment placeViewerFragment;
+	public PlaceViewerFragment placeViewerFragment;
 	IssuesFragment issuesFragment;
 	TasksFragment tasksFragment;
+	LoadingFragment loadingFragment;
 	SettingsActivity settingsActivity;
 
 	Fragment currentFragment;
@@ -51,6 +50,7 @@ public class VineyardMainActivity extends ActionBarActivity implements
 		placeViewerFragment = new PlaceViewerFragment();
 		issuesFragment = new IssuesFragment();
 		tasksFragment = new TasksFragment();
+		loadingFragment = new LoadingFragment();
 		settingsActivity = new SettingsActivity();
 
 		setContentView(R.layout.activity_vineyardmain);
@@ -65,7 +65,7 @@ public class VineyardMainActivity extends ActionBarActivity implements
 		actionBar = getSupportActionBar();
 
 		sp = PreferenceManager.getDefaultSharedPreferences(this);
-		
+
 		serverInit();
 	}
 
@@ -83,7 +83,7 @@ public class VineyardMainActivity extends ActionBarActivity implements
 				getString(R.string.preference_server_url),
 				getString(R.string.preference_server_url_default)))
 			return true;
-		
+
 		if (serverPort != Integer.parseInt(sp.getString(
 				getString(R.string.preference_server_port),
 				getString(R.string.preference_server_port_default))))
@@ -99,16 +99,10 @@ public class VineyardMainActivity extends ActionBarActivity implements
 				getString(R.string.preference_server_port),
 				getString(R.string.preference_server_port_default)));
 
-		vineyardServer = new VineyardServer(serverURL);
+		vineyardServer = new VineyardServer(serverURL, serverPort);
 
-		try {
-			rootPlaceJSON = vineyardServer.getRootPlaceJSON();
-			rootPlace = new Place(new JSONObject(rootPlaceJSON));
-		} catch (JSONException e) {
-			finish();
-		}
-
-		setCurrentPlace(rootPlace);
+		new loadingAsyncHttpRequest().execute(vineyardServer.getUrl(),
+				String.valueOf(vineyardServer.getPort()));
 	}
 
 	@Override
@@ -127,7 +121,7 @@ public class VineyardMainActivity extends ActionBarActivity implements
 			startActivity(new Intent(this, SettingsActivity.class));
 			return;
 		default:
-			Log.e(TAG, "onNavigationDrawerItemSelected: Unexpected position");
+			currentFragment = loadingFragment;
 			return;
 		}
 
@@ -148,6 +142,8 @@ public class VineyardMainActivity extends ActionBarActivity implements
 			switchFragment(placeViewerFragment);
 		else if (currentFragment == tasksFragment)
 			switchFragment(placeViewerFragment);
+		else if (currentFragment == loadingFragment)
+			askExit();
 		return;
 	}
 
@@ -169,6 +165,10 @@ public class VineyardMainActivity extends ActionBarActivity implements
 		;
 	}
 
+	public void setRootPlace(Place rootPlace) {
+		this.rootPlace = rootPlace;
+	}
+
 	public Place getRootPlace() {
 		return rootPlace;
 	}
@@ -178,10 +178,8 @@ public class VineyardMainActivity extends ActionBarActivity implements
 	}
 
 	public void setCurrentPlace(Place place) {
-		if (place == null) {
-			Log.e("TAG", "rootPlace is null");
-			finish();
-		}
+		if (place == null)
+			return;
 
 		currentPlace = place;
 		setTitle(place.getName());
@@ -209,4 +207,31 @@ public class VineyardMainActivity extends ActionBarActivity implements
 	public String getRootPlaceJSON() {
 		return rootPlaceJSON;
 	}
+
+	private class loadingAsyncHttpRequest extends
+			VineyardServer.asyncHttpRequest {
+
+		@Override
+		protected void onPreExecute() {
+			switchFragment(new LoadingFragment());
+		}
+
+		@Override
+		protected void onPostExecute(String result) {
+			if (result != null) {
+
+				try {
+					rootPlaceJSON = result;
+					rootPlace = new Place(new JSONObject(rootPlaceJSON));
+				} catch (JSONException e) {
+					finish();
+				}
+
+				setCurrentPlace(rootPlace);
+				switchFragment(placeViewerFragment);
+			} else {
+				// TODO
+			}
+		}
+	};
 }

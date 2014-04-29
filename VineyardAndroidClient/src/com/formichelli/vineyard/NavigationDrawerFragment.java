@@ -26,12 +26,6 @@ import android.widget.TextView;
  * implemented here.
  */
 public class NavigationDrawerFragment extends Fragment {
-
-	/**
-	 * Remember the position of the selected item.
-	 */
-	private static final String STATE_SELECTED_POSITION = "selected_navigation_drawer_position";
-
 	/**
 	 * A pointer to the current callbacks instance (the Activity).
 	 */
@@ -55,12 +49,8 @@ public class NavigationDrawerFragment extends Fragment {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		if (savedInstanceState != null)
-			mCurrentSelectedPosition = savedInstanceState
-					.getInt(STATE_SELECTED_POSITION);
-
 		// Select either the default item (0) or the last selected item.
-		selectItem(mCurrentSelectedPosition);
+		selectItem(-1);
 	}
 
 	@Override
@@ -156,8 +146,8 @@ public class NavigationDrawerFragment extends Fragment {
 					return;
 				}
 
-				getActivity().supportInvalidateOptionsMenu(); // calls
-																// onPrepareOptionsMenu()
+				// calls onPrepareOptionsMenu()
+				getActivity().supportInvalidateOptionsMenu();
 			}
 		};
 
@@ -166,14 +156,17 @@ public class NavigationDrawerFragment extends Fragment {
 			@Override
 			public void run() {
 				mDrawerToggle.syncState();
-				
+
 				// TODO set icons in ListView, works only here
-				final int drawables[] = {R.drawable.action_main, R.drawable.action_issue,R.drawable.action_tasks,R.drawable.action_settings};
+				final int drawables[] = { R.drawable.action_main,
+						R.drawable.action_issue, R.drawable.action_tasks,
+						R.drawable.action_settings };
 				for (int i = 0; i < 4; i++) {
-					TextView v = (TextView) mDrawerListView.getChildAt(i - mDrawerListView.getFirstVisiblePosition());
+					TextView v = (TextView) mDrawerListView.getChildAt(i
+							- mDrawerListView.getFirstVisiblePosition());
 					if (v != null)
-						v.setCompoundDrawablesWithIntrinsicBounds(
-						0, 0, drawables[i], 0);
+						v.setCompoundDrawablesWithIntrinsicBounds(0, 0,
+								drawables[i], 0);
 				}
 			}
 		});
@@ -209,12 +202,6 @@ public class NavigationDrawerFragment extends Fragment {
 	public void onDetach() {
 		super.onDetach();
 		mCallbacks = null;
-	}
-
-	@Override
-	public void onSaveInstanceState(Bundle outState) {
-		super.onSaveInstanceState(outState);
-		outState.putInt(STATE_SELECTED_POSITION, mCurrentSelectedPosition);
 	}
 
 	@Override
