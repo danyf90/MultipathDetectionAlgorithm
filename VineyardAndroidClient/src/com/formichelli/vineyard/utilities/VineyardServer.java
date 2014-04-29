@@ -25,34 +25,55 @@ import com.formichelli.vineyard.entities.Task;
 import com.formichelli.vineyard.entities.Worker;
 
 public class VineyardServer {
-	private final static String placeHierarchyAPI = "api/place/hierarchy";
+	private final static String placeHierarchyAPI = "/api/place/hierarchy";
 
-	
 	private String serverURL;
-	static Place rootPlace;
+	private int port;
 
 	public VineyardServer(String serverURL) {
-		this.serverURL = serverURL;
-		
-		//serverURL must end with '/'
-		if (serverURL.charAt(serverURL.length()-1) != '/')
-			this.serverURL += "/";
+		setServerURL(serverURL);
+		setPort(80);
 	}
 
+	public VineyardServer(String serverURL, int port) {
+		setServerURL(serverURL);
+		setPort(port);
+	}
+
+	public String getServerURL() {
+		return serverURL;
+	}
+
+	public void setServerURL(String serverURL) {
+		// serverURL must not end with '/'
+		if (serverURL.endsWith("/"))
+			this.serverURL = serverURL.substring(0, serverURL.length()-1);
+		else
+			this.serverURL = serverURL;
+	}
+
+	public int getPort() {
+		return port;
+	}
+
+	public void setPort(int port) {
+		this.port = port;
+	}
+	
 	/**
 	 * Obtain the entire tree of the places
 	 * 
 	 * @return root place
 	 */
 	public Place getRootPlace() {
-					try {
-						JSONObject rootPlaceObject = new JSONObject(new getPlaceHierarchy().execute(
-								serverURL + placeHierarchyAPI).get());
-						return new Place(rootPlaceObject);
-					} catch (JSONException | InterruptedException
-							| ExecutionException e) {
-						return null;
-					}
+		try {
+			JSONObject rootPlaceObject = new JSONObject(new asyncHttpRequest()
+					.execute(serverURL + placeHierarchyAPI,
+							String.valueOf(port)).get());
+			return new Place(rootPlaceObject);
+		} catch (JSONException | InterruptedException | ExecutionException e) {
+			return null;
+		}
 	}
 
 	/**
@@ -61,12 +82,12 @@ public class VineyardServer {
 	 * @return JSON representation of the root place
 	 */
 	public String getRootPlaceJSON() {
-			try {
-				return new getPlaceHierarchy().execute(
-						serverURL + placeHierarchyAPI).get();
-			} catch (InterruptedException | ExecutionException e) {
-				return null;
-			}
+		try {
+			return new asyncHttpRequest()
+					.execute(serverURL + placeHierarchyAPI).get();
+		} catch (InterruptedException | ExecutionException e) {
+			return null;
+		}
 	}
 
 	public void sendIssue(IssueTask i) {
@@ -123,7 +144,7 @@ public class VineyardServer {
 		return issues;
 	};
 
-	private class getPlaceHierarchy extends AsyncTask<String, Void, String> {
+	private class asyncHttpRequest extends AsyncTask<String, Void, String> {
 
 		@Override
 		protected String doInBackground(String... params) {
@@ -131,7 +152,7 @@ public class VineyardServer {
 			try {
 				HttpClient httpclient = new DefaultHttpClient();
 				HttpResponse response = httpclient.execute(new HttpGet(
-						params[0]));
+						serverURL + ":" + port + placeHierarchyAPI));
 				StatusLine statusLine = response.getStatusLine();
 				if (statusLine.getStatusCode() == HttpStatus.SC_OK) {
 					ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -145,7 +166,7 @@ public class VineyardServer {
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
-			} 
+			}
 
 			return null;
 		}

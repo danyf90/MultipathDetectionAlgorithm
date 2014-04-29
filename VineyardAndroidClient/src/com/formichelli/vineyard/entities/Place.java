@@ -44,8 +44,6 @@ public class Place {
 	}
 
 	public Place(JSONObject rootPlaceObject) throws JSONException {
-		Log.e("Place(JSON)", "Creating Place: " + rootPlaceObject.getInt(ID)
-				+ " " + rootPlaceObject.getString(NAME));
 		
 		setId(rootPlaceObject.getInt(ID));
 		

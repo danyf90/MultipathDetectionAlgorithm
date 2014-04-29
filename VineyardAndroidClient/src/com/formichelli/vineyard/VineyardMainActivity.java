@@ -1,5 +1,8 @@
 package com.formichelli.vineyard;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import com.formichelli.vineyard.entities.Place;
 import com.formichelli.vineyard.utilities.VineyardServer;
 
@@ -98,10 +101,12 @@ public class VineyardMainActivity extends ActionBarActivity implements
 
 		vineyardServer = new VineyardServer(serverURL);
 
-		rootPlaceJSON = vineyardServer.getRootPlaceJSON();
-		rootPlace = vineyardServer.getRootPlace();
-		if (rootPlace == null)
+		try {
+			rootPlaceJSON = vineyardServer.getRootPlaceJSON();
+			rootPlace = new Place(new JSONObject(rootPlaceJSON));
+		} catch (JSONException e) {
 			finish();
+		}
 
 		setCurrentPlace(rootPlace);
 	}
