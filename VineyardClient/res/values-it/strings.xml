@@ -33,6 +33,7 @@
     <string name="issue_assigned_worker_label">Operatore: </string>
     <string name="issues_label">Problemi: </string>
     <string name="tasks_label">Lavori: </string>
+    <string name="attributes_label">Attributi:</string>
     <string name="children_label">Figli: </string>
     <string name="dialog_confirm_exit">Sei sicuro di voler uscire?</string>
     <string name="dialog_confirm_exit_confirm">Sì</string>

@@ -1,5 +1,8 @@
 package com.formichelli.vineyard;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import com.formichelli.vineyard.entities.Place;
 import com.formichelli.vineyard.utilities.PlaceAdapter;
 
@@ -20,10 +23,10 @@ import android.widget.TextView;
 
 public class PlaceViewerFragment extends Fragment {
 	VineyardMainActivity activity;
-	TextView desc, issuesCount, tasksCount;
+	TextView textView, issuesCount, tasksCount;
 	ViewGroup issues, tasks;
 	PlaceAdapter placeAdapter;
-	ListView children;
+	ListView childrenList;
 	MenuItem upItem;
 	Drawable redBorder, whiteBorder;
 
@@ -41,26 +44,28 @@ public class PlaceViewerFragment extends Fragment {
 		super.onActivityCreated(savedInstanceState);
 
 		activity = (VineyardMainActivity) getActivity();
-		desc = (TextView) activity.findViewById(R.id.place_view_description);
+		textView = (TextView) activity.findViewById(R.id.place_view_text);
 		issues = (ViewGroup) activity.findViewById(R.id.place_view_issues);
 		issuesCount = (TextView) activity
 				.findViewById(R.id.place_view_issues_count);
 		tasks = (ViewGroup) activity.findViewById(R.id.place_view_tasks);
 		tasksCount = (TextView) activity
 				.findViewById(R.id.place_view_tasks_count);
-		children = (ListView) activity.findViewById(R.id.place_view_children);
+		childrenList = (ListView) activity.findViewById(R.id.place_view_children_list);
 		redBorder = getResources()
 				.getDrawable(R.drawable.white_with_red_border);
 		whiteBorder = getResources().getDrawable(
 				R.drawable.white_with_wine_border);
 
 		activity.setTitle(activity.getCurrentPlace().getName());
+		
 		issues.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				activity.switchFragment(activity.issuesFragment);
 			}
 		});
+		
 		tasks.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -68,9 +73,8 @@ public class PlaceViewerFragment extends Fragment {
 			}
 		});
 		
-		// loadPlace must be called after both onActivityCreated and onCreateOptionsMenu
 		if (upItem != null)
-			loadPlace(activity.getCurrentPlace());
+			init();
 	}
 
 	@Override
@@ -79,13 +83,18 @@ public class PlaceViewerFragment extends Fragment {
 
 		upItem = menu.findItem(R.id.action_place_viewer_up);
 
-		// loadPlace must be called after both onActivityCreated and onCreateOptionsMenu
 		if (activity != null)
-			loadPlace(activity.getCurrentPlace());
+			init();
 		
 		super.onCreateOptionsMenu(menu, inflater);
 	}
 
+	// This function must be called after both onActivityCreated and
+	// onCreateOptionMenu, their calling order is different in different version of android
+	private void init() {
+		loadPlace(activity.getCurrentPlace());
+	}
+	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 
@@ -112,21 +121,37 @@ public class PlaceViewerFragment extends Fragment {
 		else
 			upItem.setVisible(true);
 
-		this.desc.setText(p.getDescription());
+		String text = p.getDescription();
+		
+		HashMap<String,String> attributes =p.getAttributes(); 
+		if (attributes.size() != 0) {
+			text += "\n\n" + getString(R.string.attributes_label) + "\n\n";
+			
+			for (String key: p.getAttributes().keySet())
+				text += key + ":   " + attributes.get(key) + "\n";
+		}
+		
+		ArrayList<Place> children = p.getChildren();
+		
+		if (children.size() != 0){
+			text += "\n\n" + getString(R.string.children_label);
+		}
+		
+		this.textView.setText(text);
 
 		if (placeAdapter != null) {
 			placeAdapter.replaceItems(p.getChildren());
 		} else {
 			placeAdapter = new PlaceAdapter(activity,
 					R.layout.drawer_list_item, p.getChildren());
-			children.setAdapter(placeAdapter);
+			childrenList.setAdapter(placeAdapter);
 		}
 
-		if (children.getAdapter() == null)
-			children.setAdapter(placeAdapter);
+		if (childrenList.getAdapter() == null)
+			childrenList.setAdapter(placeAdapter);
 
-		if (children.getOnItemClickListener() == null)
-			children.setOnItemClickListener(new OnItemClickListener() {
+		if (childrenList.getOnItemClickListener() == null)
+			childrenList.setOnItemClickListener(new OnItemClickListener() {
 				@Override
 				public void onItemClick(AdapterView<?> parent, View view,
 						int position, long id) {

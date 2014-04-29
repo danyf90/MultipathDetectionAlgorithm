@@ -90,8 +90,11 @@ public class ReportIssueFragment extends Fragment {
 				.findViewById(R.id.report_issue_description);
 
 		activity.setTitle(getString(R.string.title_report_issue));
+		
 		addPhoto.setOnClickListener(dispatchTakePictureIntent);
+		
 		setSpinnerAdapter(priorities, R.array.priorities);
+		
 		placeButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -115,6 +118,30 @@ public class ReportIssueFragment extends Fragment {
 		});
 		placeButton.setText(activity.getCurrentPlace().getName());
 
+		if (menu != null)
+			init();
+	}
+
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		inflater.inflate(R.menu.menu_report_issue, menu);
+
+		this.menu = menu;
+
+		if (activity != null)
+			init();
+
+		super.onCreateOptionsMenu(menu, inflater);
+	}
+
+	// This function must be called after both onActivityCreated and
+	// onCreateOptionMenu, their calling order is different in different version of android
+	private void init() {
+
+		gallery = new Gallery(activity, (LinearLayout) activity
+				.findViewById(R.id.report_issue_gallery), true,
+				menu.findItem(R.id.action_report_issue_delete_selected_photos));
+
 		if (i == null) {
 			i = new IssueTask();
 			i.setPlace(activity.getCurrentPlace());
@@ -126,33 +153,6 @@ public class ReportIssueFragment extends Fragment {
 				priorities.setSelection(i.getPriority().toInt() + 1);
 			// TODO add photos
 		}
-
-		if (menu != null) {
-			gallery = new Gallery(
-					activity,
-					(LinearLayout) activity
-							.findViewById(R.id.report_issue_gallery),
-					true,
-					menu.findItem(R.id.action_report_issue_delete_selected_photos));
-		}
-	}
-
-	@Override
-	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		inflater.inflate(R.menu.menu_report_issue, menu);
-
-		this.menu = menu;
-
-		if (activity != null) {
-			gallery = new Gallery(
-					activity,
-					(LinearLayout) activity
-							.findViewById(R.id.report_issue_gallery),
-					true,
-					menu.findItem(R.id.action_report_issue_delete_selected_photos));
-		}
-
-		super.onCreateOptionsMenu(menu, inflater);
 	}
 
 	private void setSpinnerAdapter(Spinner s, int array) {

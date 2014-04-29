@@ -33,6 +33,7 @@
     <string name="issue_assigned_worker_label">Worker: </string>
     <string name="issues_label">Issues: </string>
     <string name="tasks_label">Tasks: </string>
+    <string name="attributes_label">Attributes:</string>
     <string name="children_label">Children: </string>
     <string name="dialog_confirm_exit">Are you sure you want to exit?</string>
     <string name="dialog_confirm_exit_confirm">Yes</string>

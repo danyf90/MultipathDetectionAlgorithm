@@ -39,11 +39,7 @@ public class Place {
 		setDescription(description);
 		setLocation(location);
 		setParent(parent);
-		if (children == null)
-			children = new ArrayList<Place>();
 		setChildren(children);
-		if (attributes == null)
-			attributes = new HashMap<String, String>();
 		setAttributes(attributes);
 	}
 
@@ -125,6 +121,9 @@ public class Place {
 	public void setChildren(JSONArray childrenArray) {
 		children = new ArrayList<Place>();
 
+		if (childrenArray == null)
+			return;
+		
 		for (int i = 0, l = childrenArray.length(); i < l; i++) {
 			Place p;
 			try {
@@ -156,6 +155,9 @@ public class Place {
 	public void setAttributes(JSONObject attributesObject) {
 		attributes = new HashMap<String, String>();
 
+		if (attributesObject == null)
+			return;
+		
 		Iterator<?> i = attributesObject.keys();
 		while (i.hasNext()) {
 			String key = (String) i.next();

@@ -1,4 +1,4 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/place_view_scroll_view"
     android:layout_width="match_parent"
@@ -7,85 +7,116 @@
     android:orientation="vertical"
     tools:context="com.formichelli.vineyard.MainFragment$PlaceholderFragment" >
 
-    <ImageView
-        android:id="@+id/place_view_photo"
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:background="@color/wine_light"
-        android:contentDescription="@string/place_view_photo" />
-
     <RelativeLayout
-        android:id="@+id/place_view_issues"
-        style="@style/PlaceViewButton"
-        android:layout_width="120dp"
-        android:layout_alignParentRight="true"
-        android:layout_marginTop="20dp"
-        android:layout_alignParentTop="true" >
+            android:id="@+id/place_view_header"
+            android:layout_width="match_parent"
+            android:layout_height="200dp">
 
-        <TextView
-            android:id="@+id/place_view_issues_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:text="@string/issues_label"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
+        <ImageView
+            android:id="@+id/place_view_photo"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/wine_light"
+            android:contentDescription="@string/place_view_photo" />
 
-        <TextView
-            android:id="@+id/place_view_issues_count"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <RelativeLayout
+            android:id="@+id/place_view_issues"
+            style="@style/PlaceViewButton"
+            android:layout_width="120dp"
             android:layout_alignParentRight="true"
-            android:text=""
-            android:textAppearance="?android:attr/textAppearanceSmall" />
-    </RelativeLayout>
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="20dp" >
 
-    <RelativeLayout
-        android:id="@+id/place_view_tasks"
-        style="@style/PlaceViewButton"
-        android:layout_width="120dp"
-        android:layout_alignParentRight="true"
-        android:layout_below="@id/place_view_issues" >
+            <TextView
+                android:id="@+id/place_view_issues_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:text="@string/issues_label"
+                android:textAppearance="?android:attr/textAppearanceSmall" />
 
-        <TextView
-            android:id="@+id/place_view_tasks_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:text="@string/tasks_label"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
+            <TextView
+                android:id="@+id/place_view_issues_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:text=""
+                android:textAppearance="?android:attr/textAppearanceSmall" />
+        </RelativeLayout>
 
-        <TextView
-            android:id="@+id/place_view_tasks_count"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <RelativeLayout
+            android:id="@+id/place_view_tasks"
+            style="@style/PlaceViewButton"
+            android:layout_width="120dp"
             android:layout_alignParentRight="true"
-            android:text=""
-            android:textAppearance="?android:attr/textAppearanceSmall" />
+            android:layout_below="@id/place_view_issues" >
+
+            <TextView
+                android:id="@+id/place_view_tasks_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:text="@string/tasks_label"
+                android:textAppearance="?android:attr/textAppearanceSmall" />
+
+            <TextView
+                android:id="@+id/place_view_tasks_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:text=""
+                android:textAppearance="?android:attr/textAppearanceSmall" />
+        </RelativeLayout>
     </RelativeLayout>
 
     <TextView
-        android:id="@+id/place_view_description"
+        android:id="@+id/place_view_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@id/place_view_photo"
         android:padding="10dp"
+        android:paddingBottom="0dp"
         android:text="" />
 
+    <!--
+         <LinearLayout
+            android:id="@+id/place_view_attributes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@id/place_view_description"
+            android:padding="10dp"
+            android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/place_view_attributes_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="@string/attributes_label" />
+    </LinearLayout> 
+
+    <LinearLayout
+            android:id="@+id/place_view_children"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@id/place_view_description"
+            android:orientation="vertical" >
+    
     <TextView
         android:id="@+id/place_view_children_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
         android:paddingLeft="10dp"
-        android:layout_below="@id/place_view_description"
         android:text="@string/children_label" />
+    -->
 
     <ListView
-        android:id="@+id/place_view_children"
+        android:id="@+id/place_view_children_list"
         android:layout_width="match_parent"
         android:layout_height="fill_parent"
-        android:layout_below="@id/place_view_children_label" >
+        android:layout_alignParentLeft="true"
+        android:layout_below="@id/place_view_text" >
     </ListView>
 
-</RelativeLayout>
+</LinearLayout>
