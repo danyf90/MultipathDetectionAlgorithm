@@ -13,6 +13,7 @@ class Place extends AbstractORM implements IResource {
 
     use TCrudRequestHandlers; // introduces handleRequestToBaseUri() and handleRequestToUriWithId()
 
+    // TODO check method!
     public function check() { return array(); }
     public static function getTableName() { return 'place'; }
     

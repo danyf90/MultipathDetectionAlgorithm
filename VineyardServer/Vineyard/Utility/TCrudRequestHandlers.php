@@ -38,7 +38,7 @@ trait TCrudRequestHandlers {
 
         switch ($method) {
 
-            case 'GET': // get a place
+            case 'GET': // get a resource
                 $resource = static::getById($resourceId);
 
                 if (isset($resource->id))
