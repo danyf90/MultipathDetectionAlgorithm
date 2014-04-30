@@ -20,7 +20,9 @@
     <string name="action_done">Fatto</string>
     <string name="action_edit">Modifica</string>
     <string name="action_send">Invia</string>
+    <string name="action_refresh">Aggiorna</string>
     <string name="action_up">Su</string>
+    <string name="action_retry">Retry</string>
     <string name="issue_title_error">Inserire il titolo</string>
     <string name="issue_title_label">Titolo: </string>
     <string name="issue_title_hint">Titolo del problema</string>
@@ -31,6 +33,7 @@
     <string name="issue_place_button">Seleziona posto</string>
     <string name="issue_priority_label">Priorità: </string>
     <string name="issue_assigned_worker_label">Operatore: </string>
+    <string name="loading_error_message">Il server non risponde, controllare la connessione</string>
     <string name="issues_label">Problemi: </string>
     <string name="tasks_label">Lavori: </string>
     <string name="attributes_label">Attributi:</string>

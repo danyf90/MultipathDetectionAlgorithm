@@ -5,8 +5,14 @@
 
     <item
         android:id="@+id/action_place_viewer_up"
-        android:title="@string/action_up"
         android:icon="@drawable/action_up"
+        android:title="@string/action_up"
         app:showAsAction="ifRoom"/>
     
+    <item
+        android:id="@+id/action_place_viewer_refresh"
+        android:icon="@android:drawable/stat_notify_sync"
+        android:title="@string/action_refresh"
+        app:showAsAction="ifRoom"/>
+
 </menu>

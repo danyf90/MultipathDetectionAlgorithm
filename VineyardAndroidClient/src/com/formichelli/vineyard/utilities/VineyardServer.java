@@ -1,21 +1,11 @@
 package com.formichelli.vineyard.utilities;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.StatusLine;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import android.os.AsyncTask;
-import android.util.Log;
 
 import com.formichelli.vineyard.entities.IssueTask;
 import com.formichelli.vineyard.entities.Place;
@@ -24,7 +14,7 @@ import com.formichelli.vineyard.entities.Task;
 import com.formichelli.vineyard.entities.Worker;
 
 public class VineyardServer {
-	private final static String placeHierarchyAPI = "/api/place/hierarchy";
+	public final static String PLACE_HIERARCHY_API = "/api/place/hierarchy";
 
 	private String url;
 	private int port;
@@ -66,7 +56,7 @@ public class VineyardServer {
 	 */
 	public Place getRootPlace() {
 		try {
-			new asyncHttpRequest().execute(url + placeHierarchyAPI,
+			new AsyncHttpRequest().execute(url + PLACE_HIERARCHY_API,
 					String.valueOf(port)).get();
 		} catch (InterruptedException | ExecutionException e1) {
 			// TODO Auto-generated catch block
@@ -87,8 +77,8 @@ public class VineyardServer {
 	 */
 	public String getRootPlaceJSON() {
 		try {
-			return new asyncHttpRequest()
-					.execute(url + placeHierarchyAPI).get();
+			return new AsyncHttpRequest()
+					.execute(url + PLACE_HIERARCHY_API).get();
 		} catch (InterruptedException | ExecutionException e) {
 			return null;
 		}
@@ -146,34 +136,5 @@ public class VineyardServer {
 	public ArrayList<SimpleTask> getTasks(Place p) {
 		ArrayList<SimpleTask> issues = new ArrayList<SimpleTask>();
 		return issues;
-	};
-
-	public static class asyncHttpRequest extends AsyncTask<String, Void, String> {
-
-		@Override
-		protected String doInBackground(String... params) {
-
-			try {
-				String requestString = params[0] + ":" + params[1] + placeHierarchyAPI;
-
-				HttpResponse response = new DefaultHttpClient().execute(new HttpGet(
-						requestString));
-				StatusLine statusLine = response.getStatusLine();
-				if (statusLine.getStatusCode() == HttpStatus.SC_OK) {
-					ByteArrayOutputStream out = new ByteArrayOutputStream();
-					response.getEntity().writeTo(out);
-					out.close();
-					return out.toString();
-				} else {
-					// Closes the connection.
-					response.getEntity().getContent().close();
-					Log.e("http error", statusLine.getReasonPhrase());
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-
-			return null;
-		}
 	};
 }

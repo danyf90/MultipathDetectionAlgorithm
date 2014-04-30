@@ -56,8 +56,6 @@ public class PlaceViewerFragment extends Fragment {
 				.getDrawable(R.drawable.white_with_red_border);
 		whiteBorder = getResources().getDrawable(
 				R.drawable.white_with_wine_border);
-
-		activity.setTitle(activity.getCurrentPlace().getName());
 		
 		issues.setOnClickListener(new OnClickListener() {
 			@Override
@@ -101,6 +99,9 @@ public class PlaceViewerFragment extends Fragment {
 		switch (item.getItemId()) {
 		case R.id.action_place_viewer_up:
 			loadPlace(activity.getCurrentPlace().getParent());
+			break;
+		case R.id.action_place_viewer_refresh:
+			activity.sendRootPlaceRequest();
 			break;
 		default:
 			return false;
@@ -172,5 +173,7 @@ public class PlaceViewerFragment extends Fragment {
 			tasks.setBackgroundDrawable(redBorder);
 		else
 			tasks.setBackgroundDrawable(whiteBorder);
+
+		activity.setTitle(p.getName());
 	}
 }

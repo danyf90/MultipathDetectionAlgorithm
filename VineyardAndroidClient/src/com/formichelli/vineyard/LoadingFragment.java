@@ -4,18 +4,25 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 
 public class LoadingFragment extends Fragment {
 	VineyardMainActivity activity;
-	
+	ViewGroup mainLayout, progressLayout, errorLayout;
+	ImageButton retry;
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		setHasOptionsMenu(true);
-		
+
 		// Inflate the layout for this fragment
-		return inflater.inflate(R.layout.fragment_loading, container, false);
+		mainLayout = (ViewGroup) inflater.inflate(R.layout.fragment_loading,
+				container, false);
+
+		return mainLayout;
 	}
 
 	@Override
@@ -23,16 +30,37 @@ public class LoadingFragment extends Fragment {
 		super.onActivityCreated(savedInstanceState);
 
 		activity = (VineyardMainActivity) getActivity();
+
+		// inflate both the progress and error layout and attach the former to
+		// the container
+		progressLayout = (ViewGroup) activity.getLayoutInflater().inflate(
+				R.layout.fragment_loading_progress, mainLayout, false);
+		errorLayout = (ViewGroup) activity.getLayoutInflater().inflate(
+				R.layout.fragment_loading_error, mainLayout, false);
+		mainLayout.addView(progressLayout);
+		
+		
+		retry = (ImageButton) errorLayout
+				.findViewById(R.id.loading_error_retry);
+		retry.setOnClickListener(retryOnClickListener);
 	}
 
 	public void setLoading() {
-		// TODO Auto-generated method stub
-		
+		mainLayout.removeAllViews();
+		mainLayout.addView(progressLayout);
 	}
 
 	public void setError() {
-		// TODO Auto-generated method stub
-		
+		mainLayout.removeAllViews();
+		mainLayout.addView(errorLayout);
 	}
 
+	OnClickListener retryOnClickListener = new OnClickListener() {
+
+		@Override
+		public void onClick(View v) {
+			setLoading();
+			activity.sendRootPlaceRequest();
+		}
+	};
 }

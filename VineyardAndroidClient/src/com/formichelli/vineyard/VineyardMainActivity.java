@@ -4,6 +4,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.formichelli.vineyard.entities.Place;
+import com.formichelli.vineyard.utilities.AsyncHttpRequest;
 import com.formichelli.vineyard.utilities.VineyardServer;
 
 import android.support.v7.app.ActionBar;
@@ -16,6 +17,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.Menu;
+import android.widget.Toast;
 import android.support.v4.widget.DrawerLayout;
 
 public class VineyardMainActivity extends ActionBarActivity implements
@@ -27,7 +29,7 @@ public class VineyardMainActivity extends ActionBarActivity implements
 	LoadingFragment loadingFragment;
 	SettingsActivity settingsActivity;
 
-	Fragment currentFragment;
+	Fragment lastFragment, currentFragment;
 	Menu menu;
 	Place currentPlace, rootPlace;
 	String rootPlaceJSON;
@@ -101,36 +103,47 @@ public class VineyardMainActivity extends ActionBarActivity implements
 
 		vineyardServer = new VineyardServer(serverURL, serverPort);
 
-		new loadingAsyncHttpRequest().execute(vineyardServer.getUrl(),
-				String.valueOf(vineyardServer.getPort()));
+		sendRootPlaceRequest();
+	}
+
+	public void sendRootPlaceRequest() {
+		new LoadingAsyncHttpRequest().execute(vineyardServer.getUrl(),
+				String.valueOf(vineyardServer.getPort()),
+				VineyardServer.PLACE_HIERARCHY_API);
 	}
 
 	@Override
 	public void onNavigationDrawerItemSelected(int position) {
-		
+		Fragment nextFragment;
+
 		// don't allow switch while loading
-		if(currentFragment == loadingFragment)
-				return;
-		
+		if (currentFragment == loadingFragment) {
+			Toast.makeText(this, "Wait server response...", Toast.LENGTH_SHORT)
+					.show();
+			return;
+		}
+
 		switch (position) {
 		case 0:
-			currentFragment = placeViewerFragment;
+			nextFragment = placeViewerFragment;
 			break;
 		case 1:
-			currentFragment = issuesFragment;
+			nextFragment = issuesFragment;
 			break;
 		case 2:
-			currentFragment = tasksFragment;
+			nextFragment = tasksFragment;
 			break;
 		case 3:
 			startActivity(new Intent(this, SettingsActivity.class));
 			return;
 		default:
-			currentFragment = loadingFragment;
-			return;
+			// after loading is completed lastFragment will be shown
+			currentFragment = placeViewerFragment;
+			nextFragment = loadingFragment;
+			break;
 		}
 
-		switchFragment(currentFragment);
+		switchFragment(nextFragment);
 	}
 
 	@Override
@@ -195,6 +208,10 @@ public class VineyardMainActivity extends ActionBarActivity implements
 	}
 
 	public void switchFragment(Fragment nextFragment) {
+		if (nextFragment == currentFragment)
+			return;
+
+		lastFragment = currentFragment;
 		currentFragment = nextFragment;
 
 		getSupportFragmentManager().beginTransaction()
@@ -213,19 +230,17 @@ public class VineyardMainActivity extends ActionBarActivity implements
 		return rootPlaceJSON;
 	}
 
-	private class loadingAsyncHttpRequest extends
-			VineyardServer.asyncHttpRequest {
+	private class LoadingAsyncHttpRequest extends AsyncHttpRequest {
 
 		@Override
 		protected void onPreExecute() {
-			loadingFragment.setLoading();
 			switchFragment(loadingFragment);
 		}
 
 		@Override
 		protected void onPostExecute(String result) {
 			if (result != null) {
-
+				// request OK, parse JSON to get rootPlace and restore previous fragment
 				try {
 					rootPlaceJSON = result;
 					rootPlace = new Place(new JSONObject(rootPlaceJSON));
@@ -234,7 +249,7 @@ public class VineyardMainActivity extends ActionBarActivity implements
 				}
 
 				setCurrentPlace(rootPlace);
-				switchFragment(placeViewerFragment);
+				switchFragment(lastFragment);
 			} else {
 				loadingFragment.setError();
 			}
