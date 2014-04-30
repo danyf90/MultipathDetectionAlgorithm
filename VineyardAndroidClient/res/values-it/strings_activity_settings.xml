@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="preference_settings_restored">Le impostazioni sono state ripristinate</string>
+    <string name="preference_settings_restore_title">Sei sicuro di voler ripristinare le impostazioni?</string>
+    <string name="preference_server_settings">Impostazioni server</string>
+    <string name="preference_server_url_label">URL del server</string>
+    <string name="preference_server_url_error">URL non valido</string>
+    <string name="preference_server_port_label">Porta del server</string>
+    <string name="preference_server_port_error">La porta deve essere compresa nell\'intervallo [1, 65535]</string>
+</resources>

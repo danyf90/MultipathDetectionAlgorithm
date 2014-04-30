@@ -118,7 +118,8 @@ public class IssueExpandableAdapter extends BaseExpandableListAdapter {
 		((TextView) childView.findViewById(R.id.issue_view_description))
 				.setText(object.getDescription());
 		((TextView) childView.findViewById(R.id.issue_view_priority_value))
-				.setText(context.getString(object.getPriority().getStringId()));
+				.setText(context.getResources().getStringArray(
+						R.array.issue_priorities)[object.getPriority().toInt()]);
 		((TextView) childView
 				.findViewById(R.id.issue_view_assigned_worker_name))
 				.setText(object.getAssignedWorker().getName());

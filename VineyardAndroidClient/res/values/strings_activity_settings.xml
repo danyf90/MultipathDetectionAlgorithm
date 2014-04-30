@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="preference_settings_restored">Settings has been restored</string>
+    <string name="preference_settings_restore_title">Are you sure you want to restore default settings?</string>
+    <string name="preference_settings_restore_confirm">Yes</string>
+    <string name="preference_settings_restore_cancel">No</string>
+    <string name="preference_server_settings">Server settings</string>
+    <string name="preference_server_url">server_url</string>
+    <string name="preference_server_url_label">Server URL</string>
+    <string name="preference_server_url_default">http://vineyard-server.no-ip.org/</string>
+    <string name="preference_server_url_error">Invalid server URL</string>
+    <string name="preference_server_port">server_port</string>
+    <string name="preference_server_port_label">Server port:</string>
+    <string name="preference_server_port_default">80</string>
+    <string name="preference_server_port_error">Server port must be in the range [1, 65535]</string>
+</resources>

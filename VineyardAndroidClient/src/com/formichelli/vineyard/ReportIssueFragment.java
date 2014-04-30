@@ -90,11 +90,11 @@ public class ReportIssueFragment extends Fragment {
 				.findViewById(R.id.report_issue_description);
 
 		activity.setTitle(getString(R.string.title_report_issue));
-		
+
 		addPhoto.setOnClickListener(dispatchTakePictureIntent);
-		
-		setSpinnerAdapter(priorities, R.array.priorities);
-		
+
+		setSpinnerAdapter(priorities, R.array.issue_priorities);
+
 		placeButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {

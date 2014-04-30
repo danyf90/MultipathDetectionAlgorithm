@@ -1,65 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Vigneto</string>
-    <string name="place_picker_name">Seleziona Posto</string>
+    <string name="app_name">Vineyard</string>
     <string name="title_section_place_viewer">Luoghi</string>
     <string name="title_section_issues">Problemi</string>
     <string name="title_section_tasks">Lavori</string>
     <string name="title_section_settings">Impostazioni</string>
     <string name="title_report_issue">Segnala un problema</string>
-    <string name="title_place_picker">Scegli un luogo</string>
-    <string name="navigation_drawer_open">Apri il navigation drawer</string>
-    <string name="navigation_drawer_close">Chiudi il navigation drawer</string>
-    <string name="action_report_issue">Segnala</string>
-    <string name="action_settings_restore">Ripristina predefiniti</string>
+    <string name="title_place_picker">Scelta Luogo</string>
     <string name="action_add_photo">Aggiungi foto</string>
-    <string name="action_delete_selected_photos">Cancella foto selezionate</string>
     <string name="action_cancel">Annulla</string>
     <string name="action_delete">Cancella</string>
+    <string name="action_delete_selected_photos">Cancella foto selezionate</string>
     <string name="action_done">Fatto</string>
     <string name="action_edit">Modifica</string>
-    <string name="action_send">Invia</string>
     <string name="action_refresh">Aggiorna</string>
+    <string name="action_retry">Riprova</string>
+    <string name="action_report_issue">Segnala</string>
+    <string name="action_send">Invia</string>
+    <string name="action_settings_restore">Ripristina predefiniti</string>
     <string name="action_up">Su</string>
-    <string name="action_retry">Retry</string>
-    <string name="issue_title_error">Inserire il titolo</string>
-    <string name="issue_title_label">Titolo: </string>
-    <string name="issue_title_hint">Titolo del problema</string>
-    <string name="issue_description_label">Descrizione: </string>
-    <string name="issue_description_hint">Dettagli del problema</string>
-    <string name="issue_photos_label">Foto</string>
-    <string name="issue_place_label">Luogo: </string>
-    <string name="issue_place_button">Seleziona posto</string>
-    <string name="issue_priority_label">Priorità: </string>
-    <string name="issue_assigned_worker_label">Operatore: </string>
-    <string name="loading_error_message">Il server non risponde, controllare la connessione</string>
+    <string name="loading_error_message">Il server non risponde, controlla la connessione internet!</string>
     <string name="issues_label">Problemi: </string>
     <string name="tasks_label">Lavori: </string>
     <string name="attributes_label">Attributi:</string>
     <string name="children_label">Figli: </string>
-    <string name="dialog_confirm_exit">Sei sicuro di voler uscire?</string>
-    <string name="dialog_confirm_exit_confirm">Sì</string>
-    <string name="dialog_confirm_exit_cancel">No</string>
-    <string name="status_new">Nuovo</string>
-    <string name="status_assigned">Assegnato</string>
-    <string name="status_done">Completato</string>
-    <string name="priority_low">Bassa</string>
-    <string name="priority_medium">Media</string>
-    <string name="priority_high">Alta</string>
-    <string name="preference_settings_restore_title">Sei sicuro di voler ripristinare le impostazioni iniziale??</string>
-    <string name="preference_settings_restore_confirm">Sì</string>
-    <string name="preference_settings_restore_cancel">No</string>
-    <string name="preference_settings_restored">Le impostazioni sono state ripristinate</string>
-    <string name="preference_server_settings">Configurazione server</string>
-    <string name="preference_server_url_label">URL del server</string>
-    <string name="preference_server_port_label">Porta del server</string>
-
-    <string-array name="priorities">
-        <item>--</item>
-        <item>Bassa</item>
-        <item>Media</item>
-        <item>Alta</item>
-    </string-array>
+    <string name="dialog_exit_message">Sei sicuro di voler uscire?</string>
+    <string name="dialog_confirm">Sì</string>
+    <string name="dialog_cancel">No</string>
+    <string name="place_view_photo">Foto del luogo</string>
 
 </resources>

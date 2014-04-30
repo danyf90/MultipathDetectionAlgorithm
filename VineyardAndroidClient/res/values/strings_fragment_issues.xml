@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="issue_title_error">Title is mandatory</string>
+    <string name="issue_title_label">Title: </string>
+    <string name="issue_title_hint">Issue title</string>
+    <string name="issue_description_label">Description: </string>
+    <string name="issue_description_hint">Issue details</string>
+    <string name="issue_photos_label">Photos</string>
+    <string name="issue_place_label">Place</string>
+    <string name="issue_place_button">Select place</string>
+    <string name="issue_priority_label">Priority: </string>
+    <string name="issue_assigned_worker_label">Worker: </string>
+
+    <string-array name="issue_priorities">
+        <item>--</item>
+        <item>Low</item>
+        <item>Medium</item>
+        <item>High</item>
+    </string-array>
+
+</resources>

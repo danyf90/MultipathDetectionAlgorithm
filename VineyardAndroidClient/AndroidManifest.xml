@@ -32,11 +32,11 @@
         </activity>
         <activity
             android:name="com.formichelli.vineyard.PlacePickerActivity"
-            android:label="@string/place_picker_name" >
+            android:label="@string/title_place_picker" >
         </activity>
         <activity
             android:name="com.formichelli.vineyard.SettingsActivity"
-            android:label="@string/settings_name"
+            android:label="@string/title_section_settings"
             android:parentActivityName="com.formichelli.vineyard.VineyardMainActivity" >
         </activity>
     </application>

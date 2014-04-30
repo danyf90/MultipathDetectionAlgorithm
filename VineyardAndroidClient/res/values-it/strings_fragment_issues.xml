@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="issue_title_error">Il titolo è obbligatorio</string>
+    <string name="issue_title_label">Titolo: </string>
+    <string name="issue_title_hint">Descrizione breve</string>
+    <string name="issue_description_label">Descrizione: </string>
+    <string name="issue_description_hint">Descrizione dettagliata</string>
+    <string name="issue_photos_label">Foto</string>
+    <string name="issue_place_label">Luogo</string>
+    <string name="issue_place_button">Scegli luogo</string>
+    <string name="issue_priority_label">Priorità: </string>
+    <string name="issue_assigned_worker_label">Operatore: </string>
+
+    <string-array name="issue_priorities">
+        <item>--</item>
+        <item>Bassa</item>
+        <item>Media</item>
+        <item>Alta</item>
+    </string-array>
+
+</resources>

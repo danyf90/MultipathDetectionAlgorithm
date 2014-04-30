@@ -167,14 +167,14 @@ public class VineyardMainActivity extends ActionBarActivity implements
 
 	private void askExit() {
 		new AlertDialog.Builder(this)
-				.setMessage(R.string.dialog_confirm_exit)
-				.setPositiveButton(R.string.dialog_confirm_exit_confirm,
+				.setMessage(R.string.dialog_exit_message)
+				.setPositiveButton(R.string.dialog_confirm,
 						new DialogInterface.OnClickListener() {
 							public void onClick(DialogInterface dialog, int id) {
 								finish();
 							}
 						})
-				.setNegativeButton(R.string.dialog_confirm_exit_cancel,
+				.setNegativeButton(R.string.dialog_cancel,
 						new DialogInterface.OnClickListener() {
 							public void onClick(DialogInterface dialog, int id) {
 								return;
