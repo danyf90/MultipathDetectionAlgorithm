@@ -3,7 +3,7 @@
 
     <string name="app_name">Vigneto</string>
     <string name="place_picker_name">Seleziona Posto</string>
-    <string name="title_section_main">Riepilogo</string>
+    <string name="title_section_place_viewer">Luoghi</string>
     <string name="title_section_issues">Problemi</string>
     <string name="title_section_tasks">Lavori</string>
     <string name="title_section_settings">Impostazioni</string>

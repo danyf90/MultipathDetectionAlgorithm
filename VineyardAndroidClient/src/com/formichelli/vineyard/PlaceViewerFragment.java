@@ -1,11 +1,11 @@
 package com.formichelli.vineyard;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.formichelli.vineyard.entities.Place;
 import com.formichelli.vineyard.utilities.PlaceAdapter;
 
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -23,8 +23,8 @@ import android.widget.TextView;
 
 public class PlaceViewerFragment extends Fragment {
 	VineyardMainActivity activity;
-	TextView textView, issuesCount, tasksCount;
-	ViewGroup issues, tasks;
+	TextView description, issuesCount, tasksCount;
+	ViewGroup attributesLabels, attributesValues, issues, tasks;
 	PlaceAdapter placeAdapter;
 	ListView childrenList;
 	MenuItem upItem;
@@ -44,33 +44,39 @@ public class PlaceViewerFragment extends Fragment {
 		super.onActivityCreated(savedInstanceState);
 
 		activity = (VineyardMainActivity) getActivity();
-		textView = (TextView) activity.findViewById(R.id.place_view_text);
 		issues = (ViewGroup) activity.findViewById(R.id.place_view_issues);
 		issuesCount = (TextView) activity
 				.findViewById(R.id.place_view_issues_count);
 		tasks = (ViewGroup) activity.findViewById(R.id.place_view_tasks);
 		tasksCount = (TextView) activity
 				.findViewById(R.id.place_view_tasks_count);
-		childrenList = (ListView) activity.findViewById(R.id.place_view_children_list);
+		description = (TextView) activity
+				.findViewById(R.id.place_view_description);
+		attributesLabels = (ViewGroup) activity
+				.findViewById(R.id.place_view_attributes_labels);
+		attributesValues = (ViewGroup) activity
+				.findViewById(R.id.place_view_attributes_values);
+		childrenList = (ListView) activity
+				.findViewById(R.id.place_view_children_list);
 		redBorder = getResources()
 				.getDrawable(R.drawable.white_with_red_border);
 		whiteBorder = getResources().getDrawable(
 				R.drawable.white_with_wine_border);
-		
+
 		issues.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				activity.switchFragment(activity.issuesFragment);
 			}
 		});
-		
+
 		tasks.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				activity.switchFragment(activity.tasksFragment);
 			}
 		});
-		
+
 		if (upItem != null)
 			init();
 	}
@@ -83,16 +89,17 @@ public class PlaceViewerFragment extends Fragment {
 
 		if (activity != null)
 			init();
-		
+
 		super.onCreateOptionsMenu(menu, inflater);
 	}
 
 	// This function must be called after both onActivityCreated and
-	// onCreateOptionMenu, their calling order is different in different version of android
+	// onCreateOptionMenu, their calling order is different in different version
+	// of android
 	private void init() {
 		loadPlace(activity.getCurrentPlace());
 	}
-	
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 
@@ -113,7 +120,7 @@ public class PlaceViewerFragment extends Fragment {
 	// setBackgroundDrawable needed for compatibility with API 8
 	@SuppressWarnings("deprecation")
 	public void loadPlace(Place p) {
-		int i, t;
+		int c;
 
 		activity.setCurrentPlace(p);
 
@@ -122,24 +129,44 @@ public class PlaceViewerFragment extends Fragment {
 		else
 			upItem.setVisible(true);
 
-		String text = p.getDescription();
+		// set photo TODO
 		
-		HashMap<String,String> attributes =p.getAttributes(); 
-		if (attributes.size() != 0) {
-			text += "\n\n" + getString(R.string.attributes_label) + "\n\n";
-			
-			for (String key: p.getAttributes().keySet())
-				text += key + ":   " + attributes.get(key) + "\n";
-		}
-		
-		ArrayList<Place> children = p.getChildren();
-		
-		if (children.size() != 0){
-			text += "\n\n" + getString(R.string.children_label);
-		}
-		
-		this.textView.setText(text);
+		// set issues count
+		c = activity.getServer().getIssuesCount(p);
+		issuesCount.setText(String.valueOf(c));
+		if (c != 0)
+			issues.setBackgroundDrawable(redBorder);
+		else
+			issues.setBackgroundDrawable(whiteBorder);
 
+		// set tasks count
+		c = activity.getServer().getTasksCount(p);
+		tasksCount.setText(String.valueOf(c));
+		if (c != 0)
+			tasks.setBackgroundDrawable(redBorder);
+		else
+			tasks.setBackgroundDrawable(whiteBorder);
+
+		// set description
+		description.setText(p.getDescription());
+
+		// set attributes
+		attributesLabels.removeAllViews();
+		attributesValues.removeAllViews();
+		HashMap<String, String> attributes = p.getAttributes();
+		if (attributes.size() != 0)
+			for (String key : p.getAttributes().keySet()) {
+				TextView t = new TextView(activity);
+				t.setTypeface(null, Typeface.BOLD_ITALIC);
+				t.setText(key + ":");
+				attributesLabels.addView(t);
+
+				t = new TextView(activity);
+				t.setText(attributes.get(key));
+				attributesValues.addView(t);
+			}
+
+		// set children
 		if (placeAdapter != null) {
 			placeAdapter.replaceItems(p.getChildren());
 		} else {
@@ -160,20 +187,5 @@ public class PlaceViewerFragment extends Fragment {
 				}
 			});
 
-		i = activity.getServer().getIssuesCount(p);
-		issuesCount.setText(String.valueOf(i));
-		if (i != 0)
-			issues.setBackgroundDrawable(redBorder);
-		else
-			issues.setBackgroundDrawable(whiteBorder);
-
-		t = activity.getServer().getTasksCount(p);
-		tasksCount.setText(String.valueOf(t));
-		if (t != 0)
-			tasks.setBackgroundDrawable(redBorder);
-		else
-			tasks.setBackgroundDrawable(whiteBorder);
-
-		activity.setTitle(p.getName());
 	}
 }

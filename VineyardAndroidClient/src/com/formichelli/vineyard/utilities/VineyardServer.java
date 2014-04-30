@@ -1,7 +1,6 @@
 package com.formichelli.vineyard.utilities;
 
 import java.util.ArrayList;
-import java.util.Random;
 import java.util.concurrent.ExecutionException;
 
 import org.json.JSONException;
@@ -18,7 +17,7 @@ public class VineyardServer {
 
 	private String url;
 	private int port;
-	
+
 	public VineyardServer(String serverUrl) {
 		setUrl(serverUrl);
 		setPort(80);
@@ -29,14 +28,14 @@ public class VineyardServer {
 		setPort(port);
 	}
 
-	public String getUrl(){
+	public String getUrl() {
 		return url;
 	}
 
 	public void setUrl(String url) {
 		// serverUrl must not end with '/'
 		if (url.endsWith("/"))
-			this.url = url.substring(0, url .length()-1);
+			this.url = url.substring(0, url.length() - 1);
 		else
 			this.url = url;
 	}
@@ -48,7 +47,7 @@ public class VineyardServer {
 	public void setPort(int port) {
 		this.port = port;
 	}
-	
+
 	/**
 	 * Obtain the entire tree of the places
 	 * 
@@ -77,8 +76,8 @@ public class VineyardServer {
 	 */
 	public String getRootPlaceJSON() {
 		try {
-			return new AsyncHttpRequest()
-					.execute(url + PLACE_HIERARCHY_API).get();
+			return new AsyncHttpRequest().execute(url + PLACE_HIERARCHY_API)
+					.get();
 		} catch (InterruptedException | ExecutionException e) {
 			return null;
 		}
@@ -90,12 +89,12 @@ public class VineyardServer {
 
 	public int getIssuesCount(Place p) {
 		// TODO
-		return new Random().nextInt(10);
+		return p.getId() % 10 + p.getId() % 7;
 	};
 
 	public int getTasksCount(Place p) {
 		// TODO
-		return new Random().nextInt(10);
+		return p.getId() % 10 + p.getId() % 5;
 	};
 
 	/**

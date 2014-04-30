@@ -4,7 +4,7 @@
     <string name="app_name">Vineyard</string>
     <string name="place_picker_name">Place Picker</string>
     <string name="settings_name">Settings</string>
-    <string name="title_section_main">Main</string>
+    <string name="title_section_place_viewer">Places</string>
     <string name="title_section_issues">Issue Tracker</string>
     <string name="title_section_tasks">Tasks</string>
     <string name="title_section_settings">Settings</string>
