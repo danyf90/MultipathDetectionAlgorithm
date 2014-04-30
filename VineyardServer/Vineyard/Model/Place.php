@@ -60,51 +60,70 @@ class Place extends AbstractORM implements IResource {
                 return static::handleRequestsToBaseUri($method, $requestParameters);
             break;
 
-            case 1: // api/place/<id> or api/place/hierarchy
-                if ($requestParameters[0] == 'hierarchy') {
-                    if ($method == 'GET')
-                        return static::getHierarchy();
-                    http_response_code(501); // Not Implemented
-                    return;
+            case 1: // api/place/<id> or api/place/hierarchy or api/place/stats
+                
+                switch ($requestParameters[0]) {
+                    case "stats":
+                        return static::handleStatsRequest($method);
+                    break;
+                    
+                    case "hierarchy":
+                        if ($method == 'GET')
+                            return static::getHierarchy();
+                        http_response_code(501); // Not Implemented
+                        return;   
+                    break;
+                    
+                    default: // we hope is <id>
+                        return static::handleRequestsToUriWithId($method, $requestParameters);
                 }
-            
-                return static::handleRequestsToUriWithId($method, $requestParameters);
             break;
 
             case 2: // api/place/<id>/attribute
-                if ($requestParameters[1] != "attribute") {
-                    http_response_code(400); // Bad Request
-                    return;
-                }
-
+            
                 $id = array_shift($requestParameters);
-
-                switch ($method) {
-                    // the only one implemented
-                    case "POST":
-                        return static::insertAttribute($id);
+            
+                switch($requestParameters[1]) {
+                    case "attribute":
+                        return static::handleAttributeRequest($method, $id);
                     break;
                     
-                    case "PUT":
-                        return static::updateAttribute($id);
-                    break;
-
-                    case "DELETE":
-                        return static::deleteAttribute($id);
-                    break;
-                    
-                    // case "GET": not implemented, all attributes are already returned with a place resource
                     default:
-                        http_response_code(501); // Not Implemented
+                        http_response_code(400); // Bad Request
                         return;
                 }
-
             break;
 
             default:
                 http_response_code(501); // Not Implemented
                 return;
 
+        }
+    }
+    
+    /**************************
+     * ATTRIBUTE HANDLING
+     **************************/
+    
+    public static function handleAttributeRequest($method, $id) {
+        switch ($method) {
+            // the only one implemented
+            case "POST":
+                return static::insertAttribute($id);
+            break;
+
+            case "PUT":
+                return static::updateAttribute($id);
+            break;
+
+            case "DELETE":
+                return static::deleteAttribute($id);
+            break;
+
+            // case "GET": not implemented, all attributes are already returned with a place resource
+            default:
+                http_response_code(501); // Not Implemented
+                return;
         }
     }
 
@@ -173,7 +192,7 @@ class Place extends AbstractORM implements IResource {
             return;
         }
         
-         try {
+        try {
             $sql = $pdo->prepare("DELETE FROM `place_attribute` WHERE `place` = ? AND `key` = ?");
             $sql->execute(array($id, $_DELETE['key']));
             if ($sql->rowCount() == 1)
@@ -188,6 +207,57 @@ class Place extends AbstractORM implements IResource {
             }
         }
     }
+    
+     /**************************
+     * STATS HANDLING
+     **************************/
+    
+    public static function handleStatsRequest($method) {
+        if ($method != "GET") {
+            http_response_code(501); // Not Implemented
+            return;
+        }
+        
+        $results = array();
+        
+        $pdo = DB::getConnection();
+        $tQuery = "SELECT `place`, COUNT(*) AS `tasks`
+            FROM `task` 
+            WHERE `end_time` IS NULL AND
+            `issuer` IS NULL
+            GROUP BY `place`";
+        
+       $iQuery = "SELECT `place`, COUNT(*) AS `issues`
+            FROM `task` 
+            WHERE `end_time` IS NULL AND
+            `issuer` IS NOT NULL
+            GROUP BY `place`";
+        
+        try {
+            
+            $results = $pdo->query($tQuery)->fetchAll(PDO::FETCH_ASSOC);
+            
+            while ($pdo->query($tQuery) as $row)
+                $results[$row['place']] = $row;
+                
+            while ($pdo->query($iQuery) as $row)
+                $results[$row['place']] = array_merge($results[$row['place']], $row);
+
+            return array_values($results);
+            
+        }  catch (PDOException $e) {
+            // check which SQL error occured
+            switch ($e->getCode()) {
+                default:
+                    http_response_code(400); // Bad Request
+            }
+        }
+            
+    }
+    
+     /**************************
+     * HIERARCHY HANDLING
+     **************************/
     
     public function loadChildren() {
         $pdo = DB::getConnection();
@@ -223,7 +293,7 @@ class Place extends AbstractORM implements IResource {
 
             $hierarchy = json_encode($place);
             
-        }, "WHERE `parent` IS NULL");
+        }, "`parent` IS NULL");
         
         return $hierarchy;
     }

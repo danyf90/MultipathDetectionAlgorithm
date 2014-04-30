@@ -1,4 +1,5 @@
 ### WORKER
+------------------------------------------
 
 # Get worker(s)
 GET http://vineyard-server.org/worker/
@@ -10,6 +11,7 @@ PUT/DELETE http://vineyard-server.org/worker/87
 PUT/DELETE http://vineyard-server.org/worker/pinco.pallo
 
 ### GROUPS
+------------------------------------------
 
 # get group(s)
 GET http://vineyard-server.org/group/
@@ -22,8 +24,8 @@ PUT/DELETE http://vineyard-server.org/group/<id>
 # add/remove a worker from a group
 PUT/DELETE http://vineyard-server.org/group/<gid>/worker/<wid>
 
-### ISSUES
-
+### TASK/ISSUE
+-------------------------------------------
 # Get issue(s)
 GET http://vineyard-server.org/issue
 GET http://vineyard-server.org/issue/<id>
@@ -45,6 +47,7 @@ POST http://vineyard-server.org/issue/<id>/photo
 GET http://vineyard-server.org/issue/<id>/photo
 
 ### PLACES
+-------------------------------------------
 
 # Get place(s) (already in hierarchy?, already with attributes?)
 GET http://vineyard-server.org/place
@@ -66,10 +69,11 @@ DELETE http://vineyard-server.org/place/<id>/attribute/			<key in body, url enco
 # Get issues of place <id>
 GET http://vineyard-server.org/place/<id>/issues
 
+# Get statistics (issue/task count) of all places
+GET http://vineyard-server.org/place/stats
+
 # Get hierarchy
 GET http://vineyard-server.org/place/hierarchy
-
-
 
 http://vineyard-server.org/
 
