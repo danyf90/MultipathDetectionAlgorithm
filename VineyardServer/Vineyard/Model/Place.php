@@ -235,15 +235,23 @@ class Place extends AbstractORM implements IResource {
         
         try {
             
-            $results = $pdo->query($tQuery)->fetchAll(PDO::FETCH_ASSOC);
+            $results = array();
             
-            while ($pdo->query($tQuery) as $row)
+            $tSql = $pdo->query($tQuery);
+            
+            while ($row = $tSql->fetch(PDO::FETCH_ASSOC))
                 $results[$row['place']] = $row;
-                
-            while ($pdo->query($iQuery) as $row)
-                $results[$row['place']] = array_merge($results[$row['place']], $row);
+            
+            $iSql = $pdo->query($iQuery);
+            
+            while ($row = $iSql->fetch(PDO::FETCH_ASSOC)) {
+                if (isset($results[$row['place']]))
+                    $newResult = array_merge($results[$row['place']], $row);
+                else $newResult = $row;
+                $results[$row['place']] = $newResult; 
+            }
 
-            return array_values($results);
+            return json_encode(array_values($results));
             
         }  catch (PDOException $e) {
             // check which SQL error occured

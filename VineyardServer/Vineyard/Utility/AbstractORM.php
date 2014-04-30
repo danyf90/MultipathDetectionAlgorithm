@@ -34,7 +34,7 @@ abstract class AbstractORM implements JsonSerializable {
      **************************************/
     
 	protected $_data = array();
-	private $touchedFields = array();
+	protected $touchedFields = array();
 	
 	public function __get($key) {
 		if (array_key_exists($key, $this->_data))
