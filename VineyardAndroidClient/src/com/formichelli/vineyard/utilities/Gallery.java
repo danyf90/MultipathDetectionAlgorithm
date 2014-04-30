@@ -78,7 +78,7 @@ public class Gallery {
 
 		v = new ImageView(activity);
 		v.setImageBitmap(b);
-		v.setPadding(0, padding, 0, padding);
+		v.setPadding(padding, padding, padding, padding);
 
 		if (deletable)
 			v.setOnClickListener(new OnClickListener() {

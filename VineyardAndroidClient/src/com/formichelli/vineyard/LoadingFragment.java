@@ -25,4 +25,14 @@ public class LoadingFragment extends Fragment {
 		activity = (VineyardMainActivity) getActivity();
 	}
 
+	public void setLoading() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void setError() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

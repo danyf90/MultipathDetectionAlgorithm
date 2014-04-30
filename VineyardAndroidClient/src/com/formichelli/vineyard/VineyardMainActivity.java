@@ -107,6 +107,11 @@ public class VineyardMainActivity extends ActionBarActivity implements
 
 	@Override
 	public void onNavigationDrawerItemSelected(int position) {
+		
+		// don't allow switch while loading
+		if(currentFragment == loadingFragment)
+				return;
+		
 		switch (position) {
 		case 0:
 			currentFragment = placeViewerFragment;
@@ -213,7 +218,8 @@ public class VineyardMainActivity extends ActionBarActivity implements
 
 		@Override
 		protected void onPreExecute() {
-			switchFragment(new LoadingFragment());
+			loadingFragment.setLoading();
+			switchFragment(loadingFragment);
 		}
 
 		@Override
@@ -230,7 +236,7 @@ public class VineyardMainActivity extends ActionBarActivity implements
 				setCurrentPlace(rootPlace);
 				switchFragment(placeViewerFragment);
 			} else {
-				// TODO
+				loadingFragment.setError();
 			}
 		}
 	};
