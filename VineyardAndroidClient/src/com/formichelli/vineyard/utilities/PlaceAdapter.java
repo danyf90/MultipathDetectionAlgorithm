@@ -56,7 +56,7 @@ public class PlaceAdapter extends ArrayAdapter<Place> {
 
 		t = (TextView) item.findViewById(R.id.place_list_item_stats);
 
-		t.setText("(" + p.getIssuesCount() + ", " + p.getTasksCount() + ")");
+		t.setText("(" + p.getChildrenIssuesCount() + ", " + p.getChildrenTasksCount() + ")");
 
 		return item;
 	}
