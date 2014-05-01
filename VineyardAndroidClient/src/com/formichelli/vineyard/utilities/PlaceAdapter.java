@@ -61,13 +61,16 @@ public class PlaceAdapter extends ArrayAdapter<Place> {
 		return item;
 	}
 
+	@Override
+	public int getCount() {
+		return objects.size();
+	}
 	/**
 	 * Replace all items of the ListView
 	 * @param objects new objects of the ListView
 	 */
 	public void replaceItems(ArrayList<Place> objects) {
-		this.objects.clear();
-		this.objects.addAll(objects);
+		this.objects = objects;
 		notifyDataSetChanged();
 	}
 }

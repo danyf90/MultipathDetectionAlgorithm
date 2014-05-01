@@ -1,15 +1,12 @@
 package com.formichelli.vineyard;
 
 import java.util.ArrayList;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import com.formichelli.vineyard.entities.Place;
 import com.formichelli.vineyard.utilities.AsyncHttpRequests;
 import com.formichelli.vineyard.utilities.VineyardServer;
-
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v4.app.Fragment;
@@ -19,7 +16,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.util.Pair;
 import android.util.SparseArray;
 import android.view.Menu;
@@ -28,6 +24,10 @@ import android.support.v4.widget.DrawerLayout;
 
 public class VineyardMainActivity extends ActionBarActivity implements
 		NavigationDrawerFragment.NavigationDrawerCallbacks {
+	public final static String PLACES_HIERARCHY = "places";
+	public final static String PLACES_STATS = "stats";
+	public final static String PLACES_ISSUES = "places";
+	public final static String PLACES_TASKS = "places";
 
 	public PlaceViewerFragment placeViewerFragment;
 	IssuesFragment issuesFragment;
@@ -38,12 +38,13 @@ public class VineyardMainActivity extends ActionBarActivity implements
 	Fragment lastFragment, currentFragment;
 	Menu menu;
 	Place currentPlace, rootPlace;
-	String rootPlaceJSON, placesStatsJSON;
+	String placesStatsJSON;
 	String serverURL = "http://vineyard-server.no-ip.org/";
 	int serverPort;
 	ActionBar actionBar;
 	VineyardServer vineyardServer;
 	SharedPreferences sp;
+	Cache cache;
 
 	/**
 	 * Fragment managing the behaviors, interactions and presentation of the
@@ -73,6 +74,7 @@ public class VineyardMainActivity extends ActionBarActivity implements
 		actionBar = getSupportActionBar();
 
 		sp = PreferenceManager.getDefaultSharedPreferences(this);
+		cache = new Cache(sp);
 
 		serverInit();
 	}
@@ -205,6 +207,10 @@ public class VineyardMainActivity extends ActionBarActivity implements
 	public Place getCurrentPlace() {
 		return currentPlace;
 	}
+	
+	public Cache getCache() {
+		return cache;
+	}
 
 	public void setCurrentPlace(Place place) {
 		if (place == null)
@@ -237,10 +243,6 @@ public class VineyardMainActivity extends ActionBarActivity implements
 		return vineyardServer;
 	}
 
-	public String getRootPlaceJSON() {
-		return rootPlaceJSON;
-	}
-
 	private class RootPlaceAsyncHttpRequest extends AsyncHttpRequests {
 
 		@Override
@@ -255,7 +257,8 @@ public class VineyardMainActivity extends ActionBarActivity implements
 				// request OK, parse JSON to get rootPlace and show previous
 				// fragment
 				try {
-					rootPlaceJSON = result.get(0);
+					final String rootPlaceJSON = result.get(0);
+					cache.setRootPlaceJSON(rootPlaceJSON);
 					rootPlace = new Place(new JSONObject(rootPlaceJSON));
 
 					setStats(rootPlace, getStats(result.get(1)));
@@ -263,11 +266,22 @@ public class VineyardMainActivity extends ActionBarActivity implements
 					finish();
 				}
 
-				setCurrentPlace(rootPlace);
-				switchFragment(lastFragment);
 			} else {
-				loadingFragment.setError();
+				try {
+					rootPlace = new Place(new JSONObject(cache.getRootPlaceJSON()));
+					setStats(rootPlace, getStats(cache.getPlacesStatsJSON()));
+				} catch (JSONException e) {
+					loadingFragment.setError();
+					return;
+				}
+
+				Toast.makeText(VineyardMainActivity.this,
+						getString(R.string.cache_data_used), Toast.LENGTH_SHORT)
+						.show();
 			}
+
+			setCurrentPlace(rootPlace);
+			switchFragment(lastFragment);
 		}
 
 		private void setStats(Place place,
@@ -275,18 +289,15 @@ public class VineyardMainActivity extends ActionBarActivity implements
 			final int placeId = place.getId();
 
 			if (stats.get(placeId) != null) {
-
-				Log.e("STATS", placeId + ": " + stats.get(placeId).first + ", " + stats.get(placeId).second);
-				
 				place.setIssuesCount(stats.get(placeId).first);
 				place.setTasksCount(stats.get(placeId).second);
 			} else {
 				place.setIssuesCount(0);
 				place.setTasksCount(0);
 			}
-			
-			for (Place child: place.getChildren())
-				setStats(child,stats);
+
+			for (Place child : place.getChildren())
+				setStats(child, stats);
 		}
 
 		private SparseArray<Pair<Integer, Integer>> getStats(String placesStats) {
@@ -309,7 +320,7 @@ public class VineyardMainActivity extends ActionBarActivity implements
 				try {
 					placeStats = placesStatsArray.getJSONObject(i);
 					place = placeStats.getInt(PLACE);
-				} catch (JSONException e1) {
+				} catch (JSONException e) {
 					break;
 				}
 
@@ -323,12 +334,55 @@ public class VineyardMainActivity extends ActionBarActivity implements
 				} catch (JSONException e) {
 					tasks = 0;
 				}
-				
+
 				stats.put(place, new Pair<Integer, Integer>(issues, tasks));
 			}
+
+			cache.setPlacesStatsJSON(placesStats);
 
 			return stats;
 
 		}
 	};
+
+	class Cache {
+		SharedPreferences sp;
+
+		Cache(SharedPreferences sp) {
+			this.sp = sp;
+		}
+
+		public void setRootPlaceJSON(String rootPlaceJSON) {
+			sp.edit().putString(PLACES_HIERARCHY, rootPlaceJSON).apply();
+		}
+
+		public String getRootPlaceJSON() {
+			return sp.getString(PLACES_HIERARCHY, null);
+		}
+
+		public void setPlacesStatsJSON(String placesStatsJSON) {
+			sp.edit().putString(PLACES_STATS, placesStatsJSON).apply();
+		}
+
+		public String getPlacesStatsJSON() {
+			return sp.getString(PLACES_STATS, null);
+		}
+
+		public void setPlacesIssuesJSON(String placesIssuesJSON) {
+			sp.edit().putString(PLACES_ISSUES, placesIssuesJSON).apply();
+		}
+
+		public String getPlacesIssuesJSON() {
+			return sp.getString(PLACES_ISSUES, null);
+		}
+
+		public void setPlacesTasksJSON(String placesTasksJSON) {
+			sp.edit().putString(PLACES_TASKS, placesTasksJSON).apply();
+		}
+
+		public String getPlacesTasksJSON() {
+			return sp.getString(PLACES_TASKS, null);
+		}
+
+	}
 }

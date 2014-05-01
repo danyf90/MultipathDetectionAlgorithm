@@ -24,6 +24,8 @@ public class Place {
 	private Location location;
 	private Place parent;
 	private ArrayList<Place> children;
+	private ArrayList<IssueTask> issues;
+	private ArrayList<SimpleTask> tasks;
 	private HashMap<String, String> attributes;
 	private int issuesCount;
 	private int tasksCount;
@@ -35,7 +37,9 @@ public class Place {
 
 	public Place(int id, String name, String description, Location location,
 			Place parent, ArrayList<Place> children,
-			HashMap<String, String> attributes, int issuesCount, int tasksCount) {
+			HashMap<String, String> attributes, int issuesCount,
+			int tasksCount, ArrayList<IssueTask> issues,
+			ArrayList<SimpleTask> tasks) {
 		setId(id);
 		setName(name);
 		setDescription(description);
@@ -43,8 +47,11 @@ public class Place {
 		setParent(parent);
 		setChildren(children);
 		setAttributes(attributes);
+		setIssues(issues);
+		setTasks(tasks);
 		setIssuesCount(issuesCount);
 		setTasksCount(tasksCount);
+
 	}
 
 	public Place(JSONObject rootPlaceObject) throws JSONException {
@@ -67,6 +74,10 @@ public class Place {
 		} catch (JSONException e) {
 			children = new ArrayList<Place>();
 		}
+
+		// issues and tasks are not included in place JSON
+		setIssues(null);
+		setTasks(null);
 	}
 
 	public int getId() {
@@ -109,40 +120,69 @@ public class Place {
 		this.parent = parent;
 	}
 
-	@SuppressWarnings("unchecked")
 	public ArrayList<Place> getChildren() {
-		return (ArrayList<Place>) this.children.clone();
+		return this.children;
 	}
 
 	public void setChildren(ArrayList<Place> children) {
-		if (children == null)
-			this.children = new ArrayList<Place>();
-		else
-			this.children = children;
+		this.children = children;
 	}
 
 	public void setChildren(JSONArray childrenArray) {
-		children = new ArrayList<Place>();
 
-		if (childrenArray == null)
+		if (childrenArray == null) {
+			children = null;
 			return;
+		}
 
+		children = new ArrayList<Place>();
 		for (int i = 0, l = childrenArray.length(); i < l; i++) {
 			Place p;
 			try {
 				p = new Place(childrenArray.getJSONObject(i));
 				p.setParent(this);
+				children.add(p);
 			} catch (JSONException e) {
 				Log.e("setChildren", "Error parsing children " + i);
-				break;
 			}
-			children.add(p);
 		}
-
 	}
 
 	public void addChild(Place child) {
-		children.add(child);
+		if (children == null)
+			this.children = new ArrayList<Place>();
+		else
+			children.add(child);
+	}
+
+	public ArrayList<IssueTask> getIssues() {
+		return issues;
+	}
+
+	public void setIssues(ArrayList<IssueTask> issues) {
+		this.issues = issues;
+	}
+
+	public void addIssue(IssueTask issue) {
+		if (issues == null)
+			this.issues = new ArrayList<IssueTask>();
+		else
+			issues.add(issue);
+	}
+
+	public ArrayList<SimpleTask> getTasks() {
+		return tasks;
+	}
+
+	public void setTasks(ArrayList<SimpleTask> tasks) {
+		this.tasks = tasks;
+	}
+
+	public void addTask(SimpleTask task) {
+		if (tasks == null)
+			this.tasks = new ArrayList<SimpleTask>();
+		else
+			tasks.add(task);
 	}
 
 	public HashMap<String, String> getAttributes() {
@@ -195,19 +235,19 @@ public class Place {
 
 	public int getChildrenIssuesCount() {
 		int issuesCount = this.issuesCount;
-		
-		for (Place p: children)
+
+		for (Place p : children)
 			issuesCount += p.getChildrenIssuesCount();
-		
+
 		return issuesCount;
 	}
 
 	public int getChildrenTasksCount() {
 		int tasksCount = this.tasksCount;
-		
-		for (Place p: children)
+
+		for (Place p : children)
 			tasksCount += p.getChildrenTasksCount();
-		
+
 		return tasksCount;
 	}
 

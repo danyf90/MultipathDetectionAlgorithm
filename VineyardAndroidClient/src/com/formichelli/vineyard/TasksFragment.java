@@ -1,5 +1,14 @@
 package com.formichelli.vineyard;
 
+import java.util.ArrayList;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+
+import com.formichelli.vineyard.entities.IssueTask;
+import com.formichelli.vineyard.entities.SimpleTask;
+import com.formichelli.vineyard.utilities.AsyncHttpRequests;
+
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -47,4 +56,39 @@ public class TasksFragment extends Fragment {
 		}
 	}
 
+	private class PlaceTasksAsyncHttpRequest extends AsyncHttpRequests {
+
+		@Override
+		protected void onPreExecute() {
+			activity.switchFragment(activity.loadingFragment);
+		}
+
+		@Override
+		protected void onPostExecute(ArrayList<String> result) {
+			if (result != null && result.size() == 1 && result.get(0) != null) {
+				JSONArray tasksArray;
+				ArrayList<SimpleTask> tasks = new ArrayList<SimpleTask>();
+
+				try {
+					tasksArray = new JSONArray(result.get(0));
+
+				} catch (JSONException e) {
+					return;
+				}
+
+				for (int i = 0, l = tasksArray.length(); i < l; i++) {
+					try {
+						tasks.add(new SimpleTask(tasksArray.getJSONObject(i)));
+					} catch (JSONException e) {
+					}
+				}
+
+				activity.getCurrentPlace().setTasks(tasks);
+
+				activity.switchFragment(activity.lastFragment);
+			} else {
+				// TODO
+			}
+		}
+	}
 }

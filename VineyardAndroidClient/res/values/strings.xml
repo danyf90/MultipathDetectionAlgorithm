@@ -33,5 +33,6 @@
     <string name="dialog_confirm">Yes</string>
     <string name="dialog_cancel">No</string>
     <string name="place_view_photo">Place photo</string>
+    <string name="cache_data_used">Unable to contact server, last cached data has been used</string>
 
 </resources>

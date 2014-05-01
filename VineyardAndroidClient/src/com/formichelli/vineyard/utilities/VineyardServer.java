@@ -10,8 +10,8 @@ import com.formichelli.vineyard.entities.Worker;
 
 public class VineyardServer {
 	public final static String PLACES_HIERARCHY_API = "/api/place/hierarchy";
-
 	public final static String PLACES_STATS_API = "/api/place/stats";
+	public final static String PLACE_ISSUES_API = ""; // TODO
 
 	private String url;
 	private int port;

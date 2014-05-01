@@ -1,10 +1,29 @@
 package com.formichelli.vineyard.entities;
 
-import java.util.Date;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import org.json.JSONException;
+import org.json.JSONObject;
+import android.annotation.SuppressLint;
 import android.location.Location;
 
 public class SimpleTask implements Task {
+	private final static String CREATE_TIME = "create_time";
+	private final static String ASSIGN_TIME = "assign_time";
+	private final static String DUE_TIME = "due_time";
+	private final static String ASSIGNEE = "assignee";
+	private final static String STATUS = "status";
+	private final static String PRIORITY = "priority";
+	private final static String PLACE = "place";
+	private final static String TITLE = "title";
+	private final static String DESCRIPTION = "description";
+	private final static String LOCATION = "location";
+	private final static String ASSIGNED_WORKER = "assigned_worker";
+	private final static String ASSIGNED_GROUP = "assigned_group";
+	
+	private final static String dateFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'";
 
 	private Date createTime;
 	private Date assignTime;
@@ -18,6 +37,20 @@ public class SimpleTask implements Task {
 	private Location location;
 	private Worker assignedWorker;
 	private WorkGroup assignedGroup;
+
+	public SimpleTask() {
+	}
+
+	@SuppressLint("SimpleDateFormat")
+	public SimpleTask(JSONObject jsonObject) throws JSONException {
+		try {
+			createTime = new SimpleDateFormat(dateFormat).parse(jsonObject.getString(CREATE_TIME));
+			assignTime = new SimpleDateFormat(dateFormat).parse(jsonObject.getString(ASSIGN_TIME));
+			dueTime = new SimpleDateFormat(dateFormat).parse(jsonObject.getString(DUE_TIME));
+		} catch (ParseException e) {
+			throw new JSONException("Invalid date format");
+		}
+	}
 
 	public Date getCreateTime() {
 		return createTime;

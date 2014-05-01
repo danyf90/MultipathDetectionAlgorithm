@@ -2,7 +2,11 @@ package com.formichelli.vineyard;
 
 import java.util.ArrayList;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+
 import com.formichelli.vineyard.entities.IssueTask;
+import com.formichelli.vineyard.utilities.AsyncHttpRequests;
 import com.formichelli.vineyard.utilities.IssueExpandableAdapter;
 import com.formichelli.vineyard.utilities.VineyardServer;
 
@@ -52,20 +56,9 @@ public class IssuesFragment extends Fragment {
 		vineyardServer = activity.getServer();
 		issuesList = (ExpandableListView) activity
 				.findViewById(R.id.issues_list_view);
-		ArrayList<IssueTask> issues = vineyardServer.getIssues(activity
-				.getCurrentPlace());
-		issueAdapter = new IssueExpandableAdapter(activity,
-				R.layout.issues_list_item, R.layout.issue_view, issues,
-				reportIssueOnClickListener, editOnClickListener,
-				doneOnClickListener);
-		issuesList.setAdapter(issueAdapter);
 
-		if (upItem != null) {
-			if (activity.getCurrentPlace().getParent() != null)
-				upItem.setVisible(true);
-			else
-				upItem.setVisible(false);
-		}
+		if (upItem != null)
+			init();
 	}
 
 	@Override
@@ -74,16 +67,52 @@ public class IssuesFragment extends Fragment {
 
 		upItem = menu.findItem(R.id.action_issues_up);
 
-		if (activity != null) {
-			if (activity.getCurrentPlace().getParent() != null)
-				upItem.setVisible(true);
-			else
-				upItem.setVisible(false);
-		}
+		if (activity != null)
+			init();
 
 		super.onCreateOptionsMenu(menu, inflater);
 	}
 
+	private void init() {
+		if (activity.getCurrentPlace().getParent() != null)
+			upItem.setVisible(true);
+		else
+			upItem.setVisible(false);
+
+		if (activity.getCurrentPlace().getIssues() == null)
+			sendPlaceIssuesRequest();
+		else {
+//			issueAdapter = new IssueExpandableAdapter(activity,
+//					R.layout.issues_list_item, R.layout.issue_view, activity.getCurrentPlace().getIssues(),
+//					reportIssueOnClickListener, editOnClickListener,
+//					doneOnClickListener);
+//			issuesList.setAdapter(issueAdapter);
+
+			issueAdapter = new IssueExpandableAdapter(activity,
+					R.layout.issues_list_item, R.layout.issue_view, activity.getCurrentPlace().getIssues(),
+					reportIssueOnClickListener, editOnClickListener,
+					doneOnClickListener);
+			issuesList.setAdapter(issueAdapter);
+		}
+	}
+
+	public void sendPlaceIssuesRequest() {
+		activity.getCurrentPlace().setIssues(vineyardServer.getIssues(activity
+					.getCurrentPlace()));
+
+		issueAdapter = new IssueExpandableAdapter(activity,
+				R.layout.issues_list_item, R.layout.issue_view, activity.getCurrentPlace().getIssues(),
+				reportIssueOnClickListener, editOnClickListener,
+				doneOnClickListener);
+		issuesList.setAdapter(issueAdapter);
+//		TODO
+//		final String placeIssuesRequest = vineyardServer.getUrl() + ":"
+//				+ vineyardServer.getPort()
+//				+ VineyardServer.PLACE_ISSUES_API;
+//
+//		new PlaceIssuesAsyncHttpRequest().execute(placeIssuesRequest);
+	}
+	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
@@ -124,4 +153,40 @@ public class IssuesFragment extends Fragment {
 					Toast.LENGTH_SHORT).show();
 		}
 	};
+
+	private class PlaceIssuesAsyncHttpRequest extends AsyncHttpRequests {
+
+		@Override
+		protected void onPreExecute() {
+			activity.switchFragment(activity.loadingFragment);
+		}
+
+		@Override
+		protected void onPostExecute(ArrayList<String> result) {
+			if (result != null && result.size() == 1 && result.get(0) != null) {
+				JSONArray issuesArray;
+				ArrayList<IssueTask> issues = new ArrayList<IssueTask>();
+
+				try {
+					issuesArray = new JSONArray(result.get(0));
+
+				} catch (JSONException e) {
+					return;
+				}
+
+				for (int i = 0, l = issuesArray.length(); i < l; i++) {
+					try {
+						issues.add(new IssueTask(issuesArray.getJSONObject(i)));
+					} catch (JSONException e) {
+					}
+				}
+
+				activity.getCurrentPlace().setIssues(issues);
+
+				activity.switchFragment(activity.lastFragment);
+			} else {
+				// TODO
+			}
+		}
+	}
 }

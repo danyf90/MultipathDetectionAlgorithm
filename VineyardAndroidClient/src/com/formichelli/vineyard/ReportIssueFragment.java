@@ -103,7 +103,7 @@ public class ReportIssueFragment extends Fragment {
 
 				// Put the place hierarchy to the intent
 				placePicker.putExtra(PlacePickerActivity.HIERARCHY,
-						activity.getRootPlaceJSON());
+						activity.getCache().getRootPlaceJSON());
 
 				// Put the id of the selected place and of all its ancestors
 				ArrayList<Integer> ids = new ArrayList<Integer>();

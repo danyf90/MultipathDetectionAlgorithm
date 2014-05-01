@@ -29,5 +29,6 @@
     <string name="dialog_confirm">Sì</string>
     <string name="dialog_cancel">No</string>
     <string name="place_view_photo">Foto del luogo</string>
+    <string name="cache_data_used">Impossibile contattare il server, sono stati utilizzati i dati presenti in cache</string>
 
 </resources>

@@ -3,6 +3,8 @@ package com.formichelli.vineyard.entities;
 import java.net.URL;
 import java.util.ArrayList;
 
+import org.json.JSONObject;
+
 public class IssueTask extends SimpleTask {
 	private int issuer;
 	private ArrayList<URL> photos;
@@ -11,6 +13,10 @@ public class IssueTask extends SimpleTask {
 		photos = new ArrayList<URL>();
 	}
 	
+	public IssueTask(JSONObject jsonObject) {
+		// TODO Auto-generated constructor stub
+	}
+
 	public int getIssuer() {
 		return this.issuer;
 	}
