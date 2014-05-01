@@ -1,10 +1,13 @@
 package com.formichelli.vineyard;
 
+import java.util.ArrayList;
+
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.formichelli.vineyard.entities.Place;
-import com.formichelli.vineyard.utilities.AsyncHttpRequest;
+import com.formichelli.vineyard.utilities.AsyncHttpRequests;
 import com.formichelli.vineyard.utilities.VineyardServer;
 
 import android.support.v7.app.ActionBar;
@@ -16,6 +19,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
+import android.util.Pair;
+import android.util.SparseArray;
 import android.view.Menu;
 import android.widget.Toast;
 import android.support.v4.widget.DrawerLayout;
@@ -32,7 +38,7 @@ public class VineyardMainActivity extends ActionBarActivity implements
 	Fragment lastFragment, currentFragment;
 	Menu menu;
 	Place currentPlace, rootPlace;
-	String rootPlaceJSON;
+	String rootPlaceJSON, placesStatsJSON;
 	String serverURL = "http://vineyard-server.no-ip.org/";
 	int serverPort;
 	ActionBar actionBar;
@@ -107,9 +113,14 @@ public class VineyardMainActivity extends ActionBarActivity implements
 	}
 
 	public void sendRootPlaceRequest() {
-		new LoadingAsyncHttpRequest().execute(vineyardServer.getUrl(),
-				String.valueOf(vineyardServer.getPort()),
-				VineyardServer.PLACE_HIERARCHY_API);
+		final String placesHierarchyRequest = vineyardServer.getUrl() + ":"
+				+ vineyardServer.getPort()
+				+ VineyardServer.PLACES_HIERARCHY_API;
+		final String placesStatsRequest = vineyardServer.getUrl() + ":"
+				+ vineyardServer.getPort() + VineyardServer.PLACES_STATS_API;
+
+		new RootPlaceAsyncHttpRequest().execute(placesHierarchyRequest,
+				placesStatsRequest);
 	}
 
 	@Override
@@ -230,7 +241,7 @@ public class VineyardMainActivity extends ActionBarActivity implements
 		return rootPlaceJSON;
 	}
 
-	private class LoadingAsyncHttpRequest extends AsyncHttpRequest {
+	private class RootPlaceAsyncHttpRequest extends AsyncHttpRequests {
 
 		@Override
 		protected void onPreExecute() {
@@ -238,12 +249,16 @@ public class VineyardMainActivity extends ActionBarActivity implements
 		}
 
 		@Override
-		protected void onPostExecute(String result) {
-			if (result != null) {
-				// request OK, parse JSON to get rootPlace and restore previous fragment
+		protected void onPostExecute(ArrayList<String> result) {
+			if (result != null && result.size() == 2 && result.get(0) != null
+					&& result.get(1) != null) {
+				// request OK, parse JSON to get rootPlace and show previous
+				// fragment
 				try {
-					rootPlaceJSON = result;
+					rootPlaceJSON = result.get(0);
 					rootPlace = new Place(new JSONObject(rootPlaceJSON));
+
+					setStats(rootPlace, getStats(result.get(1)));
 				} catch (JSONException e) {
 					finish();
 				}
@@ -253,6 +268,67 @@ public class VineyardMainActivity extends ActionBarActivity implements
 			} else {
 				loadingFragment.setError();
 			}
+		}
+
+		private void setStats(Place place,
+				SparseArray<Pair<Integer, Integer>> stats) {
+			final int placeId = place.getId();
+
+			if (stats.get(placeId) != null) {
+
+				Log.e("STATS", placeId + ": " + stats.get(placeId).first + ", " + stats.get(placeId).second);
+				
+				place.setIssuesCount(stats.get(placeId).first);
+				place.setTasksCount(stats.get(placeId).second);
+			} else {
+				place.setIssuesCount(0);
+				place.setTasksCount(0);
+			}
+			
+			for (Place child: place.getChildren())
+				setStats(child,stats);
+		}
+
+		private SparseArray<Pair<Integer, Integer>> getStats(String placesStats) {
+			int place, issues, tasks;
+			final String PLACE = "place";
+			final String ISSUES = "issues";
+			final String TASKS = "tasks";
+
+			SparseArray<Pair<Integer, Integer>> stats = new SparseArray<Pair<Integer, Integer>>();
+
+			JSONArray placesStatsArray;
+			try {
+				placesStatsArray = new JSONArray(placesStats);
+			} catch (JSONException e1) {
+				return null;
+			}
+
+			for (int i = 0, l = placesStatsArray.length(); i < l; i++) {
+				JSONObject placeStats;
+				try {
+					placeStats = placesStatsArray.getJSONObject(i);
+					place = placeStats.getInt(PLACE);
+				} catch (JSONException e1) {
+					break;
+				}
+
+				try {
+					issues = placeStats.getInt(ISSUES);
+				} catch (JSONException e) {
+					issues = 0;
+				}
+				try {
+					tasks = placeStats.getInt(TASKS);
+				} catch (JSONException e) {
+					tasks = 0;
+				}
+				
+				stats.put(place, new Pair<Integer, Integer>(issues, tasks));
+			}
+
+			return stats;
+
 		}
 	};
 }

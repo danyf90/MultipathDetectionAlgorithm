@@ -132,7 +132,7 @@ public class PlaceViewerFragment extends Fragment {
 		// set photo TODO
 		
 		// set issues count
-		c = activity.getServer().getIssuesCount(p);
+		c = p.getIssuesCount();
 		issuesCount.setText(String.valueOf(c));
 		if (c != 0)
 			issues.setBackgroundDrawable(redBorder);
@@ -140,7 +140,7 @@ public class PlaceViewerFragment extends Fragment {
 			issues.setBackgroundDrawable(whiteBorder);
 
 		// set tasks count
-		c = activity.getServer().getTasksCount(p);
+		c = p.getTasksCount();
 		tasksCount.setText(String.valueOf(c));
 		if (c != 0)
 			tasks.setBackgroundDrawable(redBorder);

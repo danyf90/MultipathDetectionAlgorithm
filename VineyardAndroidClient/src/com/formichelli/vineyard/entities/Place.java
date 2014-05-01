@@ -25,6 +25,8 @@ public class Place {
 	private Place parent;
 	private ArrayList<Place> children;
 	private HashMap<String, String> attributes;
+	private int issuesCount;
+	private int tasksCount;
 
 	public Place() {
 		attributes = new HashMap<String, String>();
@@ -33,7 +35,7 @@ public class Place {
 
 	public Place(int id, String name, String description, Location location,
 			Place parent, ArrayList<Place> children,
-			HashMap<String, String> attributes) {
+			HashMap<String, String> attributes, int issuesCount, int tasksCount) {
 		setId(id);
 		setName(name);
 		setDescription(description);
@@ -41,22 +43,25 @@ public class Place {
 		setParent(parent);
 		setChildren(children);
 		setAttributes(attributes);
+		setIssuesCount(issuesCount);
+		setTasksCount(tasksCount);
 	}
 
 	public Place(JSONObject rootPlaceObject) throws JSONException {
-		
+
 		setId(rootPlaceObject.getInt(ID));
-		
+
 		setName(rootPlaceObject.getString(NAME));
-		
+
 		setDescription(rootPlaceObject.getString(DESCRIPTION));
-		
+
 		try {
 			setAttributes(rootPlaceObject.getJSONObject(ATTRIBUTES));
 		} catch (JSONException e) {
 			attributes = new HashMap<String, String>();
+
 		}
-		
+
 		try {
 			setChildren(rootPlaceObject.getJSONArray(CHILDREN));
 		} catch (JSONException e) {
@@ -121,7 +126,7 @@ public class Place {
 
 		if (childrenArray == null)
 			return;
-		
+
 		for (int i = 0, l = childrenArray.length(); i < l; i++) {
 			Place p;
 			try {
@@ -155,7 +160,7 @@ public class Place {
 
 		if (attributesObject == null)
 			return;
-		
+
 		Iterator<?> i = attributesObject.keys();
 		while (i.hasNext()) {
 			String key = (String) i.next();
@@ -170,6 +175,22 @@ public class Place {
 
 	public void addAttribute(String key, String value) {
 		attributes.put(key, value);
+	}
+
+	public int getIssuesCount() {
+		return issuesCount;
+	}
+
+	public void setIssuesCount(int issuesCount) {
+		this.issuesCount = issuesCount;
+	}
+
+	public int getTasksCount() {
+		return tasksCount;
+	}
+
+	public void setTasksCount(int tasksCount) {
+		this.tasksCount = tasksCount;
 	}
 
 }

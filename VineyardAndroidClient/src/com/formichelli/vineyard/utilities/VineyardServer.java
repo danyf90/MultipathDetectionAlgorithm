@@ -1,10 +1,6 @@
 package com.formichelli.vineyard.utilities;
 
 import java.util.ArrayList;
-import java.util.concurrent.ExecutionException;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import com.formichelli.vineyard.entities.IssueTask;
 import com.formichelli.vineyard.entities.Place;
@@ -13,7 +9,9 @@ import com.formichelli.vineyard.entities.Task;
 import com.formichelli.vineyard.entities.Worker;
 
 public class VineyardServer {
-	public final static String PLACE_HIERARCHY_API = "/api/place/hierarchy";
+	public final static String PLACES_HIERARCHY_API = "/api/place/hierarchy";
+
+	public final static String PLACES_STATS_API = "/api/place/stats";
 
 	private String url;
 	private int port;
@@ -48,53 +46,8 @@ public class VineyardServer {
 		this.port = port;
 	}
 
-	/**
-	 * Obtain the entire tree of the places
-	 * 
-	 * @return root place
-	 */
-	public Place getRootPlace() {
-		try {
-			new AsyncHttpRequest().execute(url + PLACE_HIERARCHY_API,
-					String.valueOf(port)).get();
-		} catch (InterruptedException | ExecutionException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		try {
-			JSONObject rootPlaceObject = new JSONObject();
-			return new Place(rootPlaceObject);
-		} catch (JSONException e) {
-			return null;
-		}
-	}
-
-	/**
-	 * Obtain the entire tree of the places
-	 * 
-	 * @return JSON representation of the root place
-	 */
-	public String getRootPlaceJSON() {
-		try {
-			return new AsyncHttpRequest().execute(url + PLACE_HIERARCHY_API)
-					.get();
-		} catch (InterruptedException | ExecutionException e) {
-			return null;
-		}
-	}
-
 	public void sendIssue(IssueTask i) {
 		// TODO
-	};
-
-	public int getIssuesCount(Place p) {
-		// TODO
-		return p.getId() % 10 + p.getId() % 7;
-	};
-
-	public int getTasksCount(Place p) {
-		// TODO
-		return p.getId() % 10 + p.getId() % 5;
 	};
 
 	/**
