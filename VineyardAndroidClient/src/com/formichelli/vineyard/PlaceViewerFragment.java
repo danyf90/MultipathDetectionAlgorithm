@@ -23,7 +23,8 @@ import android.widget.TextView;
 
 public class PlaceViewerFragment extends Fragment {
 	VineyardMainActivity activity;
-	TextView description, issuesCount, tasksCount;
+	TextView description, issuesCount, tasksCount, childrenIssuesCount,
+			childrenTasksCount;
 	ViewGroup attributesLabels, attributesValues, issues, tasks;
 	PlaceAdapter placeAdapter;
 	ListView childrenList;
@@ -44,12 +45,18 @@ public class PlaceViewerFragment extends Fragment {
 		super.onActivityCreated(savedInstanceState);
 
 		activity = (VineyardMainActivity) getActivity();
+
 		issues = (ViewGroup) activity.findViewById(R.id.place_view_issues);
 		issuesCount = (TextView) activity
 				.findViewById(R.id.place_view_issues_count);
+		childrenIssuesCount = (TextView) activity
+				.findViewById(R.id.place_view_children_issues_count);
+
 		tasks = (ViewGroup) activity.findViewById(R.id.place_view_tasks);
 		tasksCount = (TextView) activity
 				.findViewById(R.id.place_view_tasks_count);
+		childrenTasksCount = (TextView) activity
+				.findViewById(R.id.place_view_children_tasks_count);
 		description = (TextView) activity
 				.findViewById(R.id.place_view_description);
 		attributesLabels = (ViewGroup) activity
@@ -130,10 +137,12 @@ public class PlaceViewerFragment extends Fragment {
 			upItem.setVisible(true);
 
 		// set photo TODO
-		
+
 		// set issues count
 		c = p.getIssuesCount();
 		issuesCount.setText(String.valueOf(c));
+		childrenIssuesCount.setText("(" + (p.getChildrenIssuesCount() - c)
+				+ ")");
 		if (c != 0)
 			issues.setBackgroundDrawable(redBorder);
 		else
@@ -142,6 +151,7 @@ public class PlaceViewerFragment extends Fragment {
 		// set tasks count
 		c = p.getTasksCount();
 		tasksCount.setText(String.valueOf(c));
+		childrenTasksCount.setText("(" + (p.getChildrenTasksCount() - c) + ")");
 		if (c != 0)
 			tasks.setBackgroundDrawable(redBorder);
 		else
@@ -171,7 +181,7 @@ public class PlaceViewerFragment extends Fragment {
 			placeAdapter.replaceItems(p.getChildren());
 		} else {
 			placeAdapter = new PlaceAdapter(activity,
-					R.layout.drawer_list_item, p.getChildren());
+					R.layout.place_list_item, p.getChildren());
 			childrenList.setAdapter(placeAdapter);
 		}
 

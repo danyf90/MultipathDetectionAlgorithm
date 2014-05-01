@@ -39,11 +39,18 @@
                 android:textAppearance="?android:attr/textAppearanceSmall" />
 
             <TextView
-                android:id="@+id/place_view_tasks_count"
+                android:id="@+id/place_view_children_tasks_count"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
-                android:text=""
+                android:textAppearance="?android:attr/textAppearanceSmall" />
+
+            <TextView
+                android:id="@+id/place_view_tasks_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="5dp"
+                android:layout_toLeftOf="@id/place_view_children_tasks_count"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
         </RelativeLayout>
 
@@ -63,11 +70,18 @@
                 android:textAppearance="?android:attr/textAppearanceSmall" />
 
             <TextView
-                android:id="@+id/place_view_issues_count"
+                android:id="@+id/place_view_children_issues_count"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
-                android:text=""
+                android:textAppearance="?android:attr/textAppearanceSmall" />
+
+            <TextView
+                android:id="@+id/place_view_issues_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="5dp"
+                android:layout_toLeftOf="@id/place_view_children_issues_count"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
         </RelativeLayout>
     </RelativeLayout>

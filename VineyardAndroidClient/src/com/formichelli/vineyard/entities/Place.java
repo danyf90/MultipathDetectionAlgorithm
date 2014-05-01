@@ -193,4 +193,22 @@ public class Place {
 		this.tasksCount = tasksCount;
 	}
 
+	public int getChildrenIssuesCount() {
+		int issuesCount = this.issuesCount;
+		
+		for (Place p: children)
+			issuesCount += p.getChildrenIssuesCount();
+		
+		return issuesCount;
+	}
+
+	public int getChildrenTasksCount() {
+		int tasksCount = this.tasksCount;
+		
+		for (Place p: children)
+			tasksCount += p.getChildrenTasksCount();
+		
+		return tasksCount;
+	}
+
 }

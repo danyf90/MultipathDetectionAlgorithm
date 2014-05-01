@@ -26,7 +26,7 @@ public class PlaceAdapter extends ArrayAdapter<Place> {
 	 * @param context
 	 *            Activity context
 	 * @param resource
-	 *            itema layout, it must contain a TextView with id
+	 *            item layout, it must contain a TextView with id
 	 *            drawer_list_item_label that will contain the Place name
 	 * @param objects
 	 *            places to be added to the ListView
@@ -42,15 +42,20 @@ public class PlaceAdapter extends ArrayAdapter<Place> {
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		TextView t;
-		Place object = objects.get(position);
+		Place p = objects.get(position);
 		LayoutInflater inflater = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
 		View item = inflater.inflate(resource, parent, false);
 
-		t = (TextView) item.findViewById(R.id.drawer_list_item_label);
-		t.setText(object.getName());
-		t.setTag(object);
+		t = (TextView) item.findViewById(R.id.place_list_item_label);
+		t.setText(p.getName());
+		t.setTag(p);
+		
+
+		t = (TextView) item.findViewById(R.id.place_list_item_stats);
+
+		t.setText("(" + p.getIssuesCount() + ", " + p.getTasksCount() + ")");
 
 		return item;
 	}
