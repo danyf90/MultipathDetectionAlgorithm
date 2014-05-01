@@ -1,5 +1,6 @@
 package com.formichelli.vineyard;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.formichelli.vineyard.entities.Place;
@@ -24,7 +25,7 @@ import android.widget.TextView;
 public class PlaceViewerFragment extends Fragment {
 	VineyardMainActivity activity;
 	TextView description, issuesCount, tasksCount, childrenIssuesCount,
-			childrenTasksCount;
+			childrenTasksCount, childrenLabel;
 	ViewGroup attributesLabels, attributesValues, issues, tasks;
 	PlaceAdapter placeAdapter;
 	ListView childrenList;
@@ -57,14 +58,20 @@ public class PlaceViewerFragment extends Fragment {
 				.findViewById(R.id.place_view_tasks_count);
 		childrenTasksCount = (TextView) activity
 				.findViewById(R.id.place_view_children_tasks_count);
+
 		description = (TextView) activity
 				.findViewById(R.id.place_view_description);
+
 		attributesLabels = (ViewGroup) activity
 				.findViewById(R.id.place_view_attributes_labels);
 		attributesValues = (ViewGroup) activity
 				.findViewById(R.id.place_view_attributes_values);
+
+		childrenLabel = (TextView) activity
+				.findViewById(R.id.place_view_children_label);
 		childrenList = (ListView) activity
 				.findViewById(R.id.place_view_children_list);
+
 		redBorder = getResources()
 				.getDrawable(R.drawable.white_with_red_border);
 		whiteBorder = getResources().getDrawable(
@@ -176,26 +183,34 @@ public class PlaceViewerFragment extends Fragment {
 				attributesValues.addView(t);
 			}
 
-		// set children
-		if (placeAdapter != null) {
-			placeAdapter.replaceItems(p.getChildren());
+		ArrayList<Place> children = p.getChildren();
+
+		if (children.size() == 0) {
+			childrenLabel.setVisibility(View.INVISIBLE);
+			childrenList.setVisibility(View.INVISIBLE);
 		} else {
-			placeAdapter = new PlaceAdapter(activity,
-					R.layout.place_list_item, p.getChildren());
-			childrenList.setAdapter(placeAdapter);
+			// set children
+			if (placeAdapter != null) {
+				placeAdapter.replaceItems(children);
+			} else {
+				placeAdapter = new PlaceAdapter(activity,
+						R.layout.place_list_item, children);
+				childrenList.setAdapter(placeAdapter);
+			}
+
+			if (childrenList.getAdapter() == null)
+				childrenList.setAdapter(placeAdapter);
+
+			if (childrenList.getOnItemClickListener() == null)
+				childrenList.setOnItemClickListener(new OnItemClickListener() {
+					@Override
+					public void onItemClick(AdapterView<?> parent, View view,
+							int position, long id) {
+						loadPlace((Place) view.getTag());
+					}
+				});
+			childrenLabel.setVisibility(View.VISIBLE);
+			childrenList.setVisibility(View.VISIBLE);
 		}
-
-		if (childrenList.getAdapter() == null)
-			childrenList.setAdapter(placeAdapter);
-
-		if (childrenList.getOnItemClickListener() == null)
-			childrenList.setOnItemClickListener(new OnItemClickListener() {
-				@Override
-				public void onItemClick(AdapterView<?> parent, View view,
-						int position, long id) {
-					loadPlace((Place) view.getTag());
-				}
-			});
-
 	}
 }

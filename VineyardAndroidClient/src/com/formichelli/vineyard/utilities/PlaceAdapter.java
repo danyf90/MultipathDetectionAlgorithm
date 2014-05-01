@@ -48,10 +48,11 @@ public class PlaceAdapter extends ArrayAdapter<Place> {
 
 		View item = inflater.inflate(resource, parent, false);
 
-		t = (TextView) item.findViewById(R.id.place_list_item_label);
-		t.setText(p.getName());
-		t.setTag(p);
+		item.findViewById(R.id.place_list_item).setTag(p);
 		
+		
+		t = (TextView) item.findViewById(R.id.place_list_item_label);
+		t.setText(p.getName());		
 
 		t = (TextView) item.findViewById(R.id.place_list_item_stats);
 
