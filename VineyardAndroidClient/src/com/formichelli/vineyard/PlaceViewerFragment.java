@@ -1,6 +1,5 @@
 package com.formichelli.vineyard;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.formichelli.vineyard.entities.Place;
@@ -24,8 +23,8 @@ import android.widget.TextView;
 
 public class PlaceViewerFragment extends Fragment {
 	VineyardMainActivity activity;
-	TextView ancestors, description, issuesCount, tasksCount, childrenIssuesCount,
-			childrenTasksCount, childrenLabel;
+	TextView ancestors, description, issuesCount, tasksCount,
+			childrenIssuesCount, childrenTasksCount;
 	ViewGroup attributesLabels, attributesValues, issues, tasks;
 	PlaceAdapter placeAdapter;
 	ListView childrenList;
@@ -47,9 +46,8 @@ public class PlaceViewerFragment extends Fragment {
 
 		activity = (VineyardMainActivity) getActivity();
 
-		ancestors = (TextView) activity
-				.findViewById(R.id.place_view_ancestors);
-		
+		ancestors = (TextView) activity.findViewById(R.id.place_view_ancestors);
+
 		issues = (ViewGroup) activity.findViewById(R.id.place_view_issues);
 		issuesCount = (TextView) activity
 				.findViewById(R.id.place_view_issues_count);
@@ -70,8 +68,6 @@ public class PlaceViewerFragment extends Fragment {
 		attributesValues = (ViewGroup) activity
 				.findViewById(R.id.place_view_attributes_values);
 
-		childrenLabel = (TextView) activity
-				.findViewById(R.id.place_view_children_label);
 		childrenList = (ListView) activity
 				.findViewById(R.id.place_view_children_list);
 
@@ -150,8 +146,9 @@ public class PlaceViewerFragment extends Fragment {
 		String ancestorsString = "";
 		for (Place p1 = p; p1 != null; p1 = p1.getParent())
 			ancestorsString = p1.getName() + " > " + ancestorsString;
-		ancestors.setText(ancestorsString.substring(0, ancestorsString.length()-3));
-		
+		ancestors.setText(ancestorsString.substring(0,
+				ancestorsString.length() - 3));
+
 		// set photo TODO
 
 		// set issues count
@@ -192,34 +189,25 @@ public class PlaceViewerFragment extends Fragment {
 				attributesValues.addView(t);
 			}
 
-		ArrayList<Place> children = p.getChildren();
-
-		if (children.size() == 0) {
-			childrenLabel.setVisibility(View.INVISIBLE);
-			childrenList.setVisibility(View.INVISIBLE);
+		// set children
+		if (placeAdapter != null) {
+			placeAdapter.replaceItems(p.getChildren());
 		} else {
-			// set children
-			if (placeAdapter != null) {
-				placeAdapter.replaceItems(children);
-			} else {
-				placeAdapter = new PlaceAdapter(activity,
-						R.layout.place_list_item, children);
-				childrenList.setAdapter(placeAdapter);
-			}
-
-			if (childrenList.getAdapter() == null)
-				childrenList.setAdapter(placeAdapter);
-
-			if (childrenList.getOnItemClickListener() == null)
-				childrenList.setOnItemClickListener(new OnItemClickListener() {
-					@Override
-					public void onItemClick(AdapterView<?> parent, View view,
-							int position, long id) {
-						loadPlace((Place) view.getTag());
-					}
-				});
-			childrenLabel.setVisibility(View.VISIBLE);
-			childrenList.setVisibility(View.VISIBLE);
+			placeAdapter = new PlaceAdapter(activity, R.layout.place_list_item,
+					p.getChildren());
+			childrenList.setAdapter(placeAdapter);
 		}
+
+		if (childrenList.getAdapter() == null)
+			childrenList.setAdapter(placeAdapter);
+
+		if (childrenList.getOnItemClickListener() == null)
+			childrenList.setOnItemClickListener(new OnItemClickListener() {
+				@Override
+				public void onItemClick(AdapterView<?> parent, View view,
+						int position, long id) {
+					loadPlace((Place) view.getTag());
+				}
+			});
 	}
 }

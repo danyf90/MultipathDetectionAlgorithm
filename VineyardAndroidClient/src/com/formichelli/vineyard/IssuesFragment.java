@@ -5,8 +5,10 @@ import java.util.ArrayList;
 import org.json.JSONException;
 
 import com.formichelli.vineyard.entities.IssueTask;
+import com.formichelli.vineyard.entities.Place;
 import com.formichelli.vineyard.utilities.AsyncHttpRequests;
 import com.formichelli.vineyard.utilities.IssueExpandableAdapter;
+import com.formichelli.vineyard.utilities.PlaceAdapter;
 import com.formichelli.vineyard.utilities.VineyardServer;
 
 import android.app.Activity;
@@ -19,14 +21,19 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
 import android.widget.ExpandableListView;
+import android.widget.ListView;
 import android.widget.Toast;
+import android.widget.AdapterView.OnItemClickListener;
 
 public class IssuesFragment extends Fragment {
 	VineyardMainActivity activity;
 	VineyardServer vineyardServer;
 	ExpandableListView issuesList;
+	ListView childrenList;
 	IssueExpandableAdapter issueAdapter;
+	PlaceAdapter childrenAdapter;
 	MenuItem upItem;
 
 	@Override
@@ -54,7 +61,9 @@ public class IssuesFragment extends Fragment {
 		activity = (VineyardMainActivity) getActivity();
 		vineyardServer = activity.getServer();
 		issuesList = (ExpandableListView) activity
-				.findViewById(R.id.issues_list_view);
+				.findViewById(R.id.issues_issues_list);
+		childrenList = (ListView) activity
+				.findViewById(R.id.issues_children_list);
 
 		if (upItem != null)
 			init();
@@ -87,6 +96,22 @@ public class IssuesFragment extends Fragment {
 					reportIssueOnClickListener, editOnClickListener,
 					doneOnClickListener);
 			issuesList.setAdapter(issueAdapter);
+
+			childrenAdapter = new PlaceAdapter(activity,
+					R.layout.place_list_item, activity.getCurrentPlace()
+							.getChildren());
+			childrenList.setAdapter(childrenAdapter);
+
+			childrenList.setOnItemClickListener(new OnItemClickListener() {
+				@Override
+				public void onItemClick(AdapterView<?> parent, View view,
+						int position, long id) {
+					activity.setCurrentPlace((Place) view.getTag());
+					init();
+				}
+			});
+
+			childrenList.setVisibility(View.VISIBLE);
 		}
 	}
 
@@ -104,15 +129,7 @@ public class IssuesFragment extends Fragment {
 		switch (item.getItemId()) {
 		case R.id.action_issues_up:
 			activity.setCurrentPlace(activity.getCurrentPlace().getParent());
-			if (activity.getCurrentPlace().getIssues() == null)
-				sendPlaceIssuesAndTasksRequest();
-			else {
-				issueAdapter.replaceItems(activity.getCurrentPlace()
-						.getIssues());
-			}
-			if (activity.getCurrentPlace().getParent() == null)
-				upItem.setVisible(false);
-
+			init();
 			return true;
 		default:
 			return false;
@@ -163,7 +180,7 @@ public class IssuesFragment extends Fragment {
 					issuesJSON = result.get(0);
 
 					android.util.Log.e("sad", issuesJSON);
-					
+
 					activity.getCache().setPlaceIssuesJSON(
 							activity.getCurrentPlace().getId(), issuesJSON);
 
