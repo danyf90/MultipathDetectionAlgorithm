@@ -31,8 +31,7 @@
         </activity>
         <activity
             android:name="com.formichelli.vineyard.LoginActivity"
-            android:label="@string/activity_login"
-            android:parentActivityName="com.formichelli.vineyard.VineyardMainActivity" >
+            android:label="@string/activity_login" >
         </activity>
         <activity
             android:name="com.formichelli.vineyard.SettingsActivity"

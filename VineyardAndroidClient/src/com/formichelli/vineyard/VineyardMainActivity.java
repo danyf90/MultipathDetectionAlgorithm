@@ -44,6 +44,7 @@ public class VineyardMainActivity extends ImmersiveActivity implements
 	VineyardServer vineyardServer;
 	SharedPreferences sp;
 	Cache cache;
+	boolean preloadAll;
 
 	/**
 	 * Fragment managing the behaviors, interactions and presentation of the
@@ -74,7 +75,7 @@ public class VineyardMainActivity extends ImmersiveActivity implements
 
 		sp = PreferenceManager.getDefaultSharedPreferences(this);
 		cache = new Cache(sp);
-		
+
 		serverInit();
 	}
 
@@ -110,13 +111,20 @@ public class VineyardMainActivity extends ImmersiveActivity implements
 
 		vineyardServer = new VineyardServer(serverURL, serverPort);
 
-		if (sp.getBoolean(getString(R.string.preference_preload_all),
-				Boolean.valueOf(getString(R.string.preference_preload_all))))
-			;// TODO
-		// else
-		sendRootPlaceRequest();
+		preloadAll = sp.getBoolean(getString(R.string.preference_preload_all),
+				Boolean.valueOf(getString(R.string.preference_preload_all)));
+
+		if (preloadAll) {
+			sendLoadAllRequest();
+		} else
+			sendRootPlaceRequest();
 	}
 
+	public void sendLoadAllRequest() {
+		// TODO
+		sendRootPlaceRequest();
+	}
+	
 	public void sendRootPlaceRequest() {
 		final String placesHierarchyRequest = vineyardServer.getUrl() + ":"
 				+ vineyardServer.getPort()
@@ -183,7 +191,7 @@ public class VineyardMainActivity extends ImmersiveActivity implements
 			askExit();
 		return;
 	}
-	
+
 	private void askExit() {
 		new AlertDialog.Builder(this)
 				.setMessage(R.string.dialog_exit_message)

@@ -49,6 +49,12 @@ public class LoginActivity extends Activity {
 	private TextView mLoginStatusMessageView;
 
 	@Override
+	public void onBackPressed() {
+		// close the application
+		moveTaskToBack(true);
+	}
+
+	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
