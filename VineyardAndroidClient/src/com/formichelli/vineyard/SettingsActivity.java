@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
+import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
@@ -184,7 +185,7 @@ public class SettingsActivity extends PreferenceActivity
 			return Validity.NOT_VALID_SERVER_PORT;
 		}
 		
-		if (serverURL == null || serverURL.compareTo("") == 0/*TODO*/) {
+		if (serverURL == null || serverURL.compareTo("") == 0/*TODO check if it is a valid URL*/) {
 			return Validity.NOT_VALID_SERVER_URL;
 		}
 		
@@ -230,6 +231,8 @@ public class SettingsActivity extends PreferenceActivity
 
 		private void restorePreferences() {
 			setTextPreference(R.string.preference_server_url, getString(R.string.preference_server_url_default));
+			setTextPreference(R.string.preference_server_port, getString(R.string.preference_server_port_default));
+			setBooleanPreference(R.string.preference_preload_all, Boolean.valueOf(getString(R.string.preference_preload_all_default)));
 		}
 	
 		private void setTextPreference(int id, String value) {
@@ -244,17 +247,16 @@ public class SettingsActivity extends PreferenceActivity
 			setPreferenceSummary(findPreference(getString(id)));
 		}
 
-//		private void setBooleanPreference(int id, Boolean value) {
-//			Editor e;
-//			
-//			((CheckBoxPreference) ps.findPreference(getString(id))).setChecked(value);
-//			
-//			e = ps.getSharedPreferences().edit();
-//			e.putBoolean(getString(id), value);
-//			e.commit();
-//			
-//			setPreferenceSummary(findPreference(getString(id)));
-//		}
+		private void setBooleanPreference(int id, Boolean value) {
+			Editor e;
+			((CheckBoxPreference) ps.findPreference(getString(id))).setChecked(value);
+			
+			e = ps.getSharedPreferences().edit();
+			e.putBoolean(getString(id), value);
+			e.commit();
+			
+			setPreferenceSummary(findPreference(getString(id)));
+		}
 	};
 
 }

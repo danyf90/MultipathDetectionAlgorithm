@@ -6,7 +6,7 @@
     <item
         android:id="@+id/action_settings_restore"
         android:title="@string/action_settings_restore"
-        android:icon="@android:drawable/stat_notify_sync"
+        android:icon="@drawable/action_refresh_dark"
         app:showAsAction="always" />
     
 </menu>

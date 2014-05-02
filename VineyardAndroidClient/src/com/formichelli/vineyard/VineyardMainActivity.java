@@ -111,6 +111,10 @@ public class VineyardMainActivity extends ActionBarActivity implements
 
 		vineyardServer = new VineyardServer(serverURL, serverPort);
 
+		if (sp.getBoolean(getString(R.string.preference_preload_all),
+				Boolean.valueOf(getString(R.string.preference_preload_all))))
+			;// TODO
+		// else
 		sendRootPlaceRequest();
 	}
 
