@@ -1,5 +1,8 @@
 package com.formichelli.vineyard;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -147,6 +150,13 @@ public class SettingsActivity extends PreferenceActivity implements
 			oldValue = etp.getText();
 			etp.getEditText().selectAll();
 		}
+
+		if (p.getKey() == getString(R.string.preference_immersive_mode)) {
+			onWindowFocusChanged(false);
+			onWindowFocusChanged(true);
+			onWindowFocusChanged(false);
+		}
+
 		return true;
 	}
 
@@ -204,11 +214,13 @@ public class SettingsActivity extends PreferenceActivity implements
 			return Validity.NOT_VALID_SERVER_PORT;
 		}
 
-		if (serverURL == null || serverURL.compareTo("") == 0/*
-															 * TODO check if it
-															 * is a valid URL
-															 */) {
-			return Validity.NOT_VALID_SERVER_URL;
+		if (serverURL == null) {
+			// is this a valid check ?
+			try {
+				new URL(serverURL);
+			} catch (MalformedURLException e) {
+				return Validity.NOT_VALID_SERVER_URL;
+			}
 		}
 
 		if (serverPort < 1 || serverPort > 65535)
@@ -304,13 +316,17 @@ public class SettingsActivity extends PreferenceActivity implements
 						getString(R.string.preference_immersive_mode),
 						Boolean.valueOf(getString(R.string.preference_immersive_mode_default)));
 
-		if (hasFocus && android.os.Build.VERSION.SDK_INT >= 19 && immersiveMode) {
-			getWindow().getDecorView().setSystemUiVisibility(
-					View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-							| View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-							| View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-							| View.SYSTEM_UI_FLAG_FULLSCREEN
-							| View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+		if (immersiveMode) {
+			if (hasFocus && android.os.Build.VERSION.SDK_INT >= 19)
+				getWindow().getDecorView().setSystemUiVisibility(
+						View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+								| View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+								| View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+								| View.SYSTEM_UI_FLAG_FULLSCREEN
+								| View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+		}
+		else {
+			getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
 		}
 	}
 
