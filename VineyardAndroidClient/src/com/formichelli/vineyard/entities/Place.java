@@ -74,10 +74,6 @@ public class Place {
 		} catch (JSONException e) {
 			children = new ArrayList<Place>();
 		}
-
-		// issues and tasks are not included in place JSON
-		setIssues(null);
-		setTasks(null);
 	}
 
 	public int getId() {
@@ -163,9 +159,23 @@ public class Place {
 		this.issues = issues;
 	}
 
+	public void setIssues(String issuesJSON) throws JSONException {
+		JSONArray issuesArray = new JSONArray(issuesJSON);
+
+		setIssues(new ArrayList<IssueTask>());
+
+		for (int i = 0, l = issuesArray.length(); i < l; i++) {
+			try {
+				addIssue(new IssueTask(issuesArray.getJSONObject(i)));
+			} catch (JSONException e) {
+				android.util.Log.e("Place.setIsues", e.getLocalizedMessage());
+			}
+		}
+	}
+
 	public void addIssue(IssueTask issue) {
 		if (issues == null)
-			this.issues = new ArrayList<IssueTask>();
+			issues = new ArrayList<IssueTask>();
 		else
 			issues.add(issue);
 	}
@@ -178,9 +188,22 @@ public class Place {
 		this.tasks = tasks;
 	}
 
+	public void setTasks(String tasksJSON) throws JSONException {
+		JSONArray tasksArray = new JSONArray(tasksJSON);
+
+		setTasks(new ArrayList<SimpleTask>());
+
+		for (int i = 0, l = tasksArray.length(); i < l; i++) {
+			try {
+				addTask(new SimpleTask(tasksArray.getJSONObject(i)));
+			} catch (JSONException e) {
+			}
+		}
+	}
+
 	public void addTask(SimpleTask task) {
 		if (tasks == null)
-			this.tasks = new ArrayList<SimpleTask>();
+			tasks = new ArrayList<SimpleTask>();
 		else
 			tasks.add(task);
 	}

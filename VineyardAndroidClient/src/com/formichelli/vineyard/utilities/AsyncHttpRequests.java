@@ -27,15 +27,22 @@ public class AsyncHttpRequests extends
 		ArrayList<String> results = new ArrayList<String>();
 		try {
 			for (String request : params) {
+				Log.e("AsyncHttpRequest", "Sending GET request to " + request);
 				HttpResponse response = new DefaultHttpClient()
 						.execute(new HttpGet(request));
 				StatusLine statusLine = response.getStatusLine();
-				if (statusLine.getStatusCode() == HttpStatus.SC_OK) {
+				switch (statusLine.getStatusCode()) {
+				case HttpStatus.SC_OK:
 					ByteArrayOutputStream out = new ByteArrayOutputStream();
 					response.getEntity().writeTo(out);
 					out.close();
 					results.add(out.toString());
-				} else {
+					break;
+				case HttpStatus.SC_NOT_FOUND:
+					Log.e("http error", "not found");
+					results.add("[]");
+					break;
+				default:
 					// Closes the connection.
 					response.getEntity().getContent().close();
 					Log.e("http error", statusLine.getReasonPhrase());

@@ -56,12 +56,12 @@ public class ReportIssueFragment extends Fragment {
 		this.i = i;
 	}
 
-	public void setIssuePlace(Place p) {
-		i.setPlace(p);
+	public void setIssuePlace(int placeId) {
+		i.setPlaceId(placeId);
 	}
 
-	public Place getIssuePlace() {
-		return i.getPlace();
+	public int getIssuePlace() {
+		return i.getPlaceId();
 	}
 
 	@Override
@@ -144,11 +144,11 @@ public class ReportIssueFragment extends Fragment {
 
 		if (i == null) {
 			i = new IssueTask();
-			i.setPlace(activity.getCurrentPlace());
+			i.setPlaceId(activity.getCurrentPlace().getId());
 		} else {
 			title.setText(i.getTitle());
 			description.setText(i.getDescription());
-			placeButton.setText(i.getPlace().getName());
+			placeButton.setText(i.getPlaceId());
 			if (i.getPriority() != null)
 				priorities.setSelection(i.getPriority().toInt() + 1);
 			// TODO add photos
@@ -293,7 +293,7 @@ public class ReportIssueFragment extends Fragment {
 				}
 
 				placeButton.setText(selectedPlace.getName());
-				i.setPlace(selectedPlace);
+				i.setPlaceId(selectedPlace.getId());
 			}
 			break;
 		}

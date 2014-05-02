@@ -51,6 +51,7 @@ public class LoadingFragment extends Fragment {
 	}
 
 	public void setError() {
+		// TODO change error message
 		mainLayout.removeAllViews();
 		mainLayout.addView(errorLayout);
 	}

@@ -11,10 +11,12 @@ public interface Task {
 	};
 
 	public enum Priority {
-		LOW, MEDIUM, HIGH;
+		NOT_SET, LOW, MEDIUM, HIGH;
 
 		public int toInt() {
 			switch (this) {
+			case NOT_SET:
+				return 0;
 			case LOW:
 				return 1;
 			case MEDIUM:
@@ -26,25 +28,45 @@ public interface Task {
 		}
 	};
 
+	public int getId();
+
+	public void setId(int id);
+
+	public int getAssigneeId();
+
+	public void setAssigneeId(int assigneeId);
+
+	public Date getCreateTime();
+
+	public void setCreateTime(Date createTime);
+
+	public Date getAssignTime();
+
+	public void setAssignTime(Date assignTime);
+
+	public Date getDueTime();
+
+	public void setDueTime(Date dueTime);
+
 	public abstract String getDescription();
 
 	public void setDescription(String description);
-
-	public Worker getAssignee();
-
-	public void setAssignee(Worker assignee);
 
 	public Status getStatus();
 
 	public void setStatus(Status status);
 
+	public void setStatus(String priority);
+
 	public Priority getPriority();
 
 	public void setPriority(Priority priority);
 
-	public Place getPlace();
+	public void setPriority(String priority);
 
-	public void setPlace(Place p);
+	public int getPlaceId();
+
+	public void setPlaceId(int p);
 
 	public String getTitle();
 
@@ -54,19 +76,12 @@ public interface Task {
 
 	public void setLocation(Location location);
 
-	public WorkGroup getAssignedGroup();
+	public int getAssignedWorkerId();
 
-	public void setAssignedGroup(WorkGroup assignedGroup);
+	public void setAssignedWorkerId(int assignedWorkerId);
 
-	public Worker getAssignedWorker();
+	public int getAssignedGroupId();
 
-	public void setAssignedWorker(Worker assignedWorker);
+	public void setAssignedGroupId(int assignedGroupId);
 
-	public Date getCreateTime();
-
-	public Date getAssignTime();
-
-	public Date getDueTime();
-
-	public void setDueTime(Date dueTime);
 }

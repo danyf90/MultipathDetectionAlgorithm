@@ -1,12 +1,16 @@
 package com.formichelli.vineyard;
 
 import java.util.ArrayList;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import com.formichelli.vineyard.entities.Place;
 import com.formichelli.vineyard.utilities.AsyncHttpRequests;
+import com.formichelli.vineyard.utilities.Cache;
 import com.formichelli.vineyard.utilities.VineyardServer;
+
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v4.app.Fragment;
@@ -24,10 +28,6 @@ import android.support.v4.widget.DrawerLayout;
 
 public class VineyardMainActivity extends ActionBarActivity implements
 		NavigationDrawerFragment.NavigationDrawerCallbacks {
-	public final static String PLACES_HIERARCHY = "places";
-	public final static String PLACES_STATS = "stats";
-	public final static String PLACES_ISSUES = "places";
-	public final static String PLACES_TASKS = "places";
 
 	public PlaceViewerFragment placeViewerFragment;
 	IssuesFragment issuesFragment;
@@ -207,7 +207,7 @@ public class VineyardMainActivity extends ActionBarActivity implements
 	public Place getCurrentPlace() {
 		return currentPlace;
 	}
-	
+
 	public Cache getCache() {
 		return cache;
 	}
@@ -235,6 +235,10 @@ public class VineyardMainActivity extends ActionBarActivity implements
 				.replace(R.id.container, currentFragment).commit();
 	}
 
+	public void switchFragment() {
+		switchFragment(lastFragment);
+	}
+
 	public void setTitle(String title) {
 		actionBar.setTitle(title);
 	}
@@ -252,36 +256,37 @@ public class VineyardMainActivity extends ActionBarActivity implements
 
 		@Override
 		protected void onPostExecute(ArrayList<String> result) {
+			String rootPlaceJSON, statsJSON;
+
 			if (result != null && result.size() == 2 && result.get(0) != null
 					&& result.get(1) != null) {
-				// request OK, parse JSON to get rootPlace and show previous
+				// request OK, parse JSON to get rootPlace, cache data and show
+				// previous
 				// fragment
-				try {
-					final String rootPlaceJSON = result.get(0);
-					cache.setRootPlaceJSON(rootPlaceJSON);
-					rootPlace = new Place(new JSONObject(rootPlaceJSON));
 
-					setStats(rootPlace, getStats(result.get(1)));
-				} catch (JSONException e) {
-					finish();
-				}
+				rootPlaceJSON = result.get(0);
+				statsJSON = result.get(1);
+
+				cache.setRootPlaceJSON(rootPlaceJSON);
+				cache.setPlacesStatsJSON(statsJSON);
 
 			} else {
-				try {
-					rootPlace = new Place(new JSONObject(cache.getRootPlaceJSON()));
-					setStats(rootPlace, getStats(cache.getPlacesStatsJSON()));
-				} catch (JSONException e) {
-					loadingFragment.setError();
-					return;
-				}
+				rootPlaceJSON = cache.getRootPlaceJSON();
+				statsJSON = cache.getPlacesStatsJSON();
 
 				Toast.makeText(VineyardMainActivity.this,
 						getString(R.string.cache_data_used), Toast.LENGTH_SHORT)
 						.show();
 			}
 
-			setCurrentPlace(rootPlace);
-			switchFragment(lastFragment);
+			try {
+				rootPlace = new Place(new JSONObject(rootPlaceJSON));
+				setCurrentPlace(rootPlace);
+				setStats(rootPlace, getStats(statsJSON));
+				switchFragment(lastFragment);
+			} catch (JSONException e) {
+				loadingFragment.setError();
+			}
 		}
 
 		private void setStats(Place place,
@@ -343,46 +348,10 @@ public class VineyardMainActivity extends ActionBarActivity implements
 			return stats;
 
 		}
+	}
+
+	public LoadingFragment getLoadingFragment() {
+		return loadingFragment;
 	};
 
-	class Cache {
-		SharedPreferences sp;
-
-		Cache(SharedPreferences sp) {
-			this.sp = sp;
-		}
-
-		public void setRootPlaceJSON(String rootPlaceJSON) {
-			sp.edit().putString(PLACES_HIERARCHY, rootPlaceJSON).apply();
-		}
-
-		public String getRootPlaceJSON() {
-			return sp.getString(PLACES_HIERARCHY, null);
-		}
-
-		public void setPlacesStatsJSON(String placesStatsJSON) {
-			sp.edit().putString(PLACES_STATS, placesStatsJSON).apply();
-		}
-
-		public String getPlacesStatsJSON() {
-			return sp.getString(PLACES_STATS, null);
-		}
-
-		public void setPlacesIssuesJSON(String placesIssuesJSON) {
-			sp.edit().putString(PLACES_ISSUES, placesIssuesJSON).apply();
-		}
-
-		public String getPlacesIssuesJSON() {
-			return sp.getString(PLACES_ISSUES, null);
-		}
-
-		public void setPlacesTasksJSON(String placesTasksJSON) {
-			sp.edit().putString(PLACES_TASKS, placesTasksJSON).apply();
-		}
-
-		public String getPlacesTasksJSON() {
-			return sp.getString(PLACES_TASKS, null);
-		}
-
-	}
 }

@@ -120,9 +120,10 @@ public class IssueExpandableAdapter extends BaseExpandableListAdapter {
 		((TextView) childView.findViewById(R.id.issue_view_priority_value))
 				.setText(context.getResources().getStringArray(
 						R.array.issue_priorities)[object.getPriority().toInt()]);
+
 		((TextView) childView
 				.findViewById(R.id.issue_view_assigned_worker_name))
-				.setText(object.getAssignedWorker().getName());
+				.setText(getWorkerString(object.getAssignedWorkerId()));
 
 		ArrayList<URL> photos = object.getPhotos();
 		if (photos == null || photos.size() == 0) {
@@ -149,6 +150,11 @@ public class IssueExpandableAdapter extends BaseExpandableListAdapter {
 		childView.findViewById(R.id.issue_view_done).setTag(object);
 
 		return childView;
+	}
+
+	private String getWorkerString(int workerId) {
+		// TODO print id or get name from server?
+		return workerId != 0 ? String.valueOf(workerId) : "--";
 	}
 
 	@Override

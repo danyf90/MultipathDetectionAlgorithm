@@ -5,13 +5,12 @@ import java.util.ArrayList;
 import com.formichelli.vineyard.entities.IssueTask;
 import com.formichelli.vineyard.entities.Place;
 import com.formichelli.vineyard.entities.SimpleTask;
-import com.formichelli.vineyard.entities.Task;
-import com.formichelli.vineyard.entities.Worker;
 
 public class VineyardServer {
 	public final static String PLACES_HIERARCHY_API = "/api/place/hierarchy";
 	public final static String PLACES_STATS_API = "/api/place/stats";
-	public final static String PLACE_ISSUES_API = ""; // TODO
+	public final static String PLACE_ISSUES_API = "/api/place/%d/issues";
+	public final static String PLACE_TASKS_API = "/api/place/%d/tasks";
 
 	private String url;
 	private int port;
@@ -57,26 +56,26 @@ public class VineyardServer {
 	 *            query place
 	 * @return list of issues
 	 */
-	public ArrayList<IssueTask> getIssues(Place p) {
-		ArrayList<IssueTask> issues = new ArrayList<IssueTask>();
-		Worker w = new Worker();
-		IssueTask i = new IssueTask();
-
-		w.setEmail("asd@asd.asd");
-		w.setName("Employee #1");
-
-		i.setAssignedWorker(w);
-		i.setAssignedGroup(null);
-		i.setTitle("Problem");
-		i.setDescription("There is a big problem!");
-		i.setPlace(p);
-		i.setPriority(Task.Priority.HIGH);
-
-		issues.add(i);
-		issues.add(i);
-
-		return issues;
-	};
+//	public ArrayList<IssueTask> getIssues(Place p) {
+//		ArrayList<IssueTask> issues = new ArrayList<IssueTask>();
+//		Worker w = new Worker();
+//		IssueTask i = new IssueTask();
+//
+//		w.setEmail("asd@asd.asd");
+//		w.setName("Employee #1");
+//
+//		i.setAssignedWorker(w);
+//		i.setAssignedGroup(null);
+//		i.setTitle("Problem");
+//		i.setDescription("There is a big problem!");
+//		i.setPlace(p);
+//		i.setPriority(Task.Priority.HIGH);
+//
+//		issues.add(i);
+//		issues.add(i);
+//
+//		return issues;
+//	};
 
 	/**
 	 * Get the list of tasks associated with place @p p

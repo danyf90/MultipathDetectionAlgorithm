@@ -2,7 +2,6 @@ package com.formichelli.vineyard;
 
 import java.util.ArrayList;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 
 import com.formichelli.vineyard.entities.IssueTask;
@@ -80,47 +79,37 @@ public class IssuesFragment extends Fragment {
 			upItem.setVisible(false);
 
 		if (activity.getCurrentPlace().getIssues() == null)
-			sendPlaceIssuesRequest();
+			sendPlaceIssuesAndTasksRequest();
 		else {
-//			issueAdapter = new IssueExpandableAdapter(activity,
-//					R.layout.issues_list_item, R.layout.issue_view, activity.getCurrentPlace().getIssues(),
-//					reportIssueOnClickListener, editOnClickListener,
-//					doneOnClickListener);
-//			issuesList.setAdapter(issueAdapter);
-
 			issueAdapter = new IssueExpandableAdapter(activity,
-					R.layout.issues_list_item, R.layout.issue_view, activity.getCurrentPlace().getIssues(),
+					R.layout.issues_list_item, R.layout.issue_view, activity
+							.getCurrentPlace().getIssues(),
 					reportIssueOnClickListener, editOnClickListener,
 					doneOnClickListener);
 			issuesList.setAdapter(issueAdapter);
 		}
 	}
 
-	public void sendPlaceIssuesRequest() {
-		activity.getCurrentPlace().setIssues(vineyardServer.getIssues(activity
-					.getCurrentPlace()));
+	public void sendPlaceIssuesAndTasksRequest() {
+		final String placeIssuesAndTasksRequest = String.format(
+				vineyardServer.getUrl() + ":" + vineyardServer.getPort()
+						+ VineyardServer.PLACE_ISSUES_API, activity
+						.getCurrentPlace().getId());
 
-		issueAdapter = new IssueExpandableAdapter(activity,
-				R.layout.issues_list_item, R.layout.issue_view, activity.getCurrentPlace().getIssues(),
-				reportIssueOnClickListener, editOnClickListener,
-				doneOnClickListener);
-		issuesList.setAdapter(issueAdapter);
-//		TODO
-//		final String placeIssuesRequest = vineyardServer.getUrl() + ":"
-//				+ vineyardServer.getPort()
-//				+ VineyardServer.PLACE_ISSUES_API;
-//
-//		new PlaceIssuesAsyncHttpRequest().execute(placeIssuesRequest);
+		new PlaceIssuesAsyncHttpRequest().execute(placeIssuesAndTasksRequest);
 	}
-	
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.action_issues_up:
 			activity.setCurrentPlace(activity.getCurrentPlace().getParent());
-			issueAdapter.replaceItems(vineyardServer.getIssues(activity
-					.getCurrentPlace()));
-
+			if (activity.getCurrentPlace().getIssues() == null)
+				sendPlaceIssuesAndTasksRequest();
+			else {
+				issueAdapter.replaceItems(activity.getCurrentPlace()
+						.getIssues());
+			}
 			if (activity.getCurrentPlace().getParent() == null)
 				upItem.setVisible(false);
 
@@ -154,38 +143,45 @@ public class IssuesFragment extends Fragment {
 		}
 	};
 
-	private class PlaceIssuesAsyncHttpRequest extends AsyncHttpRequests {
+	class PlaceIssuesAsyncHttpRequest extends AsyncHttpRequests {
+		private static final String TAG = "PlaceIssuesAsyncHttpRequest";
 
 		@Override
 		protected void onPreExecute() {
-			activity.switchFragment(activity.loadingFragment);
+			activity.switchFragment(activity.getLoadingFragment());
 		}
 
 		@Override
 		protected void onPostExecute(ArrayList<String> result) {
-			if (result != null && result.size() == 1 && result.get(0) != null) {
-				JSONArray issuesArray;
-				ArrayList<IssueTask> issues = new ArrayList<IssueTask>();
+			String issuesJSON;
 
-				try {
-					issuesArray = new JSONArray(result.get(0));
+			try {
+				if (result != null && result.size() == 1
+						&& result.get(0) != null) {
+					// request OK, parse JSON to get issues, cache data and show
+					// retrieved issues
+					issuesJSON = result.get(0);
 
-				} catch (JSONException e) {
-					return;
+					android.util.Log.e("sad", issuesJSON);
+					
+					activity.getCache().setPlaceIssuesJSON(
+							activity.getCurrentPlace().getId(), issuesJSON);
+
+				} else {
+					issuesJSON = activity.getCache().getPlaceIssuesJSON(
+							activity.getCurrentPlace().getId());
+
+					Toast.makeText(activity,
+							activity.getString(R.string.cache_data_used),
+							Toast.LENGTH_SHORT).show();
 				}
 
-				for (int i = 0, l = issuesArray.length(); i < l; i++) {
-					try {
-						issues.add(new IssueTask(issuesArray.getJSONObject(i)));
-					} catch (JSONException e) {
-					}
-				}
+				activity.getCurrentPlace().setIssues(issuesJSON);
+				activity.switchFragment();
 
-				activity.getCurrentPlace().setIssues(issues);
-
-				activity.switchFragment(activity.lastFragment);
-			} else {
-				// TODO
+			} catch (JSONException e) {
+				android.util.Log.e(TAG, e.getLocalizedMessage());
+				activity.getLoadingFragment().setError();
 			}
 		}
 	}
