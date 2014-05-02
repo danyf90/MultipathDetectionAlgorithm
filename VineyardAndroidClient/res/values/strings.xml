@@ -26,7 +26,7 @@
     <string name="action_send">Send</string>
     <string name="action_settings_restore">Restore default</string>
     <string name="action_up">Up</string>
-    <string name="loading_error_message">Server does not respond, check your internet connection!</string>
+    <string name="loading_error_message">Server does not respond and requested data are not available in cache, check your internet connection!</string>
     <string name="issues_label">Issues: </string>
     <string name="tasks_label">Tasks: </string>
     <string name="attributes_label">Attributes:</string>

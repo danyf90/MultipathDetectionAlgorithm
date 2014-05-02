@@ -288,6 +288,11 @@ public class VineyardMainActivity extends ImmersiveActivity implements
 				rootPlaceJSON = cache.getRootPlaceJSON();
 				statsJSON = cache.getPlacesStatsJSON();
 
+				if (rootPlace == null || statsJSON == null) {
+					loadingFragment.setError();
+					return;
+				}
+				
 				Toast.makeText(VineyardMainActivity.this,
 						getString(R.string.cache_data_used), Toast.LENGTH_SHORT)
 						.show();
