@@ -24,7 +24,7 @@ import android.widget.TextView;
 
 public class PlaceViewerFragment extends Fragment {
 	VineyardMainActivity activity;
-	TextView description, issuesCount, tasksCount, childrenIssuesCount,
+	TextView ancestors, description, issuesCount, tasksCount, childrenIssuesCount,
 			childrenTasksCount, childrenLabel;
 	ViewGroup attributesLabels, attributesValues, issues, tasks;
 	PlaceAdapter placeAdapter;
@@ -47,6 +47,9 @@ public class PlaceViewerFragment extends Fragment {
 
 		activity = (VineyardMainActivity) getActivity();
 
+		ancestors = (TextView) activity
+				.findViewById(R.id.place_view_ancestors);
+		
 		issues = (ViewGroup) activity.findViewById(R.id.place_view_issues);
 		issuesCount = (TextView) activity
 				.findViewById(R.id.place_view_issues_count);
@@ -143,6 +146,12 @@ public class PlaceViewerFragment extends Fragment {
 		else
 			upItem.setVisible(true);
 
+		// set ancestors
+		String ancestorsString = "";
+		for (Place p1 = p; p1 != null; p1 = p1.getParent())
+			ancestorsString = p1.getName() + " > " + ancestorsString;
+		ancestors.setText(ancestorsString.substring(0, ancestorsString.length()-3));
+		
 		// set photo TODO
 
 		// set issues count

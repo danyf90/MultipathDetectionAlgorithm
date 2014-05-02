@@ -11,9 +11,21 @@
         android:id="@+id/place_view_header"
         android:layout_width="match_parent"
         android:layout_height="200dp"
-        android:background="@color/wine_light"
-        android:padding="5dp" >
+        android:background="@color/wine_light" >
 
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white" >
+
+            <TextView
+                android:id="@+id/place_view_ancestors"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="@color/wine_dark" />
+        </HorizontalScrollView>
+        
         <!--
         <ImageView
             android:id="@+id/place_view_photo"
