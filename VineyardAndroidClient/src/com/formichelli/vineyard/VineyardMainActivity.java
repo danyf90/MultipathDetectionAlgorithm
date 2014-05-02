@@ -152,6 +152,9 @@ public class VineyardMainActivity extends ImmersiveActivity implements
 		case 3:
 			startActivity(new Intent(this, SettingsActivity.class));
 			return;
+		case 4:
+			startActivity(new Intent(this, LoginActivity.class));
+			return;
 		default:
 			// after loading is completed lastFragment will be shown
 			currentFragment = placeViewerFragment;

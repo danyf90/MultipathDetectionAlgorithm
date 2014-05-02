@@ -80,7 +80,8 @@ public class NavigationDrawerFragment extends Fragment {
 						getString(R.string.title_section_place_viewer),
 						getString(R.string.title_section_issues),
 						getString(R.string.title_section_tasks),
-						getString(R.string.title_section_settings), }));
+						getString(R.string.title_section_settings),
+						getString(R.string.title_section_logout) }));
 		mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
 
 		return mDrawerListView;
@@ -160,8 +161,8 @@ public class NavigationDrawerFragment extends Fragment {
 				// TODO set icons in ListView, works only here
 				final int drawables[] = { R.drawable.action_main,
 						R.drawable.action_issue, R.drawable.action_tasks,
-						R.drawable.action_settings };
-				for (int i = 0; i < 4; i++) {
+						R.drawable.action_settings, R.drawable.action_logout };
+				for (int i = 0; i < drawables.length; i++) {
 					TextView v = (TextView) mDrawerListView.getChildAt(i
 							- mDrawerListView.getFirstVisiblePosition());
 					if (v != null)

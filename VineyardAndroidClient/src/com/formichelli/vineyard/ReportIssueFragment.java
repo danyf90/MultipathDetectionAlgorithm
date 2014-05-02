@@ -124,7 +124,7 @@ public class ReportIssueFragment extends Fragment {
 
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		inflater.inflate(R.menu.menu_report_issue, menu);
+		inflater.inflate(R.menu.report_issue, menu);
 
 		this.menu = menu;
 

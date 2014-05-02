@@ -69,7 +69,7 @@ public class PlacePickerActivity extends ImmersiveActivity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.menu_place_picker, menu);
+		getMenuInflater().inflate(R.menu.place_picker, menu);
 		return true;
 	}
 

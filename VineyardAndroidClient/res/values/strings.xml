@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Vineyard</string>
-    <string name="place_picker_name">Place Picker</string>
-    <string name="settings_name">Settings</string>
+    <string name="activity_main">Vineyard</string>
+    <string name="activity_settings">Settings</string>
+    <string name="activity_login">Login</string>
+    <string name="activity_place_picker">Place Picker</string>
     <string name="title_section_place_viewer">Places</string>
     <string name="title_section_issues">Issues</string>
     <string name="title_section_tasks">Tasks</string>
     <string name="title_section_settings">Settings</string>
+    <string name="title_section_logout">Logout</string>
     <string name="title_report_issue">Report Issue</string>
     <string name="title_place_picker">Place Picker</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>

@@ -1,8 +1,5 @@
 package com.formichelli.vineyard;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -59,7 +56,7 @@ public class SettingsActivity extends PreferenceActivity implements
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.menu_settings, menu);
+		getMenuInflater().inflate(R.menu.settings, menu);
 
 		restoreDefault = menu.findItem(R.id.action_settings_restore);
 
@@ -203,7 +200,7 @@ public class SettingsActivity extends PreferenceActivity implements
 	protected Validity isValid(SharedPreferences sharedPreferences) {
 		int serverPort;
 		String serverURL;
-
+		final String URL_REGEX = "*"; // TODO
 		serverURL = sharedPreferences.getString(
 				getString(R.string.preference_server_url), null);
 
@@ -214,14 +211,8 @@ public class SettingsActivity extends PreferenceActivity implements
 			return Validity.NOT_VALID_SERVER_PORT;
 		}
 
-		if (serverURL == null) {
-			// is this a valid check ?
-			try {
-				new URL(serverURL);
-			} catch (MalformedURLException e) {
+		if (serverURL == null || !serverURL.matches(URL_REGEX))
 				return Validity.NOT_VALID_SERVER_URL;
-			}
-		}
 
 		if (serverPort < 1 || serverPort > 65535)
 			return Validity.NOT_VALID_SERVER_PORT;
@@ -324,9 +315,9 @@ public class SettingsActivity extends PreferenceActivity implements
 								| View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
 								| View.SYSTEM_UI_FLAG_FULLSCREEN
 								| View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
-		}
-		else {
-			getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
+		} else {
+			getWindow().getDecorView().setSystemUiVisibility(
+					View.SYSTEM_UI_FLAG_VISIBLE);
 		}
 	}
 

@@ -11,7 +11,7 @@
     
     <item
         android:id="@+id/action_place_viewer_refresh"
-        android:icon="@android:drawable/stat_notify_sync"
+        android:icon="@drawable/action_refresh"
         android:title="@string/action_refresh"
         app:showAsAction="ifRoom"/>
 

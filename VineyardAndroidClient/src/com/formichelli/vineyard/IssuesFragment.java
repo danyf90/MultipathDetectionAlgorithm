@@ -71,7 +71,7 @@ public class IssuesFragment extends Fragment {
 
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		inflater.inflate(R.menu.menu_issues, menu);
+		inflater.inflate(R.menu.issues, menu);
 
 		upItem = menu.findItem(R.id.action_issues_up);
 

@@ -96,7 +96,7 @@ public class PlaceViewerFragment extends Fragment {
 
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		inflater.inflate(R.menu.menu_place_viewer, menu);
+		inflater.inflate(R.menu.place_viewer, menu);
 
 		upItem = menu.findItem(R.id.action_place_viewer_up);
 
