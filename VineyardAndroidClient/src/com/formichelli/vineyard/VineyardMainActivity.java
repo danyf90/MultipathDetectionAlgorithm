@@ -12,7 +12,6 @@ import com.formichelli.vineyard.utilities.Cache;
 import com.formichelli.vineyard.utilities.VineyardServer;
 
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v4.app.Fragment;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -26,7 +25,7 @@ import android.view.Menu;
 import android.widget.Toast;
 import android.support.v4.widget.DrawerLayout;
 
-public class VineyardMainActivity extends ActionBarActivity implements
+public class VineyardMainActivity extends ImmersiveActivity implements
 		NavigationDrawerFragment.NavigationDrawerCallbacks {
 
 	public PlaceViewerFragment placeViewerFragment;
@@ -75,7 +74,7 @@ public class VineyardMainActivity extends ActionBarActivity implements
 
 		sp = PreferenceManager.getDefaultSharedPreferences(this);
 		cache = new Cache(sp);
-
+		
 		serverInit();
 	}
 
@@ -181,7 +180,7 @@ public class VineyardMainActivity extends ActionBarActivity implements
 			askExit();
 		return;
 	}
-
+	
 	private void askExit() {
 		new AlertDialog.Builder(this)
 				.setMessage(R.string.dialog_exit_message)

@@ -9,6 +9,9 @@
     <string name="preference_preload_all">preload_all</string>
     <string name="preference_preload_all_label">Preload all data on startup</string>
     <string name="preference_preload_all_default">false</string>
+    <string name="preference_immersive_mode">immersive_mode</string>
+    <string name="preference_immersive_mode_label">Immersive mode</string>
+    <string name="preference_immersive_mode_default">true</string>
     <string name="preference_server_settings">Server settings</string>
     <string name="preference_server_url">server_url</string>
     <string name="preference_server_url_label">Server URL</string>

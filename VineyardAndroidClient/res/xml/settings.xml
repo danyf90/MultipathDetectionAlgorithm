@@ -6,6 +6,10 @@
             android:defaultValue="@string/preference_preload_all_default"
             android:key="@string/preference_preload_all"
             android:title="@string/preference_preload_all_label" />
+        <CheckBoxPreference
+            android:defaultValue="@string/preference_immersive_mode_default"
+            android:key="@string/preference_immersive_mode"
+            android:title="@string/preference_immersive_mode_label" />
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/preference_server_settings" >
