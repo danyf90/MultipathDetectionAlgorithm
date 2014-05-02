@@ -80,17 +80,17 @@ abstract class TemporalORM extends AbstractORM {
         if($whereClause != "")
             $whereClause = " AND " . $whereClause;
         
-		$sql = $pdo->prepare("SELECT id FROM `" . $tableName . "` WHERE `end_time` IS NULL" . $whereClause);
+        $query = "SELECT id FROM `" . $tableName . "` WHERE `end_time` IS NULL" . $whereClause;
+        
+		$sql = $pdo->prepare($query);
 		$sql->execute($whereParams);
 		
-		$s = new static();
-		
 		while($id = $sql->fetchColumn()) {
-			$s->load($id);
+            // TODO check memory alloc/dealloc performances vs memory allocation size
+			$s = static::getById($id);
 			$scopedFunc($s);
+            unset($s);
 		}
-		
-		unset($s);
 	}
     
     public static function getHistoryById($id) {

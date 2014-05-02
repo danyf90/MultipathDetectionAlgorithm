@@ -79,13 +79,21 @@ class Place extends AbstractORM implements IResource {
                 }
             break;
 
-            case 2: // api/place/<id>/attribute
+            case 2: // api/place/<id>/attribute or api/place/<id>/issues
             
                 $id = array_shift($requestParameters);
             
-                switch($requestParameters[1]) {
+                switch($requestParameters[0]) {
                     case "attribute":
                         return static::handleAttributeRequest($method, $id);
+                    break;
+                    
+                    case "issues":
+                        return static::handleIssuesRequest($method, $id);
+                    break;
+                    
+                    case "tasks":
+                        return static::handleTasksRequest($method, $id);
                     break;
                     
                     default:
@@ -206,6 +214,40 @@ class Place extends AbstractORM implements IResource {
                     http_response_code(400); // Bad Request
             }
         }
+    }
+    
+     /**************************
+     * ISSUES/TASKS (PER PLACE) HANDLING
+     **************************/
+    
+    public static function handleIssuesRequest($method, $id) {
+        if ($method != "GET") {
+            http_response_code(501); // Not Implemented
+            return;
+        }
+        
+        $issues = array();
+        
+        Task::get(function($issue) use (&$issues) {
+            $issues[] = clone $issue;
+        }, "`place` = ? AND `issuer` IS NOT NULL", array($id));
+        
+        return json_encode($issues);
+    }
+    
+     public static function handleTasksRequest($method, $id) {
+        if ($method != "GET") {
+            http_response_code(501); // Not Implemented
+            return;
+        }
+        
+        $tasks = array();
+        
+        Task::get(function($task) use (&$tasks) {
+            $tasks[] = clone $task;
+        }, "`place` = ? AND `issuer` IS NULL", array($id));
+        
+        return json_encode($tasks);
     }
     
      /**************************

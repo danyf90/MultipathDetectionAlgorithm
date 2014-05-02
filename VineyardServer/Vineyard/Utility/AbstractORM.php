@@ -187,8 +187,10 @@ abstract class AbstractORM implements JsonSerializable {
         
          if($whereClause != "")
             $whereClause = " WHERE " . $whereClause;
-		
-		$sql = $pdo->prepare("SELECT id FROM `" . $tableName . "` " . $whereClause);
+        
+        $query = "SELECT id FROM `" . $tableName . "` " . $whereClause;
+        
+		$sql = $pdo->prepare($query);
 		$sql->execute($whereParams);
 		
 		while($id = $sql->fetchColumn()) {
