@@ -29,7 +29,7 @@ public class SettingsActivity extends PreferenceActivity implements
 	private static final String TAG = "SettingsActivity";
 
 	private enum Validity {
-		VALID, NOT_VALID_SERVER_URL, NOT_VALID_SERVER_PORT,
+		VALID
 	}
 
 	PreferenceScreen ps;
@@ -104,13 +104,6 @@ public class SettingsActivity extends PreferenceActivity implements
 				setPreferenceSummary(findPreference(key));
 				return;
 
-			case NOT_VALID_SERVER_URL:
-				msgId = R.string.preference_server_url_error;
-				break;
-
-			case NOT_VALID_SERVER_PORT:
-				msgId = R.string.preference_server_port_error;
-				break;
 			}
 
 			Toast.makeText(this, getString(msgId), Toast.LENGTH_SHORT).show();
@@ -198,25 +191,6 @@ public class SettingsActivity extends PreferenceActivity implements
 	 * @return result of the check as Validity enum
 	 */
 	protected Validity isValid(SharedPreferences sharedPreferences) {
-		int serverPort;
-		String serverURL;
-		final String URL_REGEX = "*"; // TODO
-		serverURL = sharedPreferences.getString(
-				getString(R.string.preference_server_url), null);
-
-		try {
-			serverPort = Integer.parseInt(sharedPreferences.getString(
-					getString(R.string.preference_server_port), "-1"));
-		} catch (NumberFormatException nfe) {
-			return Validity.NOT_VALID_SERVER_PORT;
-		}
-
-		if (serverURL == null || !serverURL.matches(URL_REGEX))
-				return Validity.NOT_VALID_SERVER_URL;
-
-		if (serverPort < 1 || serverPort > 65535)
-			return Validity.NOT_VALID_SERVER_PORT;
-
 		return Validity.VALID;
 	}
 
@@ -260,27 +234,23 @@ public class SettingsActivity extends PreferenceActivity implements
 		}
 
 		private void restorePreferences() {
-			setTextPreference(R.string.preference_server_url,
-					getString(R.string.preference_server_url_default));
-			setTextPreference(R.string.preference_server_port,
-					getString(R.string.preference_server_port_default));
 			setBooleanPreference(
 					R.string.preference_preload_all,
 					Boolean.valueOf(getString(R.string.preference_preload_all_default)));
 		}
 
-		private void setTextPreference(int id, String value) {
-			Editor e;
-
-			((EditTextPreference) ps.findPreference(getString(id)))
-					.setText(value);
-
-			e = ps.getSharedPreferences().edit();
-			e.putString(getString(id), value);
-			e.commit();
-
-			setPreferenceSummary(findPreference(getString(id)));
-		}
+//		private void setTextPreference(int id, String value) {
+//			Editor e;
+//
+//			((EditTextPreference) ps.findPreference(getString(id)))
+//					.setText(value);
+//
+//			e = ps.getSharedPreferences().edit();
+//			e.putString(getString(id), value);
+//			e.commit();
+//
+//			setPreferenceSummary(findPreference(getString(id)));
+//		}
 
 		private void setBooleanPreference(int id, Boolean value) {
 			Editor e;

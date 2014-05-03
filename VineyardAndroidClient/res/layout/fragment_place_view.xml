@@ -10,7 +10,8 @@
         android:id="@+id/place_view_header"
         android:layout_width="match_parent"
         android:layout_height="200dp"
-        android:background="@color/wine_light" >
+        android:background="@color/wine_light"
+        android:paddingBottom="5dp" >
 
         <HorizontalScrollView
             android:layout_width="match_parent"

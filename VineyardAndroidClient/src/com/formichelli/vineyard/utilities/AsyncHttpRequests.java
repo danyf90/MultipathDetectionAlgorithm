@@ -27,6 +27,9 @@ public class AsyncHttpRequests extends
 		ArrayList<String> results = new ArrayList<String>();
 		try {
 			for (String request : params) {
+				if (request == null)
+					return null;
+
 				Log.e("AsyncHttpRequest", "Sending GET request to " + request);
 				HttpResponse response = new DefaultHttpClient()
 						.execute(new HttpGet(request));

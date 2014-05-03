@@ -38,8 +38,7 @@ public class VineyardMainActivity extends ImmersiveActivity implements
 	Menu menu;
 	Place currentPlace, rootPlace;
 	String placesStatsJSON;
-	String serverURL = "http://vineyard-server.no-ip.org/";
-	int serverPort;
+	String serverURL;
 	ActionBar actionBar;
 	VineyardServer vineyardServer;
 	SharedPreferences sp;
@@ -64,6 +63,20 @@ public class VineyardMainActivity extends ImmersiveActivity implements
 
 		setContentView(R.layout.activity_vineyardmain);
 
+		sp = PreferenceManager.getDefaultSharedPreferences(this);
+
+		if (sp.getString(getString(R.string.preference_user_id), null) == null) {
+			startActivity(new Intent(this, LoginActivity.class));
+			return;
+		}
+
+		serverURL = sp.getString(getString(R.string.preference_server_url),
+				null);
+		if (serverURL == null) {
+			startActivity(new Intent(this, LoginActivity.class));
+			return;
+		}
+
 		mNavigationDrawerFragment = (NavigationDrawerFragment) getSupportFragmentManager()
 				.findFragmentById(R.id.navigation_drawer);
 
@@ -73,43 +86,13 @@ public class VineyardMainActivity extends ImmersiveActivity implements
 
 		actionBar = getSupportActionBar();
 
-		sp = PreferenceManager.getDefaultSharedPreferences(this);
 		cache = new Cache(sp);
 
 		serverInit();
 	}
 
-	@Override
-	protected void onStart() {
-		super.onStart();
-
-		// if the server settings have been changed reload places
-		if (serverSettingsAreChanged())
-			serverInit();
-	}
-
-	private boolean serverSettingsAreChanged() {
-		if (serverURL != sp.getString(
-				getString(R.string.preference_server_url),
-				getString(R.string.preference_server_url_default)))
-			return true;
-
-		if (serverPort != Integer.parseInt(sp.getString(
-				getString(R.string.preference_server_port),
-				getString(R.string.preference_server_port_default))))
-			return true;
-
-		return false;
-	}
-
 	private void serverInit() {
-		serverURL = sp.getString(getString(R.string.preference_server_url),
-				getString(R.string.preference_server_url_default));
-		serverPort = Integer.parseInt(sp.getString(
-				getString(R.string.preference_server_port),
-				getString(R.string.preference_server_port_default)));
-
-		vineyardServer = new VineyardServer(serverURL, serverPort);
+		vineyardServer = new VineyardServer(serverURL);
 
 		preloadAll = sp.getBoolean(getString(R.string.preference_preload_all),
 				Boolean.valueOf(getString(R.string.preference_preload_all)));
@@ -124,13 +107,14 @@ public class VineyardMainActivity extends ImmersiveActivity implements
 		// TODO
 		sendRootPlaceRequest();
 	}
-	
+
 	public void sendRootPlaceRequest() {
-		final String placesHierarchyRequest = vineyardServer.getUrl() + ":"
-				+ vineyardServer.getPort()
+		final String placesHierarchyRequest = vineyardServer.getUrl()
 				+ VineyardServer.PLACES_HIERARCHY_API;
-		final String placesStatsRequest = vineyardServer.getUrl() + ":"
-				+ vineyardServer.getPort() + VineyardServer.PLACES_STATS_API;
+		final String placesStatsRequest = vineyardServer.getUrl()
+				+ VineyardServer.PLACES_STATS_API;
+
+		android.util.Log.e("ASD", placesHierarchyRequest + placesStatsRequest);
 
 		new RootPlaceAsyncHttpRequest().execute(placesHierarchyRequest,
 				placesStatsRequest);
@@ -161,6 +145,7 @@ public class VineyardMainActivity extends ImmersiveActivity implements
 			startActivity(new Intent(this, SettingsActivity.class));
 			return;
 		case 4:
+			sp.edit().remove(getString(R.string.preference_user_id)).commit();
 			startActivity(new Intent(this, LoginActivity.class));
 			return;
 		default:
@@ -292,7 +277,7 @@ public class VineyardMainActivity extends ImmersiveActivity implements
 					loadingFragment.setError();
 					return;
 				}
-				
+
 				Toast.makeText(VineyardMainActivity.this,
 						getString(R.string.cache_data_used), Toast.LENGTH_SHORT)
 						.show();

@@ -117,8 +117,7 @@ public class IssuesFragment extends Fragment {
 
 	public void sendPlaceIssuesAndTasksRequest() {
 		final String placeIssuesAndTasksRequest = String.format(
-				vineyardServer.getUrl() + ":" + vineyardServer.getPort()
-						+ VineyardServer.PLACE_ISSUES_API, activity
+				vineyardServer.getUrl() + VineyardServer.PLACE_ISSUES_API, activity
 						.getCurrentPlace().getId());
 
 		new PlaceIssuesAsyncHttpRequest().execute(placeIssuesAndTasksRequest);

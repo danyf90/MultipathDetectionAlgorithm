@@ -4,9 +4,11 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -40,13 +42,17 @@ public class LoginActivity extends Activity {
 	// Values for email and password at the time of the login attempt.
 	private String mEmail;
 	private String mPassword;
+	private String mServerUrl;
 
 	// UI references.
 	private EditText mEmailView;
 	private EditText mPasswordView;
+	private EditText mServerUrlView;
 	private View mLoginFormView;
 	private View mLoginStatusView;
 	private TextView mLoginStatusMessageView;
+
+	SharedPreferences sp;
 
 	@Override
 	public void onBackPressed() {
@@ -60,12 +66,16 @@ public class LoginActivity extends Activity {
 
 		setContentView(R.layout.activity_login);
 
+		sp = PreferenceManager.getDefaultSharedPreferences(LoginActivity.this);
+
 		// Set up the login form.
-		mEmail = getIntent().getStringExtra(EXTRA_EMAIL);
 		mEmailView = (EditText) findViewById(R.id.email);
-		mEmailView.setText(mEmail);
+		mEmailView.setText(sp.getString(
+				getString(R.string.preference_user_email), null));
 
 		mPasswordView = (EditText) findViewById(R.id.password);
+		mPasswordView.setText(sp.getString(
+				getString(R.string.preference_user_password), null));
 		mPasswordView
 				.setOnEditorActionListener(new TextView.OnEditorActionListener() {
 					@Override
@@ -78,6 +88,10 @@ public class LoginActivity extends Activity {
 						return false;
 					}
 				});
+
+		mServerUrlView = (EditText) findViewById(R.id.server_url);
+		mServerUrlView.setText(sp.getString(
+				getString(R.string.preference_server_url), null));
 
 		mLoginFormView = findViewById(R.id.login_form);
 		mLoginStatusView = findViewById(R.id.login_status);
@@ -116,6 +130,14 @@ public class LoginActivity extends Activity {
 		// Store values at the time of the login attempt.
 		mEmail = mEmailView.getText().toString();
 		mPassword = mPasswordView.getText().toString();
+		mServerUrl = mServerUrlView.getText().toString();
+
+		sp.edit()
+				.putString(getString(R.string.preference_user_email), mEmail)
+				.putString(getString(R.string.preference_user_password),
+						mPassword)
+				.putString(getString(R.string.preference_server_url),
+						mServerUrl).commit();
 
 		boolean cancel = false;
 		View focusView = null;
@@ -152,7 +174,7 @@ public class LoginActivity extends Activity {
 			mLoginStatusMessageView.setText(R.string.login_progress_signing_in);
 			showProgress(true);
 			mAuthTask = new UserLoginTask();
-			mAuthTask.execute((Void) null);
+			mAuthTask.execute();
 		}
 	}
 
@@ -208,7 +230,7 @@ public class LoginActivity extends Activity {
 
 			try {
 				// Simulate network access.
-				Thread.sleep(2000);
+				Thread.sleep(1000);
 			} catch (InterruptedException e) {
 				return false;
 			}
@@ -231,6 +253,8 @@ public class LoginActivity extends Activity {
 			showProgress(false);
 
 			if (success) {
+				sp.edit().putString(getString(R.string.preference_user_id),
+						mEmail).commit();
 				finish();
 			} else {
 				mPasswordView
