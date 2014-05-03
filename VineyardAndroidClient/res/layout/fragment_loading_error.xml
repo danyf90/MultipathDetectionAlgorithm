@@ -5,7 +5,8 @@
     android:layout_height="match_parent"
     android:background="@drawable/background"
     android:gravity="center"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+    tools:context="com.formichelli.vineyard.LoadingFragment" >
 
     <TextView
         android:id="@+id/loading_error_message"

@@ -6,7 +6,8 @@
     android:background="@drawable/background"
     android:gravity="center"
     android:orientation="horizontal"
-    android:weightSum="3" >
+    android:weightSum="3"
+    tools:context="com.formichelli.vineyard.LoadingFragment" >
 
     <ProgressBar
         android:id="@+id/loading_progress"
