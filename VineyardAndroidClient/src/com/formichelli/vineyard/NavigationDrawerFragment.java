@@ -1,5 +1,7 @@
 package com.formichelli.vineyard;
 
+import java.util.Locale;
+
 import android.app.Activity;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -77,11 +79,11 @@ public class NavigationDrawerFragment extends Fragment {
 		mDrawerListView.setAdapter(new ArrayAdapter<String>(getActionBar()
 				.getThemedContext(), R.layout.drawer_list_item,
 				R.id.drawer_list_item_label, new String[] {
-						getString(R.string.title_section_place_viewer),
-						getString(R.string.title_section_issues),
-						getString(R.string.title_section_tasks),
-						getString(R.string.title_section_settings),
-						getString(R.string.title_section_logout) }));
+						getString(R.string.title_section_place_viewer).toUpperCase(Locale.US),
+						getString(R.string.title_section_issues).toUpperCase(Locale.US),
+						getString(R.string.title_section_tasks).toUpperCase(Locale.US),
+						getString(R.string.title_section_settings).toUpperCase(Locale.US),
+						getString(R.string.title_section_logout).toUpperCase(Locale.US) }));
 		mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
 
 		return mDrawerListView;
@@ -166,8 +168,8 @@ public class NavigationDrawerFragment extends Fragment {
 					TextView v = (TextView) mDrawerListView.getChildAt(i
 							- mDrawerListView.getFirstVisiblePosition());
 					if (v != null)
-						v.setCompoundDrawablesWithIntrinsicBounds(0, 0,
-								drawables[i], 0);
+						v.setCompoundDrawablesWithIntrinsicBounds(drawables[i], 0, 0,
+								0);
 				}
 			}
 		});
