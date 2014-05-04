@@ -43,13 +43,17 @@ DELETE	http://vineyard-server.org/issue/<id>/
 # add a photo and associate it to issue <id>
 POST http://vineyard-server.org/issue/<id>/photo
 
+# delete a photo associated to an issue
+DELETE http://vineyard-server.org/issue/<id>/photo/<filename>
+
 # get all photos associated with issue <id>
-GET http://vineyard-server.org/issue/<id>/photo
+# GET http://vineyard-server.org/issue/<id>/photo
+# Implemented in GET of issue/<id>
 
 ### PLACES
 -------------------------------------------
 
-# Get place(s) (already in hierarchy?, already with attributes?)
+# Get place(s) (already with attributes)
 GET http://vineyard-server.org/place
 GET http://vineyard-server.org/place/<id>/
 
@@ -62,12 +66,18 @@ POST http://vineyard-server.org/place/<id>/attribute/			<key, value in body URL 
 PUT http://vineyard-server.org/place/<id>/attribute/			<key, newValue in body URL encoded>
 DELETE http://vineyard-server.org/place/<id>/attribute/			<key in body, url encoded>
 
+# add/remove/update place photo
+POST http://vineyard-server.org/place/<id>/photo/       <add photo in $_POST to place>
+PUT http://vineyard-server.org/place/<id>/photo/        <replace current photo with photo in $_PUT to place (keep old one?)>
+DELETE http://vineyard-server.org/place/<id>/photo/     <remove current photo from place, put NULL, (keep old one?)>
+
 # add/remove child from place hierarchy
 # PUT/DELETE http://vineyard-server.org/place/<id>/child/<id>
 # Implemented with PUT on place modifying "parent" field
 
-# Get issues of place <id>
+# Get issues/tasks of place <id>
 GET http://vineyard-server.org/place/<id>/issues
+GET http://vineyard-server.org/place/<id>/tasks
 
 # Get statistics (issue/task count) of all places
 GET http://vineyard-server.org/place/stats
@@ -75,5 +85,8 @@ GET http://vineyard-server.org/place/stats
 # Get hierarchy
 GET http://vineyard-server.org/place/hierarchy
 
-http://vineyard-server.org/
+### PHOTO
+--------------------------------------------
+
+GET http://vineyard-server.org/photo/<filename>
 

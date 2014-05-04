@@ -9,8 +9,10 @@ use \Vineyard\Utility\IResource;
 use \Vineyard\Utility\AbstractORM;
 use \Vineyard\Utility\TCrudRequestHandlers;
 
-class Place extends AbstractORM implements IResource {
+use \Vineyard\Model\Photo;
 
+class Place extends AbstractORM implements IResource {
+    
     use TCrudRequestHandlers; // introduces handleRequestToBaseUri() and handleRequestToUriWithId()
 
     // TODO check method!
@@ -79,7 +81,7 @@ class Place extends AbstractORM implements IResource {
                 }
             break;
 
-            case 2: // api/place/<id>/attribute or api/place/<id>/issues
+            case 2: // api/place/<id>/attribute | api/place/<id>/issues | api/place/<id>/photo
             
                 $id = array_shift($requestParameters);
             
@@ -94,6 +96,10 @@ class Place extends AbstractORM implements IResource {
                     
                     case "tasks":
                         return static::handleTasksRequest($method, $id);
+                    break;
+                    
+                    case "photo":
+                        return static::handlePhotoRequest($method, $id);
                     break;
                     
                     default:
@@ -248,6 +254,91 @@ class Place extends AbstractORM implements IResource {
         }, "`place` = ? AND `issuer` IS NULL", array($id));
         
         return json_encode($tasks);
+    }
+    
+    /**************************
+     * PHOTO HANDLING
+     **************************/
+    
+    public static function handlePhotoRequest($method, $id) {
+        switch ($method) {
+            // creates or replaces the photo
+            case "POST":
+                static::insertPhoto($id);
+            break;
+            // delete the photo
+            case "DELETE":
+                static::deletePhoto($id);
+            break;
+            
+            // case "GET": already returned in object instance!
+            // case "PUT": use POST, it does the same thing
+            default:
+                http_response_code(501); // Not Implemented
+        }
+    }
+    
+    public static function insertPhoto($id) {
+
+        $filename = "p" . time() . "_" . $id;
+        
+        $filepath = Photo::getFullPhotoPath($filename);
+        
+        if (move_uploaded_file($_FILES['photo']['tmp_name'], $filepath)) {
+            
+            $pdo = DB::getConnection();
+            try {
+                
+                static::deletePhoto($id);
+                
+                $sql = $pdo->prepare("UPDATE `place` SET `photo` = ? WHERE `id` = ?");
+                $sql->execute(array($filename, $id));
+                
+                http_response_code(201); // Created
+                return; // TODO return URL: /api/place/$id/photo/<filename>
+                
+            } catch (PDOException $e) {
+                // check which SQL error occured
+                switch ($e->getCode()) {
+                    default:
+                        http_response_code(400); // Bad Request
+                }
+                
+                unlink($filepath);
+            }
+        } else {
+            http_response_code(500); // Internal Server Error
+            return;
+        }
+    }
+    
+    public static function deletePhoto($id) {
+        
+        $pdo = DB::getConnection();
+        
+        try {
+            $sql = $pdo->prepare("SELECT `photo` FROM `place` WHERE `id` = ?");
+            $sql->execute(array($id));
+            
+            $photoUrl = $sql->fetchColumn(0);
+            if ($photoUrl != null) {
+                $filepath = Photo::getFullPhotoPath($photoUrl);
+                if (file_exists($filepath))
+                    unlink($filepath);
+                
+                $sql = $pdo->prepare("UPDATE `place` SET `photo` = NULL WHERE `id` = ?");
+                $sql->execute(array($id));
+            }
+            
+            http_response_code(202); // Accepted
+            
+        } catch (PDOException $e) {
+            // check which SQL error occured
+            switch ($e->getCode()) {
+                default:
+                    http_response_code(400); // Bad Request
+            }
+        }
     }
     
      /**************************

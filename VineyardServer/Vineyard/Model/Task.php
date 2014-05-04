@@ -2,9 +2,13 @@
 
 namespace Vineyard\Model;
 
+use \PDO;
+use \Vineyard\Utility\DB;
 use \Vineyard\Utility\IResource;
 use \Vineyard\Utility\TemporalORM;
 use \Vineyard\Utility\TCrudRequestHandlers;
+
+use \Vineyard\Model\Photo;
 
 class Task extends TemporalORM implements IResource {
     
@@ -13,6 +17,37 @@ class Task extends TemporalORM implements IResource {
     // TODO check method!
     public function check() { return array(); }
     public static function getTableName() { return 'task'; }
+    
+    // Override AbstractORM::getById() to include task photos in object instance
+    static public function getById($id) {
+		if (!is_numeric($id)) {
+			http_response_code(400);
+			return;
+		}
+		
+		$s = new static();
+		$s->load($id);
+        
+        // add attributes to place instance
+        $pdo = DB::getConnection();
+        
+        try {
+            $sql = $pdo->prepare("SELECT `url` FROM `task_photo` WHERE `task` = ?");
+            $sql->execute(array($id));
+            // TODO better empty array if no photos?
+            if ($sql->rowCount() > 0)
+                $s->photos = $sql->fetchAll(PDO::FETCH_COLUMN, 0);
+            
+        } catch (PDOException $e) {
+            // check which SQL error occured
+            switch ($e->getCode()) {
+                default:
+                    http_response_code(400); // Bad Request
+            }
+        }
+
+		return $s;
+	}
     
     public static function handleRequest($method, array $requestParameters) {
 
@@ -40,7 +75,7 @@ class Task extends TemporalORM implements IResource {
                     break;
 
                     // case "DELETE": you must give me the url (filename) of the photo to delete
-                    // case "GET": not implemented, all attributes are already returned with a place resource
+                    // case "GET": not implemented, all attributes are already returned with a task resource
                     // case "PUT": not implemented, delete and recreate it
                     default:
                         http_response_code(501); // Not Implemented
@@ -60,13 +95,9 @@ class Task extends TemporalORM implements IResource {
                 $filename = array_shift($requestParameters);
 
                 switch ($method) {            
-                    case "GET":
-                        static::getPhotoData($filename);
-                        return;
-                    break;
                     
                     case "DELETE":
-                        return static::deletePhoto($filename);
+                        return static::deletePhoto($id, $filename);
                     break;
                     
                     case "POST": // cannot create with given filename: bad request
@@ -75,6 +106,7 @@ class Task extends TemporalORM implements IResource {
                     break;
                     
                     // case "PUT": not implemented, delete and recreate it!
+                    // case "GET": implemented in "Photo" resource
                     default:
                         http_response_code(501); // Not Implemented
                         return;
@@ -88,25 +120,15 @@ class Task extends TemporalORM implements IResource {
         }
     }
     
-    public static function getPhotoData($filename) {
-        if (!file_exists($filename)) {
-            http_response_code(404); // Not Found
-            return;
-        }
-        
-        header('Content-Type: image/jpg');
-        header('Content-Length: ' . filesize($filename));
-        readfile($filename);
-    }
-    
     public static function insertPhoto($id) {
         
         // same interface of an upload
+
+        $filename = "i" . time() . "_" . $id;
         
-        // TODO decide destination filename in f($id, ...)
-        $filename = "";
+        $filepath = Photo::getFullPhotoPath($filename);
         
-        if (move_uploaded_file($_FILES['photo_upload']['tmp_name'], $filename)) {
+        if (move_uploaded_file($_FILES['photo']['tmp_name'], $filepath)) {
             
             $pdo = DB::getConnection();
             try {
@@ -124,7 +146,7 @@ class Task extends TemporalORM implements IResource {
                         http_response_code(400); // Bad Request
                 }
                 
-                unlink($filename);
+                unlink($filepath);
             }
         } else {
             http_response_code(500); // Internal Server Error
@@ -135,9 +157,11 @@ class Task extends TemporalORM implements IResource {
     
     public static function deletePhoto($id, $filename) {
         
-        $filename = ""; // TODO
+        $filepath = Photo::getFullPhotoPath($filename);
         
-        if (file_exists($filename)) {
+        if (file_exists($filepath)) {
+            
+            $pdo = DB::getConnection();
             
             try {
                 $sql = $pdo->prepare("DELETE FROM `task_photo` WHERE `task` = ? AND `url` = ?");
@@ -147,7 +171,7 @@ class Task extends TemporalORM implements IResource {
                     http_response_code(202); // Accepted
                 else http_response_code(406); // Not Acceptable
                 
-                unlink($filename);
+                unlink($filepath);
                 return;
             } catch (PDOException $e) {
                 // check which SQL error occured

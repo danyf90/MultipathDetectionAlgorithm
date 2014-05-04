@@ -28,6 +28,7 @@ CREATE  TABLE IF NOT EXISTS `vineyard`.`place` (
   `parent` INT UNSIGNED NULL COMMENT 'ID del posto genitore se questo non è un elemento di primo livello, NULL altrimenti' ,
   `description` TEXT NULL DEFAULT NULL ,
   `location` POINT NULL DEFAULT NULL ,
+  `photo` VARCHAR(45) NULL DEFAULT NULL COMMENT 'url della foto' ,
   PRIMARY KEY (`id`) ,
   INDEX `fk_place_1_idx` (`parent` ASC) ,
   CONSTRAINT `fk_place_1`
@@ -94,7 +95,7 @@ COMMENT = 'contiene coppie gruppo-lavoratore, permette di descrivere la' /* comm
 -- -----------------------------------------------------
 CREATE  TABLE IF NOT EXISTS `vineyard`.`task` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT ,
-  `assignee` INT UNSIGNED NULL ,
+  `assigner` INT UNSIGNED NULL ,
   `create_time` TIMESTAMP NULL DEFAULT NULL,
   `assign_time` TIMESTAMP NULL DEFAULT NULL ,
   `due_time`TIMESTAMP  NULL DEFAULT NULL ,
@@ -113,7 +114,7 @@ CREATE  TABLE IF NOT EXISTS `vineyard`.`task` (
   INDEX `fk_task_2_idx` (`place` ASC) ,
   INDEX `fk_task_3_idx` (`assigned_group` ASC) ,
   INDEX `fk_task_4_idx` (`assigned_worker` ASC) ,
-  INDEX `fk_task_5_idx` (`assignee` ASC) ,
+  INDEX `fk_task_5_idx` (`assigner` ASC) ,
   INDEX `fk_task_1_idx` (`issuer` ASC) ,
   CONSTRAINT `fk_task_2`
     FOREIGN KEY (`place` )
@@ -131,7 +132,7 @@ CREATE  TABLE IF NOT EXISTS `vineyard`.`task` (
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_task_5`
-    FOREIGN KEY (`assignee` )
+    FOREIGN KEY (`assigner` )
     REFERENCES `vineyard`.`worker` (`id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
@@ -245,11 +246,11 @@ COMMIT;
 -- -----------------------------------------------------
 START TRANSACTION;
 USE `vineyard`;
-INSERT INTO `vineyard`.`task` (`id`, `assignee`, `create_time`, `assign_time`, `due_time`, `status`, `priority`, `issuer`, `place`, `title`, `description`, `location`, `assigned_worker`, `assigned_group`, `start_time`, `end_time`) VALUES (1, NULL, NOW(), NULL, NULL, 'new', 'not-set', 5, 3, 'Problema X', 'C\'è un problema con X', POINT(51,23), NULL, NULL, NOW(), NULL);
-INSERT INTO `vineyard`.`task` (`id`, `assignee`, `create_time`, `assign_time`, `due_time`, `status`, `priority`, `issuer`, `place`, `title`, `description`, `location`, `assigned_worker`, `assigned_group`, `start_time`, `end_time`) VALUES (2, NULL, NOW(), NULL, NULL, 'new', 'low', 4, 6, 'Problema Y', 'C\'è un problema con Y, assegnato', POINT(51,23), 4, NULL, NOW(), DATE_ADD(NOW(), INTERVAL 1 DAY));
-INSERT INTO `vineyard`.`task` (`id`, `assignee`, `create_time`, `assign_time`, `due_time`, `status`, `priority`, `issuer`, `place`, `title`, `description`, `location`, `assigned_worker`, `assigned_group`, `start_time`, `end_time`) VALUES (2, 6, NOW(), DATE_ADD(NOW(), INTERVAL 1 DAY), DATE_ADD(NOW(), INTERVAL 7 DAY), 'assigned', 'medium', 4, 6, 'Problema Y', 'C\'è un problema con Y, assegnato', POINT(51,23), 4, NULL, DATE_ADD(NOW(), INTERVAL 1 DAY), NULL);
-INSERT INTO `vineyard`.`task` (`id`, `assignee`, `create_time`, `assign_time`, `due_time`, `status`, `priority`, `issuer`, `place`, `title`, `description`, `location`, `assigned_worker`, `assigned_group`, `start_time`, `end_time`) VALUES (3, 2, NOW(), DATE_ADD(NOW(), INTERVAL 1 DAY), DATE_ADD(NOW(), INTERVAL 2 DAY), 'assigned', 'high', NULL, 2, 'Task Z', 'C\'è da fare Z', POINT(51,23), NULL, 1, NOW(), NULL);
-INSERT INTO `vineyard`.`task` (`id`, `assignee`, `create_time`, `assign_time`, `due_time`, `status`, `priority`, `issuer`, `place`, `title`, `description`, `location`, `assigned_worker`, `assigned_group`, `start_time`, `end_time`) VALUES (4, 1, NOW(), DATE_ADD(NOW(), INTERVAL 1 DAY), DATE_ADD(NOW(), INTERVAL 5 DAY), 'resolved', 'low', NULL, 11, 'Task ABC', 'ABC è questo e quest\'altro', POINT(51,23), 6, NULL, NOW(), NULL);
+INSERT INTO `vineyard`.`task` (`id`, `assigner`, `create_time`, `assign_time`, `due_time`, `status`, `priority`, `issuer`, `place`, `title`, `description`, `location`, `assigned_worker`, `assigned_group`, `start_time`, `end_time`) VALUES (1, NULL, NOW(), NULL, NULL, 'new', 'not-set', 5, 3, 'Problema X', 'C\'è un problema con X', POINT(51,23), NULL, NULL, NOW(), NULL);
+INSERT INTO `vineyard`.`task` (`id`, `assigner`, `create_time`, `assign_time`, `due_time`, `status`, `priority`, `issuer`, `place`, `title`, `description`, `location`, `assigned_worker`, `assigned_group`, `start_time`, `end_time`) VALUES (2, NULL, NOW(), NULL, NULL, 'new', 'low', 4, 6, 'Problema Y', 'C\'è un problema con Y, assegnato', POINT(51,23), 4, NULL, NOW(), DATE_ADD(NOW(), INTERVAL 1 DAY));
+INSERT INTO `vineyard`.`task` (`id`, `assigner`, `create_time`, `assign_time`, `due_time`, `status`, `priority`, `issuer`, `place`, `title`, `description`, `location`, `assigned_worker`, `assigned_group`, `start_time`, `end_time`) VALUES (2, 6, NOW(), DATE_ADD(NOW(), INTERVAL 1 DAY), DATE_ADD(NOW(), INTERVAL 7 DAY), 'assigned', 'medium', 4, 6, 'Problema Y', 'C\'è un problema con Y, assegnato', POINT(51,23), 4, NULL, DATE_ADD(NOW(), INTERVAL 1 DAY), NULL);
+INSERT INTO `vineyard`.`task` (`id`, `assigner`, `create_time`, `assign_time`, `due_time`, `status`, `priority`, `issuer`, `place`, `title`, `description`, `location`, `assigned_worker`, `assigned_group`, `start_time`, `end_time`) VALUES (3, 2, NOW(), DATE_ADD(NOW(), INTERVAL 1 DAY), DATE_ADD(NOW(), INTERVAL 2 DAY), 'assigned', 'high', NULL, 2, 'Task Z', 'C\'è da fare Z', POINT(51,23), NULL, 1, NOW(), NULL);
+INSERT INTO `vineyard`.`task` (`id`, `assigner`, `create_time`, `assign_time`, `due_time`, `status`, `priority`, `issuer`, `place`, `title`, `description`, `location`, `assigned_worker`, `assigned_group`, `start_time`, `end_time`) VALUES (4, 1, NOW(), DATE_ADD(NOW(), INTERVAL 1 DAY), DATE_ADD(NOW(), INTERVAL 5 DAY), 'resolved', 'low', NULL, 11, 'Task ABC', 'ABC è questo e quest\'altro', POINT(51,23), 6, NULL, NOW(), NULL);
 
 COMMIT;
 
