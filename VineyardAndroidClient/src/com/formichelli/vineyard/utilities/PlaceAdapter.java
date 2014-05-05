@@ -41,7 +41,6 @@ public class PlaceAdapter extends ArrayAdapter<Place> {
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		TextView t;
 		Place p = objects.get(position);
 		LayoutInflater inflater = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -49,14 +48,15 @@ public class PlaceAdapter extends ArrayAdapter<Place> {
 		View item = inflater.inflate(resource, parent, false);
 
 		item.findViewById(R.id.place_list_item).setTag(p);
-		
-		
-		t = (TextView) item.findViewById(R.id.place_list_item_label);
-		t.setText(p.getName());		
 
-		t = (TextView) item.findViewById(R.id.place_list_item_stats);
+		((TextView) item.findViewById(R.id.place_list_item_label)).setText(p
+				.getName());
+		
+		((TextView) item.findViewById(R.id.place_list_item_issues))
+				.setText(String.valueOf(p.getChildrenIssuesCount()));
 
-		t.setText("(" + p.getChildrenIssuesCount() + ", " + p.getChildrenTasksCount() + ")");
+		((TextView) item.findViewById(R.id.place_list_item_tasks))
+				.setText(String.valueOf(p.getChildrenTasksCount()));
 
 		return item;
 	}
@@ -65,9 +65,12 @@ public class PlaceAdapter extends ArrayAdapter<Place> {
 	public int getCount() {
 		return objects.size();
 	}
+
 	/**
 	 * Replace all items of the ListView
-	 * @param objects new objects of the ListView
+	 * 
+	 * @param objects
+	 *            new objects of the ListView
 	 */
 	public void replaceItems(ArrayList<Place> objects) {
 		this.objects = objects;
