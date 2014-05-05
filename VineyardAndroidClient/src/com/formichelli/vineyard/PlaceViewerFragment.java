@@ -162,7 +162,11 @@ public class PlaceViewerFragment extends Fragment {
 				ancestorsString.length() - 3));
 
 		// set photo
-		(new ImageLoader(activity, header, progress)).execute(p.getPhoto());
+		if (imageLoader != null)
+			imageLoader.cancel(true);
+		header.setBackgroundColor(getResources().getColor(R.color.wine_light));
+		imageLoader = new ImageLoader(activity, header, progress);
+		imageLoader.execute(p.getPhoto());
 
 		// set issues count
 		c = p.getIssuesCount();

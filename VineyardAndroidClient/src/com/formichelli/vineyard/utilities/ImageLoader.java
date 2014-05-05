@@ -17,7 +17,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 public class ImageLoader extends AsyncTask<String, Void, Bitmap> {
@@ -67,9 +66,6 @@ public class ImageLoader extends AsyncTask<String, Void, Bitmap> {
 			return;
 		}
 
-		ImageView i = new ImageView(activity);
-		i.setImageBitmap(photo);
 		container.setBackgroundDrawable(new BitmapDrawable(photo));
-		container.removeView(progress);
 	}
 }
