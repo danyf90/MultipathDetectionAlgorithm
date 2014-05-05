@@ -122,7 +122,15 @@ public class PlaceViewerFragment extends Fragment {
 	// onCreateOptionMenu, their calling order is different in different version
 	// of android
 	private void init() {
-		loadPlace(activity.getCurrentPlace());
+		
+		// loadPlace needs that the header is already placed in the layout
+		header.post(new Runnable() {
+		    @Override
+		    public void run() {
+		    	loadPlace(activity.getCurrentPlace());
+		    }
+		});
+		
 	}
 
 	@Override

@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -253,9 +254,11 @@ public class LoginActivity extends Activity {
 			showProgress(false);
 
 			if (success) {
-				sp.edit().putString(getString(R.string.preference_user_id),
-						mEmail).commit();
-				finish();
+				sp.edit()
+						.putString(getString(R.string.preference_user_id),
+								mEmail).commit();
+				startActivity(new Intent(LoginActivity.this,
+						VineyardMainActivity.class));
 			} else {
 				mPasswordView
 						.setError(getString(R.string.error_incorrect_password));

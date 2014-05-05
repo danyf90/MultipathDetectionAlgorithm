@@ -1,5 +1,7 @@
 package com.formichelli.vineyard.utilities;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Locale;
 
@@ -23,25 +25,36 @@ public class ImageLoader extends AsyncTask<String, Void, Bitmap> {
 	VineyardMainActivity activity;
 	ViewGroup container;
 	ProgressBar progress;
+	String filename;
 
-	public ImageLoader(VineyardMainActivity activity, ViewGroup container, ProgressBar progress) {
+	public ImageLoader(VineyardMainActivity activity, ViewGroup container,
+			ProgressBar progress) {
 		this.activity = activity;
 		this.container = container;
 		this.progress = progress;
+
+		filename = activity.getExternalCacheDir().getAbsolutePath() + "/";
 	}
 
 	@Override
 	protected void onPreExecute() {
 		progress.setVisibility(View.VISIBLE);
-		
+
 	}
 
 	@Override
 	protected Bitmap doInBackground(String... params) {
-		final String request = String.format(Locale.US, activity.getServer().getUrl() + "/api/photo/" + params[0]/*VineyardServer.PHOTO_API, params[0], container.getWidth(), container.getHeight()*/);
-		android.util.Log.e("ImageLoader", "Requesting image: " + request);
-		
+		filename += params[0];
+
+		if ((new File(filename)).exists())
+			return BitmapFactory.decodeFile(filename);
+
+
 		try {
+			final String request = String.format(Locale.US, activity.getServer()
+					.getUrl() + String.format(Locale.US, VineyardServer.PHOTO_API, params[0], container.getMeasuredWidth(),
+							container.getMeasuredHeight()));
+			android.util.Log.e("ASD",request);
 			HttpResponse response = new DefaultHttpClient()
 					.execute(new HttpGet(request));
 			StatusLine statusLine = response.getStatusLine();
@@ -59,13 +72,26 @@ public class ImageLoader extends AsyncTask<String, Void, Bitmap> {
 	@Override
 	protected void onPostExecute(Bitmap photo) {
 		progress.setVisibility(View.INVISIBLE);
-		
+
 		if (photo == null) {
 			android.util.Log.e("ASD", "null");
 			// TODO set no image
 			return;
 		}
 
+		saveBitmap(photo, filename);
 		container.setBackgroundDrawable(new BitmapDrawable(photo));
+	}
+
+	private void saveBitmap(Bitmap b, String filename) {
+		FileOutputStream out;
+		try {
+			out = new FileOutputStream(filename);
+			b.compress(Bitmap.CompressFormat.JPEG, 90, out);
+			out.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+			return;
+		}
 	}
 }

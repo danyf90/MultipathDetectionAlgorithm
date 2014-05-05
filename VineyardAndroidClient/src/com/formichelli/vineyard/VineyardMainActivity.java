@@ -70,6 +70,7 @@ public class VineyardMainActivity extends ImmersiveActivity implements
 
 		if (sp.getString(getString(R.string.preference_user_id), null) == null) {
 			startActivity(new Intent(this, LoginActivity.class));
+			finish();
 			return;
 		}
 
@@ -77,6 +78,7 @@ public class VineyardMainActivity extends ImmersiveActivity implements
 				null);
 		if (serverURL == null) {
 			startActivity(new Intent(this, LoginActivity.class));
+			finish();
 			return;
 		}
 
