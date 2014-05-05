@@ -7,7 +7,7 @@ use \Vineyard\Utility\IResource;
 class Photo implements IResource {
     
     const PHOTO_DIRECTORY = "Photo/";
-    const THUMB_DIRECTORY = static::PHOTO_DIRECTORY . "Thumb/";
+    const THUMB_DIRECTORY = "Photo/Thumb/";
 
     public static function handleRequest($method, array $requestParameters) {
         
@@ -29,7 +29,6 @@ class Photo implements IResource {
         }
         
         $filename = static::getThumbnailPath($filename);
-        
         static::echoPhotoData($filename);        
     }
     
@@ -47,7 +46,7 @@ class Photo implements IResource {
         
         // original image
         if ($w == 0 && $h == 0)
-            return $filename;
+            return static::PHOTO_DIRECTORY . $filename;
         
         if ($w == 0) // scale to width w
             $path = static::THUMB_DIRECTORY . "wx" . $h . "_" . $filename;
@@ -56,9 +55,9 @@ class Photo implements IResource {
         else
             $path = static::THUMB_DIRECTORY . $w . "x" . $h . "_" . $filename;
     
-        if (!file_exists(static::THUMB_DIRECTORY))
-            static::generateThumb($filename, $w, $h);
-        
+        if (!file_exists($path))
+            return static::generateThumb($filename, $w, $h);
+
         return $path;
     }
     
@@ -132,7 +131,8 @@ class Photo implements IResource {
         
         // save thumbnail
         imagejpeg($thumbnail, $thumbnailFilename);
-        
+
+        return $thumbnailFilename;
     }
     
     protected static function echoPhotoData($filename) {

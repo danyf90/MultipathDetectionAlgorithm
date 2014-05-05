@@ -32,7 +32,9 @@ class RequestRouter {
         
         // echo "Your request: ", $_SERVER['REQUEST_METHOD'], " ", $_SERVER['REQUEST_URI'];
         
-        $trimmedUri = trim($_SERVER['REQUEST_URI'], "/ ");
+        $uriWithoutParams = strtok($_SERVER['REQUEST_URI'], '?');
+        
+        $trimmedUri = trim($uriWithoutParams, "/ ");
         $requestParams = explode("/", $trimmedUri);
         
         array_shift($requestParams); // remove "api" from request parameters

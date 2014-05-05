@@ -159,10 +159,12 @@ Not Implemented Yet
 ### Worker
 
 * Get worker(s)
+
         GET http://vineyard-server.org/worker/
         GET http://vineyard-server.org/worker/<id>
 
 * CRUD on worker ID or username
+
         POST http://vineyard-server.org/worker/
         PUT/DELETE http://vineyard-server.org/worker/87
         PUT/DELETE http://vineyard-server.org/worker/pinco.pallo
@@ -170,14 +172,17 @@ Not Implemented Yet
 ### Group
 
 * get group(s)
+
         GET http://vineyard-server.org/group/
         GET http://vineyard-server.org/group/<id>
 
 * CRUD on group id
+
         POST http://vineyard-server.org/group/
         PUT/DELETE http://vineyard-server.org/group/<id>
 
 * add/remove a worker from a group
+
         PUT/DELETE http://vineyard-server.org/group/<gid>/worker/<wid>
 
 ### Task/Issue
