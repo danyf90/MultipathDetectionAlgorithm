@@ -7,6 +7,7 @@
         android:id="@+id/action_place_viewer_up"
         android:icon="@drawable/action_up"
         android:title="@string/action_up"
+        android:visible="false"
         app:showAsAction="ifRoom"/>
     
     <item

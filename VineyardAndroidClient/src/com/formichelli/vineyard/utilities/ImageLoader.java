@@ -49,12 +49,15 @@ public class ImageLoader extends AsyncTask<String, Void, Bitmap> {
 		if ((new File(filename)).exists())
 			return BitmapFactory.decodeFile(filename);
 
-
 		try {
-			final String request = String.format(Locale.US, activity.getServer()
-					.getUrl() + String.format(Locale.US, VineyardServer.PHOTO_API, params[0], container.getMeasuredWidth(),
-							container.getMeasuredHeight()));
-			android.util.Log.e("ASD",request);
+			final String request = String.format(
+					Locale.US,
+					activity.getServer().getUrl()
+							+ String.format(Locale.US,
+									VineyardServer.PHOTO_API, params[0],
+									container.getMeasuredWidth(),
+									container.getMeasuredHeight()));
+			android.util.Log.e("ASD", request);
 			HttpResponse response = new DefaultHttpClient()
 					.execute(new HttpGet(request));
 			StatusLine statusLine = response.getStatusLine();
@@ -87,7 +90,8 @@ public class ImageLoader extends AsyncTask<String, Void, Bitmap> {
 		FileOutputStream out;
 		try {
 			out = new FileOutputStream(filename);
-			b.compress(Bitmap.CompressFormat.JPEG, 90, out);
+			// JPEG loses quality
+			b.compress(Bitmap.CompressFormat.PNG, 90, out);
 			out.close();
 		} catch (IOException e) {
 			e.printStackTrace();

@@ -243,4 +243,16 @@ public class NavigationDrawerFragment extends Fragment {
 		 */
 		void onNavigationDrawerItemSelected(int position);
 	}
+
+	public void lock() {
+		getActionBar().setDisplayHomeAsUpEnabled(false);
+		mDrawerToggle.setDrawerIndicatorEnabled(false);
+		mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+	}
+	
+	public void unlock() {
+		getActionBar().setDisplayHomeAsUpEnabled(true);
+		mDrawerToggle.setDrawerIndicatorEnabled(true);
+		mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+	}
 }

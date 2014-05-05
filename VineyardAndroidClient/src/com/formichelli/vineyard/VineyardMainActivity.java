@@ -22,6 +22,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.util.Pair;
 import android.util.SparseArray;
 import android.view.Menu;
@@ -30,8 +31,9 @@ import android.support.v4.widget.DrawerLayout;
 
 public class VineyardMainActivity extends ImmersiveActivity implements
 		NavigationDrawerFragment.NavigationDrawerCallbacks {
+	public static final String TAG = "VineyardMainActivity";
 
-	public PlaceViewerFragment placeViewerFragment;
+	PlaceViewerFragment placeViewerFragment;
 	IssuesFragment issuesFragment;
 	TasksFragment tasksFragment;
 	LoadingFragment loadingFragment;
@@ -41,7 +43,7 @@ public class VineyardMainActivity extends ImmersiveActivity implements
 	Menu menu;
 	Place currentPlace, rootPlace;
 	String placesStatsJSON;
-	String serverURL;
+	String serverUrl, userId;
 	ActionBar actionBar;
 	VineyardServer vineyardServer;
 	SharedPreferences sp;
@@ -68,15 +70,11 @@ public class VineyardMainActivity extends ImmersiveActivity implements
 
 		sp = PreferenceManager.getDefaultSharedPreferences(this);
 
-		if (sp.getString(getString(R.string.preference_user_id), null) == null) {
-			startActivity(new Intent(this, LoginActivity.class));
-			finish();
-			return;
-		}
-
-		serverURL = sp.getString(getString(R.string.preference_server_url),
+		userId = sp.getString(getString(R.string.preference_user_id), null);
+		serverUrl = sp.getString(getString(R.string.preference_server_url),
 				null);
-		if (serverURL == null) {
+
+		if (userId == null || serverUrl == null) {
 			startActivity(new Intent(this, LoginActivity.class));
 			finish();
 			return;
@@ -97,7 +95,7 @@ public class VineyardMainActivity extends ImmersiveActivity implements
 	}
 
 	private void serverInit() {
-		vineyardServer = new VineyardServer(serverURL);
+		vineyardServer = new VineyardServer(serverUrl);
 
 		preloadAll = sp.getBoolean(getString(R.string.preference_preload_all),
 				Boolean.valueOf(getString(R.string.preference_preload_all)));
@@ -126,13 +124,6 @@ public class VineyardMainActivity extends ImmersiveActivity implements
 	@Override
 	public void onNavigationDrawerItemSelected(int position) {
 		Fragment nextFragment;
-
-		// don't allow switch while loading
-		if (currentFragment == loadingFragment) {
-			Toast.makeText(this, "Wait server response...", Toast.LENGTH_SHORT)
-					.show();
-			return;
-		}
 
 		switch (position) {
 		case 0:
@@ -265,6 +256,9 @@ public class VineyardMainActivity extends ImmersiveActivity implements
 
 		@Override
 		protected void onPreExecute() {
+			// TODO why can't I call setTitle from fragments?
+			VineyardMainActivity.this.setTitle(getString(R.string.loading));
+			mNavigationDrawerFragment.lock();
 			switchFragment(loadingFragment);
 		}
 
@@ -289,6 +283,8 @@ public class VineyardMainActivity extends ImmersiveActivity implements
 				statsJSON = cache.getPlacesStatsJSON();
 
 				if (rootPlace == null || statsJSON == null) {
+					Log.w(TAG, "rootPlace not available in sharedPreference");
+					VineyardMainActivity.this.setTitle(getString(R.string.loading_error));
 					loadingFragment.setError();
 					return;
 				}
@@ -302,8 +298,11 @@ public class VineyardMainActivity extends ImmersiveActivity implements
 				rootPlace = new Place(new JSONObject(rootPlaceJSON));
 				setCurrentPlace(rootPlace);
 				setStats(rootPlace, getStats(statsJSON));
+
+				mNavigationDrawerFragment.unlock();
 				switchFragment(lastFragment);
 			} catch (JSONException e) {
+				Log.e(TAG, e.getLocalizedMessage());
 				loadingFragment.setError();
 			}
 		}

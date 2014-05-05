@@ -37,5 +37,7 @@
     <string name="dialog_cancel">No</string>
     <string name="place_view_photo">Place photo</string>
     <string name="cache_data_used">Unable to contact server, last cached data has been used</string>
+    <string name="loading">Loading&#8230;</string>
+    <string name="loading_error">An error occurred</string>
 
 </resources>

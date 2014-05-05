@@ -34,5 +34,7 @@
     <string name="dialog_cancel">No</string>
     <string name="place_view_photo">Foto del luogo</string>
     <string name="cache_data_used">Impossibile contattare il server, sono stati utilizzati i dati presenti in cache</string>
+    <string name="loading">Caricamento&#8230;</string>
+    <string name="loading_error">Si è verificato un errore</string>
 
 </resources>
