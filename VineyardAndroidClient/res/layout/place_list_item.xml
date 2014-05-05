@@ -19,7 +19,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
-        android:drawableLeft="@drawable/action_tasks"
+        android:drawableLeft="@drawable/action_task_dark"
         android:drawablePadding="5dp"
         android:gravity="center_vertical"
         android:textAppearance="@android:style/TextAppearance.Medium"
@@ -28,7 +28,7 @@
 
     <TextView
         android:id="@+id/place_list_item_issues"
-        android:drawableLeft="@drawable/action_issue"
+        android:drawableLeft="@drawable/action_issue_dark"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toLeftOf="@id/place_list_item_tasks"

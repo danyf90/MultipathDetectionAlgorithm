@@ -79,11 +79,16 @@ public class NavigationDrawerFragment extends Fragment {
 		mDrawerListView.setAdapter(new ArrayAdapter<String>(getActionBar()
 				.getThemedContext(), R.layout.drawer_list_item,
 				R.id.drawer_list_item_label, new String[] {
-						getString(R.string.title_section_place_viewer).toUpperCase(Locale.US),
-						getString(R.string.title_section_issues).toUpperCase(Locale.US),
-						getString(R.string.title_section_tasks).toUpperCase(Locale.US),
-						getString(R.string.title_section_settings).toUpperCase(Locale.US),
-						getString(R.string.title_section_logout).toUpperCase(Locale.US) }));
+						getString(R.string.title_section_place_viewer)
+								.toUpperCase(Locale.US),
+						getString(R.string.title_section_issues).toUpperCase(
+								Locale.US),
+						getString(R.string.title_section_tasks).toUpperCase(
+								Locale.US),
+						getString(R.string.title_section_settings).toUpperCase(
+								Locale.US),
+						getString(R.string.title_section_logout).toUpperCase(
+								Locale.US) }));
 		mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
 
 		return mDrawerListView;
@@ -161,15 +166,17 @@ public class NavigationDrawerFragment extends Fragment {
 				mDrawerToggle.syncState();
 
 				// TODO set icons in ListView, works only here
-				final int drawables[] = { R.drawable.action_main,
-						R.drawable.action_issue, R.drawable.action_tasks,
-						R.drawable.action_settings, R.drawable.action_logout };
+				final int drawables[] = { R.drawable.action_place_dark,
+						R.drawable.action_issue_dark,
+						R.drawable.action_task_dark,
+						R.drawable.action_settings_dark,
+						R.drawable.action_logout_dark };
 				for (int i = 0; i < drawables.length; i++) {
 					TextView v = (TextView) mDrawerListView.getChildAt(i
 							- mDrawerListView.getFirstVisiblePosition());
 					if (v != null)
-						v.setCompoundDrawablesWithIntrinsicBounds(drawables[i], 0, 0,
-								0);
+						v.setCompoundDrawablesWithIntrinsicBounds(drawables[i],
+								0, 0, 0);
 				}
 			}
 		});

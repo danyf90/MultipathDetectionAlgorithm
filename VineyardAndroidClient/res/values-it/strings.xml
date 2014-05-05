@@ -28,6 +28,7 @@
     <string name="tasks_label">Lavori: </string>
     <string name="attributes_label">Attributi:</string>
     <string name="children_label">Figli: </string>
+    <string name="dialog_title">Sei sicuro?</string>
     <string name="dialog_exit_message">Sei sicuro di voler uscire?</string>
     <string name="dialog_confirm">Sì</string>
     <string name="dialog_cancel">No</string>

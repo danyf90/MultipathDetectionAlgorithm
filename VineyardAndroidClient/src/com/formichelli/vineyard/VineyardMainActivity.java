@@ -12,9 +12,12 @@ import com.formichelli.vineyard.utilities.Cache;
 import com.formichelli.vineyard.utilities.VineyardServer;
 
 import android.support.v7.app.ActionBar;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -178,21 +181,33 @@ public class VineyardMainActivity extends ImmersiveActivity implements
 	}
 
 	private void askExit() {
-		new AlertDialog.Builder(this)
-				.setMessage(R.string.dialog_exit_message)
-				.setPositiveButton(R.string.dialog_confirm,
-						new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog, int id) {
-								finish();
-							}
-						})
-				.setNegativeButton(R.string.dialog_cancel,
-						new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog, int id) {
-								return;
-							}
-						}).create().show();
-		;
+		new DialogFragment() {
+			@Override
+			public Dialog onCreateDialog(Bundle savedInstanceState) {
+				VineyardMainActivity activity = VineyardMainActivity.this;
+
+				return new AlertDialog.Builder(activity)
+						.setIcon(
+								activity.getResources().getDrawable(
+										R.drawable.action_place_dark))
+						.setTitle(activity.getString(R.string.dialog_title))
+						.setMessage(
+								activity.getString(R.string.dialog_exit_message))
+						.setPositiveButton(
+								activity.getString(R.string.dialog_confirm),
+								positiveClick)
+						.setNegativeButton(
+								activity.getString(R.string.dialog_cancel),
+								null).create();
+			}
+
+			OnClickListener positiveClick = new OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					VineyardMainActivity.this.finish();
+				}
+			};
+		}.show(getSupportFragmentManager(), "asd");
 	}
 
 	public void setRootPlace(Place rootPlace) {
