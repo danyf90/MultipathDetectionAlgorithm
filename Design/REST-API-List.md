@@ -187,3 +187,10 @@ Not Implemented Yet
         GET http://vineyard-server.org/task/new/
         GET http://vineyard-server.org/task/assigned/
         GET http://vineyard-server.org/task/resolved/
+
+### Photo
+
+* Get cropped version of a particular photo
+
+	GET http://vineyard-server.org/photo/<filename>/?w=<width>&h=<height>
+
