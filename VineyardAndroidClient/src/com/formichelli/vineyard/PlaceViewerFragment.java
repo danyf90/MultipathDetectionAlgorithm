@@ -3,10 +3,13 @@ package com.formichelli.vineyard;
 import java.util.HashMap;
 
 import com.formichelli.vineyard.entities.Place;
+import com.formichelli.vineyard.utilities.ImageLoader;
 import com.formichelli.vineyard.utilities.PlaceAdapter;
 
+import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -18,18 +21,23 @@ import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 public class PlaceViewerFragment extends Fragment {
 	VineyardMainActivity activity;
 	TextView ancestors, description, issuesCount, tasksCount,
 			childrenIssuesCount, childrenTasksCount;
-	ViewGroup attributesLabels, attributesValues, issues, tasks;
+	ViewGroup attributesLabels, attributesValues, issues, tasks, header;
+	ImageView photo;
 	PlaceAdapter placeAdapter;
 	ListView childrenList;
 	MenuItem upItem;
 	Drawable redBorder, whiteBorder;
+	ProgressBar progress;
+	AsyncTask<String, Void, Bitmap> imageLoader;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -48,6 +56,10 @@ public class PlaceViewerFragment extends Fragment {
 
 		ancestors = (TextView) activity.findViewById(R.id.place_view_ancestors);
 
+		header = (ViewGroup) activity.findViewById(R.id.place_view_header);
+		
+		progress = (ProgressBar) activity.findViewById(R.id.place_view_progress);
+		
 		issues = (ViewGroup) activity.findViewById(R.id.place_view_issues);
 		issuesCount = (TextView) activity
 				.findViewById(R.id.place_view_issues_count);
@@ -149,18 +161,18 @@ public class PlaceViewerFragment extends Fragment {
 		ancestors.setText(ancestorsString.substring(0,
 				ancestorsString.length() - 3));
 
-		// set photo TODO
+		// set photo
+		(new ImageLoader(activity, header, progress)).execute(p.getPhoto());
 
 		// set issues count
 		c = p.getIssuesCount();
 		issuesCount.setText(String.valueOf(c));
-		childrenIssuesCount.setText("(" + (p.getChildrenIssuesCount() - c)
-				+ ")");
+		childrenIssuesCount.setText("(" + (p.getChildrenIssuesCount() - c) + ")");
 		if (c != 0)
 			issues.setBackgroundDrawable(redBorder);
 		else
 			issues.setBackgroundDrawable(whiteBorder);
-
+		
 		// set tasks count
 		c = p.getTasksCount();
 		tasksCount.setText(String.valueOf(c));
@@ -210,4 +222,5 @@ public class PlaceViewerFragment extends Fragment {
 				}
 			});
 	}
+
 }

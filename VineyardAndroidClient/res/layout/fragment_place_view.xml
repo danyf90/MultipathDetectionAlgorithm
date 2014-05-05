@@ -23,9 +23,12 @@
             <RelativeLayout
                 android:id="@+id/place_view_header"
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:background="@color/wine_light"
-                android:paddingBottom="5dp" >
+                android:layout_height="200dp" >
+
+                <ProgressBar
+                    android:id="@+id/place_view_progress"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
 
                 <HorizontalScrollView
                     android:layout_width="match_parent"
@@ -39,15 +42,6 @@
                         android:textAppearance="?android:attr/textAppearanceSmall"
                         android:textColor="@color/wine_dark" />
                 </HorizontalScrollView>
-
-                <!--
-        <ImageView
-            android:id="@+id/place_view_photo"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/wine_light"
-            android:contentDescription="@string/place_view_photo" />
-                -->
 
                 <RelativeLayout
                     android:id="@+id/place_view_tasks"

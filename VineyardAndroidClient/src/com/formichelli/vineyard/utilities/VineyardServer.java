@@ -11,6 +11,7 @@ public class VineyardServer {
 	public final static String PLACES_STATS_API = "/api/place/stats";
 	public final static String PLACE_ISSUES_API = "/api/place/%d/issues";
 	public final static String PLACE_TASKS_API = "/api/place/%d/tasks";
+	public static final String PHOTO_API = "/api/photo/%s?w=%d&h=%d";
 
 	private String url;
 

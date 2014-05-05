@@ -15,12 +15,14 @@ public class Place {
 	private final static String ID = "id";
 	private final static String NAME = "name";
 	private final static String DESCRIPTION = "description";
+	private final static String PHOTO = "photo";
 	private final static String ATTRIBUTES = "attributes";
 	private final static String CHILDREN = "children";
 
 	private int id;
 	private String name;
 	private String description;
+	private String photo;
 	private Location location;
 	private Place parent;
 	private ArrayList<Place> children;
@@ -35,14 +37,15 @@ public class Place {
 		children = new ArrayList<Place>();
 	}
 
-	public Place(int id, String name, String description, Location location,
-			Place parent, ArrayList<Place> children,
+	public Place(int id, String name, String description, String photo,
+			Location location, Place parent, ArrayList<Place> children,
 			HashMap<String, String> attributes, int issuesCount,
 			int tasksCount, ArrayList<IssueTask> issues,
 			ArrayList<SimpleTask> tasks) {
 		setId(id);
 		setName(name);
 		setDescription(description);
+		setPhoto(photo);
 		setLocation(location);
 		setParent(parent);
 		setChildren(children);
@@ -62,18 +65,21 @@ public class Place {
 
 		setDescription(rootPlaceObject.getString(DESCRIPTION));
 
-		try {
-			setAttributes(rootPlaceObject.getJSONObject(ATTRIBUTES));
-		} catch (JSONException e) {
+
+		if (rootPlaceObject.has(PHOTO))
+			setPhoto(rootPlaceObject.getString(PHOTO));
+		else
 			attributes = new HashMap<String, String>();
-
-		}
-
-		try {
+		
+		if (rootPlaceObject.has(ATTRIBUTES))
+			setAttributes(rootPlaceObject.getJSONObject(ATTRIBUTES));
+		else
+			attributes = new HashMap<String, String>();
+		
+		if (rootPlaceObject.has(CHILDREN))
 			setChildren(rootPlaceObject.getJSONArray(CHILDREN));
-		} catch (JSONException e) {
+		else
 			children = new ArrayList<Place>();
-		}
 	}
 
 	public int getId() {
@@ -98,6 +104,14 @@ public class Place {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public String getPhoto() {
+		return photo;
+	}
+
+	public void setPhoto(String photo) {
+		this.photo = photo;
 	}
 
 	public Location getLocation() {
@@ -213,8 +227,6 @@ public class Place {
 	}
 
 	public void setAttributes(HashMap<String, String> attributes) {
-		if (attributes == null)
-			this.attributes = new HashMap<String, String>();
 		this.attributes = attributes;
 	}
 
@@ -237,6 +249,9 @@ public class Place {
 	}
 
 	public void addAttribute(String key, String value) {
+		if (attributes == null)
+			attributes = new HashMap<String, String>();
+		
 		attributes.put(key, value);
 	}
 
@@ -273,5 +288,4 @@ public class Place {
 
 		return tasksCount;
 	}
-
 }

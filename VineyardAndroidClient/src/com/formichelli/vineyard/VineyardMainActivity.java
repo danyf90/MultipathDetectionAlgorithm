@@ -117,8 +117,6 @@ public class VineyardMainActivity extends ImmersiveActivity implements
 		final String placesStatsRequest = vineyardServer.getUrl()
 				+ VineyardServer.PLACES_STATS_API;
 
-		android.util.Log.e("ASD", placesHierarchyRequest + placesStatsRequest);
-
 		new RootPlaceAsyncHttpRequest().execute(placesHierarchyRequest,
 				placesStatsRequest);
 	}
