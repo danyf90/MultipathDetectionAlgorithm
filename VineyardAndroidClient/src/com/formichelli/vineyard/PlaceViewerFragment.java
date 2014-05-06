@@ -1,10 +1,12 @@
 package com.formichelli.vineyard;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.formichelli.vineyard.entities.Place;
 import com.formichelli.vineyard.utilities.ImageLoader;
 import com.formichelli.vineyard.utilities.PlaceAdapter;
+import com.formichelli.vineyard.utilities.Util;
 
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
@@ -29,7 +31,7 @@ import android.widget.TextView;
 public class PlaceViewerFragment extends Fragment {
 	VineyardMainActivity activity;
 	TextView ancestors, description, issuesCount, tasksCount,
-			childrenIssuesCount, childrenTasksCount;
+			childrenIssuesCount, childrenTasksCount, childrenLabel;
 	ViewGroup attributesLabels, attributesValues, issues, tasks, header;
 	ImageView photo;
 	PlaceAdapter placeAdapter;
@@ -57,9 +59,10 @@ public class PlaceViewerFragment extends Fragment {
 		ancestors = (TextView) activity.findViewById(R.id.place_view_ancestors);
 
 		header = (ViewGroup) activity.findViewById(R.id.place_view_header);
-		
-		progress = (ProgressBar) activity.findViewById(R.id.place_view_progress);
-		
+
+		progress = (ProgressBar) activity
+				.findViewById(R.id.place_view_progress);
+
 		issues = (ViewGroup) activity.findViewById(R.id.place_view_issues);
 		issuesCount = (TextView) activity
 				.findViewById(R.id.place_view_issues_count);
@@ -80,8 +83,20 @@ public class PlaceViewerFragment extends Fragment {
 		attributesValues = (ViewGroup) activity
 				.findViewById(R.id.place_view_attributes_values);
 
+		childrenLabel = (TextView) activity
+				.findViewById(R.id.place_view_children_label);
 		childrenList = (ListView) activity
 				.findViewById(R.id.place_view_children_list);
+		placeAdapter = new PlaceAdapter(activity, R.layout.place_list_item,
+				null);
+		childrenList.setAdapter(placeAdapter);
+		childrenList.setOnItemClickListener(new OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
+				loadPlace((Place) view.getTag());
+			}
+		});
 
 		redBorder = getResources()
 				.getDrawable(R.drawable.white_with_red_border);
@@ -122,15 +137,15 @@ public class PlaceViewerFragment extends Fragment {
 	// onCreateOptionMenu, their calling order is different in different version
 	// of android
 	private void init() {
-		
+
 		// loadPlace needs that the header is already placed in the layout
 		header.post(new Runnable() {
-		    @Override
-		    public void run() {
-		    	loadPlace(activity.getCurrentPlace());
-		    }
+			@Override
+			public void run() {
+				loadPlace(activity.getCurrentPlace());
+			}
 		});
-		
+
 	}
 
 	@Override
@@ -179,12 +194,13 @@ public class PlaceViewerFragment extends Fragment {
 		// set issues count
 		c = p.getIssuesCount();
 		issuesCount.setText(String.valueOf(c));
-		childrenIssuesCount.setText("(" + (p.getChildrenIssuesCount() - c) + ")");
+		childrenIssuesCount.setText("(" + (p.getChildrenIssuesCount() - c)
+				+ ")");
 		if (c != 0)
 			issues.setBackgroundDrawable(redBorder);
 		else
 			issues.setBackgroundDrawable(whiteBorder);
-		
+
 		// set tasks count
 		c = p.getTasksCount();
 		tasksCount.setText(String.valueOf(c));
@@ -213,26 +229,22 @@ public class PlaceViewerFragment extends Fragment {
 				attributesValues.addView(t);
 			}
 
-		// set children
-		if (placeAdapter != null) {
-			placeAdapter.replaceItems(p.getChildren());
-		} else {
-			placeAdapter = new PlaceAdapter(activity, R.layout.place_list_item,
-					p.getChildren());
-			childrenList.setAdapter(placeAdapter);
-		}
+		ArrayList<Place> children = p.getChildren();
 
-		if (childrenList.getAdapter() == null)
-			childrenList.setAdapter(placeAdapter);
+		if (children.size() != 0) {
+			placeAdapter.replaceItems(children);
+			Util.fixListHeight(childrenList);
+			showChildren(true);
+		} else
+			showChildren(false);
 
-		if (childrenList.getOnItemClickListener() == null)
-			childrenList.setOnItemClickListener(new OnItemClickListener() {
-				@Override
-				public void onItemClick(AdapterView<?> parent, View view,
-						int position, long id) {
-					loadPlace((Place) view.getTag());
-				}
-			});
+	}
+
+	private void showChildren(boolean show) {
+		final int visibility = show ? View.VISIBLE : View.INVISIBLE;
+
+		childrenLabel.setVisibility(visibility);
+		childrenList.setVisibility(visibility);
 	}
 
 }

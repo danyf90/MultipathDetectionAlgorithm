@@ -5,13 +5,10 @@ import java.util.ArrayList;
 import org.json.JSONException;
 
 import com.formichelli.vineyard.entities.IssueTask;
-import com.formichelli.vineyard.entities.Place;
 import com.formichelli.vineyard.utilities.AsyncHttpRequests;
 import com.formichelli.vineyard.utilities.IssueExpandableAdapter;
-import com.formichelli.vineyard.utilities.PlaceAdapter;
 import com.formichelli.vineyard.utilities.VineyardServer;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -21,19 +18,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
-import android.widget.AdapterView;
 import android.widget.ExpandableListView;
-import android.widget.ListView;
 import android.widget.Toast;
-import android.widget.AdapterView.OnItemClickListener;
 
 public class IssuesFragment extends Fragment {
 	VineyardMainActivity activity;
 	VineyardServer vineyardServer;
 	ExpandableListView issuesList;
-	ListView childrenList;
 	IssueExpandableAdapter issueAdapter;
-	PlaceAdapter childrenAdapter;
 	MenuItem upItem;
 
 	@Override
@@ -46,15 +38,6 @@ public class IssuesFragment extends Fragment {
 	}
 
 	@Override
-	public void onAttach(Activity activity) {
-		super.onAttach(activity);
-
-		VineyardMainActivity vmactivity = (VineyardMainActivity) activity;
-		((VineyardMainActivity) vmactivity).setTitle(vmactivity
-				.getCurrentPlace().getName());
-	}
-
-	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 
@@ -62,8 +45,6 @@ public class IssuesFragment extends Fragment {
 		vineyardServer = activity.getServer();
 		issuesList = (ExpandableListView) activity
 				.findViewById(R.id.issues_issues_list);
-		childrenList = (ListView) activity
-				.findViewById(R.id.issues_children_list);
 
 		if (upItem != null)
 			init();
@@ -97,22 +78,8 @@ public class IssuesFragment extends Fragment {
 					doneOnClickListener);
 			issuesList.setAdapter(issueAdapter);
 
-			childrenAdapter = new PlaceAdapter(activity,
-					R.layout.place_list_item, activity.getCurrentPlace()
-							.getChildren());
-			childrenList.setAdapter(childrenAdapter);
-
-			childrenList.setOnItemClickListener(new OnItemClickListener() {
-				@Override
-				public void onItemClick(AdapterView<?> parent, View view,
-						int position, long id) {
-					activity.setCurrentPlace((Place) view.getTag());
-					init();
-				}
-			});
-
-			childrenList.setVisibility(View.VISIBLE);
 		}
+		
 	}
 
 	public void sendPlaceIssuesAndTasksRequest() {

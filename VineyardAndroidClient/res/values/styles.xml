@@ -34,8 +34,8 @@
     </style>
     
     <style name="PlaceViewButton">
+        <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_alignParentRight">true</item>
         <item name="android:layout_margin">5dp</item>
         <item name="android:background">@drawable/white_with_wine_border</item>
         <item name="android:orientation">horizontal</item>

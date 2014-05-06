@@ -141,6 +141,7 @@ public class VineyardMainActivity extends ImmersiveActivity implements
 		case 4:
 			sp.edit().remove(getString(R.string.preference_user_id)).commit();
 			startActivity(new Intent(this, LoginActivity.class));
+			finish();
 			return;
 		default:
 			// after loading is completed lastFragment will be shown

@@ -34,9 +34,15 @@ public class PlaceAdapter extends ArrayAdapter<Place> {
 	public PlaceAdapter(Context context, int resource, ArrayList<Place> objects) {
 		super(context, resource, objects);
 
+		
 		this.context = context;
+		
 		this.resource = resource;
-		this.objects = objects;
+
+		if (objects != null)		
+			this.objects = objects;
+		else
+			this.objects = new ArrayList<Place>();
 	}
 
 	@Override
