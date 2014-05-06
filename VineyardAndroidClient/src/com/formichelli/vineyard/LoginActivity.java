@@ -57,8 +57,7 @@ public class LoginActivity extends Activity {
 
 	@Override
 	public void onBackPressed() {
-		// close the application
-		moveTaskToBack(true);
+		finish();
 	}
 
 	@Override
@@ -259,6 +258,7 @@ public class LoginActivity extends Activity {
 								mEmail).commit();
 				startActivity(new Intent(LoginActivity.this,
 						VineyardMainActivity.class));
+				finish();
 			} else {
 				mPasswordView
 						.setError(getString(R.string.error_incorrect_password));

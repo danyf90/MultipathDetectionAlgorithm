@@ -51,8 +51,7 @@ public class NavigationDrawerFragment extends Fragment {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		// Select either the default item (0) or the last selected item.
-		selectItem(-1);
+		selectItem(0);
 	}
 
 	@Override
@@ -244,15 +243,11 @@ public class NavigationDrawerFragment extends Fragment {
 		void onNavigationDrawerItemSelected(int position);
 	}
 
-	public void lock() {
-		getActionBar().setDisplayHomeAsUpEnabled(false);
-		mDrawerToggle.setDrawerIndicatorEnabled(false);
-		mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
-	}
-	
-	public void unlock() {
-		getActionBar().setDisplayHomeAsUpEnabled(true);
-		mDrawerToggle.setDrawerIndicatorEnabled(true);
-		mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+	public void setLocked(boolean locked) {
+		getActionBar().setDisplayHomeAsUpEnabled(!locked);
+		mDrawerToggle.setDrawerIndicatorEnabled(!locked);
+		mDrawerLayout
+				.setDrawerLockMode(locked ? DrawerLayout.LOCK_MODE_LOCKED_CLOSED
+						: DrawerLayout.LOCK_MODE_UNLOCKED);
 	}
 }

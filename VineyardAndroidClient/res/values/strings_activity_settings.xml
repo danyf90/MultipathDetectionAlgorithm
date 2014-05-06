@@ -14,7 +14,7 @@
     <string name="preference_preload_all_default">false</string>
     <string name="preference_immersive_mode">immersive_mode</string>
     <string name="preference_immersive_mode_label">Immersive mode</string>
-    <string name="preference_immersive_mode_default">true</string>
+    <string name="preference_immersive_mode_default">false</string>
     <string name="preference_server_url">server_url</string>
     <string name="preference_server_url_error">Invalid server URL</string>
 </resources>

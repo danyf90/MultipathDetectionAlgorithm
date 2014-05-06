@@ -46,12 +46,14 @@ public class LoadingFragment extends Fragment {
 	}
 
 	public void setLoading() {
+		activity.setNavigationDrawerLocked(true);
 		activity.setTitle(activity.getString(R.string.loading));
 		mainLayout.removeAllViews();
 		mainLayout.addView(progressLayout);
 	}
 
 	public void setError() {
+		activity.setNavigationDrawerLocked(false);
 		activity.setTitle(activity.getString(R.string.loading_error));
 		mainLayout.removeAllViews();
 		mainLayout.addView(errorLayout);
@@ -65,4 +67,11 @@ public class LoadingFragment extends Fragment {
 			activity.sendRootPlaceRequest();
 		}
 	};
+	
+	@Override
+	public void onDetach() {
+		super.onDetach();
+		
+		activity.setNavigationDrawerLocked(false);
+	}
 }

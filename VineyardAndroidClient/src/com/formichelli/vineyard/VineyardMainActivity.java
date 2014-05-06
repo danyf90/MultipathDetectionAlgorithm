@@ -77,8 +77,7 @@ public class VineyardMainActivity extends ImmersiveActivity implements
 				null);
 
 		if (userId == null || serverUrl == null) {
-			startActivity(new Intent(this, LoginActivity.class));
-			moveTaskToBack(true);
+			startLoginActivity();
 			return;
 		}
 
@@ -122,35 +121,31 @@ public class VineyardMainActivity extends ImmersiveActivity implements
 	}
 
 	@Override
-	public void onNavigationDrawerItemSelected(int position) {
-		Fragment nextFragment;
-
-		switch (position) {
+	public void onNavigationDrawerItemSelected(int position) {switch (position) {
 		case 0:
-			nextFragment = placeViewerFragment;
+			switchFragment(placeViewerFragment);
 			break;
 		case 1:
-			nextFragment = issuesFragment;
+			switchFragment(issuesFragment);
 			break;
 		case 2:
-			nextFragment = tasksFragment;
+			switchFragment(tasksFragment);
 			break;
 		case 3:
 			startActivity(new Intent(this, SettingsActivity.class));
 			return;
 		case 4:
 			sp.edit().remove(getString(R.string.preference_user_id)).commit();
-			startActivity(new Intent(this, LoginActivity.class));
-			moveTaskToBack(true);
+			startLoginActivity();
 			return;
 		default:
-			// after loading is completed lastFragment will be shown
-			currentFragment = placeViewerFragment;
-			nextFragment = loadingFragment;
-			break;
+			return;
 		}
+	}
 
-		switchFragment(nextFragment);
+	private void startLoginActivity() {
+		startActivity(new Intent(this, LoginActivity.class));
+		finish();
 	}
 
 	@Override
@@ -257,8 +252,6 @@ public class VineyardMainActivity extends ImmersiveActivity implements
 
 		@Override
 		protected void onPreExecute() {
-			// TODO why can't I call setTitle from fragments?
-			mNavigationDrawerFragment.lock();
 			switchFragment(loadingFragment);
 		}
 
@@ -298,7 +291,7 @@ public class VineyardMainActivity extends ImmersiveActivity implements
 				setCurrentPlace(rootPlace);
 				setStats(rootPlace, getStats(statsJSON));
 
-				mNavigationDrawerFragment.unlock();
+				setNavigationDrawerLocked(false);
 				switchFragment(lastFragment);
 			} catch (JSONException e) {
 				Log.e(TAG, e.getLocalizedMessage());
@@ -369,6 +362,10 @@ public class VineyardMainActivity extends ImmersiveActivity implements
 
 	public LoadingFragment getLoadingFragment() {
 		return loadingFragment;
+	}
+
+	public void setNavigationDrawerLocked(boolean lock) {
+		mNavigationDrawerFragment.setLocked(lock);
 	};
 
 }

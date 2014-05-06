@@ -145,8 +145,6 @@ public class PlaceViewerFragment extends Fragment {
 				loadPlace(activity.getCurrentPlace());
 			}
 		});
-
-		first = false;
 	}
 
 	@Override
@@ -170,6 +168,9 @@ public class PlaceViewerFragment extends Fragment {
 	@SuppressWarnings("deprecation")
 	public void loadPlace(Place p) {
 		int c;
+		
+		if (p == null)
+			return;
 
 		activity.setCurrentPlace(p);
 
