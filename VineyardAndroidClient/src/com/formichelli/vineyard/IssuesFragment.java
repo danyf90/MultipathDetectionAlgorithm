@@ -30,6 +30,7 @@ public class IssuesFragment extends Fragment {
 	IssueExpandableAdapter issueAdapter;
 	MenuItem upItem;
 	TextView noIssuesMessage;
+	boolean first;
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -44,6 +45,8 @@ public class IssuesFragment extends Fragment {
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 
+		first = true;
+		
 		activity = (VineyardMainActivity) getActivity();
 		vineyardServer = activity.getServer();
 		issuesList = (ExpandableListView) activity
@@ -51,9 +54,6 @@ public class IssuesFragment extends Fragment {
 
 		noIssuesMessage = (TextView) activity
 				.findViewById(R.id.issues_no_issues);
-		
-		if (upItem != null)
-			init();
 	}
 
 	@Override
@@ -62,16 +62,15 @@ public class IssuesFragment extends Fragment {
 
 		upItem = menu.findItem(R.id.action_issues_up);
 
-		if (activity != null)
+		if (first)
 			init();
+		else
+			first = false;
 
 		super.onCreateOptionsMenu(menu, inflater);
 	}
 
-	private void init() {
-		if (issueAdapter != null)
-			return;
-		
+	private void init() {		
 		if (activity.getCurrentPlace().getParent() != null)
 			upItem.setVisible(true);
 		else
@@ -159,8 +158,6 @@ public class IssuesFragment extends Fragment {
 					// request OK, parse JSON to get issues, cache data and show
 					// retrieved issues
 					issuesJSON = result.get(0);
-
-					android.util.Log.e("sad", issuesJSON);
 
 					activity.getCache().setPlaceIssuesJSON(
 							activity.getCurrentPlace().getId(), issuesJSON);

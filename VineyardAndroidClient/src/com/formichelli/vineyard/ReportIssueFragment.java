@@ -51,6 +51,7 @@ public class ReportIssueFragment extends Fragment {
 	EditText title, description;
 	Menu menu;
 	int imagePadding;
+	boolean first;
 
 	public void setIssue(IssueTask i) {
 		this.i = i;
@@ -78,6 +79,8 @@ public class ReportIssueFragment extends Fragment {
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 
+		first = true;
+		
 		activity = (VineyardMainActivity) getActivity();
 		vineyardServer = activity.getServer();
 		
@@ -119,9 +122,6 @@ public class ReportIssueFragment extends Fragment {
 			}
 		});
 		placeButton.setText(activity.getCurrentPlace().getName());
-
-		if (menu != null)
-			init();
 	}
 
 	@Override
@@ -129,19 +129,18 @@ public class ReportIssueFragment extends Fragment {
 		inflater.inflate(R.menu.report_issue, menu);
 
 		this.menu = menu;
-
-		if (activity != null)
+		
+		if (first)
 			init();
+		else
+			first = false;
 
 		super.onCreateOptionsMenu(menu, inflater);
 	}
 
 	// This function must be called after both onActivityCreated and
-	// onCreateOptionMenu, their calling order is different in different version of android
+	// onCreateOptionMenu but only once
 	private void init() {
-		if (gallery != null)
-			return;
-
 		gallery = new Gallery(activity, (LinearLayout) activity
 				.findViewById(R.id.report_issue_gallery), true,
 				menu.findItem(R.id.action_report_issue_delete_selected_photos));

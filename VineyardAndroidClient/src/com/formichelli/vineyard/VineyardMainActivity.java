@@ -60,6 +60,8 @@ public class VineyardMainActivity extends ImmersiveActivity implements
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		actionBar = getSupportActionBar();
+		
 		placeViewerFragment = new PlaceViewerFragment();
 		issuesFragment = new IssuesFragment();
 		tasksFragment = new TasksFragment();
@@ -76,7 +78,7 @@ public class VineyardMainActivity extends ImmersiveActivity implements
 
 		if (userId == null || serverUrl == null) {
 			startActivity(new Intent(this, LoginActivity.class));
-			finish();
+			moveTaskToBack(true);
 			return;
 		}
 
@@ -86,8 +88,6 @@ public class VineyardMainActivity extends ImmersiveActivity implements
 		// Set up the drawer.
 		mNavigationDrawerFragment.setUp(R.id.navigation_drawer,
 				(DrawerLayout) findViewById(R.id.drawer_layout));
-
-		actionBar = getSupportActionBar();
 
 		cache = new Cache(sp);
 
@@ -141,7 +141,7 @@ public class VineyardMainActivity extends ImmersiveActivity implements
 		case 4:
 			sp.edit().remove(getString(R.string.preference_user_id)).commit();
 			startActivity(new Intent(this, LoginActivity.class));
-			finish();
+			moveTaskToBack(true);
 			return;
 		default:
 			// after loading is completed lastFragment will be shown

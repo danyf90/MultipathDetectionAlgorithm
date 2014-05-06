@@ -119,9 +119,6 @@ public class PlaceViewerFragment extends Fragment {
 				activity.switchFragment(activity.tasksFragment);
 			}
 		});
-
-		if (upItem != null)
-			init();
 	}
 
 	@Override
@@ -130,19 +127,17 @@ public class PlaceViewerFragment extends Fragment {
 
 		upItem = menu.findItem(R.id.action_place_viewer_up);
 
-		if (activity != null)
+		if (first)
 			init();
+		else
+			first = false;
 
 		super.onCreateOptionsMenu(menu, inflater);
 	}
 
 	// This function must be called after both onActivityCreated and
-	// onCreateOptionMenu, their calling order is different in different version
-	// of android
+	// onCreateOptionMenu but only once
 	private void init() {
-		if (!first)
-			return;
-
 		// loadPlace needs that the header is already placed in the layout
 		header.post(new Runnable() {
 			@Override
