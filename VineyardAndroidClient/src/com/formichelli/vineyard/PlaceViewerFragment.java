@@ -39,6 +39,7 @@ public class PlaceViewerFragment extends Fragment {
 	MenuItem upItem;
 	Drawable redBorder, whiteBorder;
 	ProgressBar progress;
+	boolean first;
 	AsyncTask<String, Void, Bitmap> imageLoader;
 
 	@Override
@@ -53,6 +54,8 @@ public class PlaceViewerFragment extends Fragment {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
+
+		first = true;
 
 		activity = (VineyardMainActivity) getActivity();
 
@@ -137,6 +140,8 @@ public class PlaceViewerFragment extends Fragment {
 	// onCreateOptionMenu, their calling order is different in different version
 	// of android
 	private void init() {
+		if (!first)
+			return;
 
 		// loadPlace needs that the header is already placed in the layout
 		header.post(new Runnable() {
@@ -146,6 +151,7 @@ public class PlaceViewerFragment extends Fragment {
 			}
 		});
 
+		first = false;
 	}
 
 	@Override

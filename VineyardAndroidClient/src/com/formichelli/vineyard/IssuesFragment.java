@@ -69,6 +69,9 @@ public class IssuesFragment extends Fragment {
 	}
 
 	private void init() {
+		if (issueAdapter != null)
+			return;
+		
 		if (activity.getCurrentPlace().getParent() != null)
 			upItem.setVisible(true);
 		else

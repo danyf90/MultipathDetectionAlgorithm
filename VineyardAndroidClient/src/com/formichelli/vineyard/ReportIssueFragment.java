@@ -139,6 +139,8 @@ public class ReportIssueFragment extends Fragment {
 	// This function must be called after both onActivityCreated and
 	// onCreateOptionMenu, their calling order is different in different version of android
 	private void init() {
+		if (gallery != null)
+			return;
 
 		gallery = new Gallery(activity, (LinearLayout) activity
 				.findViewById(R.id.report_issue_gallery), true,
