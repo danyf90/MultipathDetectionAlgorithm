@@ -7,7 +7,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.formichelli.vineyard.entities.Place;
-import com.formichelli.vineyard.utilities.AsyncHttpRequests;
+import com.formichelli.vineyard.utilities.AsyncHttpGetRequests;
 import com.formichelli.vineyard.utilities.Cache;
 import com.formichelli.vineyard.utilities.VineyardServer;
 
@@ -49,7 +49,7 @@ public class VineyardMainActivity extends ImmersiveActivity implements
 	SharedPreferences sp;
 	Cache cache;
 	boolean preloadAll;
-	AsyncHttpRequests asyncTask;
+	AsyncHttpGetRequests asyncTask;
 
 	/**
 	 * Fragment managing the behaviors, interactions and presentation of the
@@ -258,7 +258,7 @@ public class VineyardMainActivity extends ImmersiveActivity implements
 		return vineyardServer;
 	}
 
-	private class RootPlaceAsyncHttpRequest extends AsyncHttpRequests {
+	private class RootPlaceAsyncHttpRequest extends AsyncHttpGetRequests {
 
 		@Override
 		protected void onPreExecute() {

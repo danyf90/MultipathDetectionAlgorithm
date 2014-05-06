@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import org.json.JSONException;
 
-import com.formichelli.vineyard.utilities.AsyncHttpRequests;
+import com.formichelli.vineyard.utilities.AsyncHttpGetRequests;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -54,7 +54,7 @@ public class TasksFragment extends Fragment {
 		}
 	}
 
-	class PlaceTasksAsyncHttpRequest extends AsyncHttpRequests {
+	class PlaceTasksAsyncHttpRequest extends AsyncHttpGetRequests {
 		private static final String TAG = "PlaceTasksAsyncHttpRequest";
 
 		@Override

@@ -3,6 +3,7 @@
 
     <string name="preference_settings_restored">Le impostazioni sono state ripristinate</string>
     <string name="preference_settings_restore_title">Sei sicuro di voler ripristinare le impostazioni?</string>
+    <string name="preference_settings_restore_confirm">Sì</string>
     <string name="preference_general_settings">Impostazioni generali</string>
     <string name="preference_preload_all_label">Carica tutti i dati all\'avvio</string>
     <string name="preference_immersive_mode_label">Modalità immersione</string>

@@ -12,6 +12,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -92,7 +93,17 @@ public class NavigationDrawerFragment extends Fragment {
 
 		return mDrawerListView;
 	}
-
+	
+	/* Called whenever we call invalidateOptionsMenu() */
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        // If the nav drawer is open, hide action items related to the content view
+    	if (isDrawerOpen())
+    		menu.clear();
+        
+    	super.onPrepareOptionsMenu(menu);
+    }
+	
 	public boolean isDrawerOpen() {
 		return mDrawerLayout != null
 				&& mDrawerLayout.isDrawerOpen(mFragmentContainerView);
@@ -141,9 +152,9 @@ public class NavigationDrawerFragment extends Fragment {
 				if (!isAdded()) {
 					return;
 				}
-
-				getActivity().supportInvalidateOptionsMenu(); // calls
-																// onPrepareOptionsMenu()
+				
+				// calls onPrepareOptionsMenu()
+				getActivity().supportInvalidateOptionsMenu(); 
 			}
 
 			@Override
@@ -164,7 +175,6 @@ public class NavigationDrawerFragment extends Fragment {
 			public void run() {
 				mDrawerToggle.syncState();
 
-				// TODO set icons in ListView, works only here
 				final int drawables[] = { R.drawable.action_place_dark,
 						R.drawable.action_issue_dark,
 						R.drawable.action_task_dark,

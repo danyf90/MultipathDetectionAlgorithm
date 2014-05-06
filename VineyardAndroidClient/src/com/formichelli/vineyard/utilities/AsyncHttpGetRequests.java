@@ -14,14 +14,14 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 /**
- * Sends an http request an asynchronously returns the response
+ * Sends n http GET requests and asynchronously returns the responses
  */
-public class AsyncHttpRequests extends
+public class AsyncHttpGetRequests extends
 		AsyncTask<String, Void, ArrayList<String>> {
-	private final static String TAG = "AsyncHttpRequest";
+	private final static String TAG = "AsyncHttpGetRequests";
 
 	/**
-	 * Sends a request to params[i] for each element i of @p params
+	 * Sends a GET request params[i] for each element i of @p params
 	 */
 	@Override
 	protected ArrayList<String> doInBackground(String... params) {
@@ -32,8 +32,10 @@ public class AsyncHttpRequests extends
 					return null;
 
 				Log.i(TAG, "Sending GET request to " + request);
+
 				HttpResponse response = new DefaultHttpClient()
 						.execute(new HttpGet(request));
+
 				StatusLine statusLine = response.getStatusLine();
 				switch (statusLine.getStatusCode()) {
 				case HttpStatus.SC_OK:

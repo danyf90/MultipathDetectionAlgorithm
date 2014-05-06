@@ -79,10 +79,10 @@ public class ReportIssueFragment extends Fragment {
 		super.onActivityCreated(savedInstanceState);
 
 		first = true;
-		
+
 		activity = (VineyardMainActivity) getActivity();
 		vineyardServer = activity.getServer();
-		
+
 		addPhoto = (ImageView) activity.findViewById(R.id.action_add_photo);
 		imagePadding = getResources().getDimensionPixelSize(
 				R.dimen.gallery_padding);
@@ -106,8 +106,8 @@ public class ReportIssueFragment extends Fragment {
 						PlacePickerActivity.class);
 
 				// Put the place hierarchy to the intent
-				placePicker.putExtra(PlacePickerActivity.HIERARCHY,
-						activity.getCache().getRootPlaceJSON());
+				placePicker.putExtra(PlacePickerActivity.HIERARCHY, activity
+						.getCache().getRootPlaceJSON());
 
 				// Put the id of the selected place and of all its ancestors
 				ArrayList<Integer> ids = new ArrayList<Integer>();
@@ -128,11 +128,11 @@ public class ReportIssueFragment extends Fragment {
 		inflater.inflate(R.menu.report_issue, menu);
 
 		this.menu = menu;
-		
-		if (first)
+
+		if (first) {
 			init();
-		else
 			first = false;
+		}
 
 		super.onCreateOptionsMenu(menu, inflater);
 	}

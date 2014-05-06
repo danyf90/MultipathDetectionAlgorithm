@@ -54,7 +54,7 @@ public class PlaceViewerFragment extends Fragment {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-
+		
 		first = true;
 
 		activity = (VineyardMainActivity) getActivity();
@@ -127,10 +127,10 @@ public class PlaceViewerFragment extends Fragment {
 
 		upItem = menu.findItem(R.id.action_place_viewer_up);
 
-		if (first)
+		if (first) {
 			init();
-		else
 			first = false;
+		}
 
 		super.onCreateOptionsMenu(menu, inflater);
 	}
@@ -168,7 +168,7 @@ public class PlaceViewerFragment extends Fragment {
 	@SuppressWarnings("deprecation")
 	public void loadPlace(Place p) {
 		int c;
-		
+
 		if (p == null)
 			return;
 
