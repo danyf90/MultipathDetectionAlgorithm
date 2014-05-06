@@ -79,6 +79,8 @@ public class ReportIssueFragment extends Fragment {
 		super.onActivityCreated(savedInstanceState);
 
 		activity = (VineyardMainActivity) getActivity();
+		vineyardServer = activity.getServer();
+		
 		addPhoto = (ImageView) activity.findViewById(R.id.action_add_photo);
 		imagePadding = getResources().getDimensionPixelSize(
 				R.dimen.gallery_padding);
@@ -148,7 +150,7 @@ public class ReportIssueFragment extends Fragment {
 		} else {
 			title.setText(i.getTitle());
 			description.setText(i.getDescription());
-			placeButton.setText(i.getPlaceId());
+			placeButton.setText(String.valueOf(i.getPlaceId()));
 			if (i.getPriority() != null)
 				priorities.setSelection(i.getPriority().toInt() + 1);
 			// TODO add photos

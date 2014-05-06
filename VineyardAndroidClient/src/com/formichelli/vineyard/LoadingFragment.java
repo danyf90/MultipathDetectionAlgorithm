@@ -37,20 +37,22 @@ public class LoadingFragment extends Fragment {
 				R.layout.fragment_loading_progress, mainLayout, false);
 		errorLayout = (ViewGroup) activity.getLayoutInflater().inflate(
 				R.layout.fragment_loading_error, mainLayout, false);
-		mainLayout.addView(progressLayout);
-		
 		
 		retry = (ImageButton) errorLayout
 				.findViewById(R.id.loading_error_retry);
 		retry.setOnClickListener(retryOnClickListener);
+		
+		setLoading();
 	}
 
 	public void setLoading() {
+		activity.setTitle(activity.getString(R.string.loading));
 		mainLayout.removeAllViews();
 		mainLayout.addView(progressLayout);
 	}
 
 	public void setError() {
+		activity.setTitle(activity.getString(R.string.loading_error));
 		mainLayout.removeAllViews();
 		mainLayout.addView(errorLayout);
 	}

@@ -39,6 +39,11 @@ public class PlacePickerActivity extends ImmersiveActivity {
 
 		ancestorsList = (ViewGroup) findViewById(R.id.place_picker_ancestors_list);
 		currentLevelPlacesListView = (ListView) findViewById(R.id.place_picker_current_level_places);
+		placeAdapter = new PlaceAdapter(this, R.layout.place_list_item,
+				null);
+		currentLevelPlacesListView.setAdapter(placeAdapter);
+		currentLevelPlacesListView
+				.setOnItemClickListener(onChildClickListener);
 
 		Place rootPlace;
 		try {
@@ -113,15 +118,7 @@ public class PlacePickerActivity extends ImmersiveActivity {
 
 		selectedPlace = p;
 
-		if (placeAdapter != null)
-			placeAdapter.replaceItems(selectedPlace.getChildren());
-		else {
-			placeAdapter = new PlaceAdapter(this, R.layout.drawer_list_item,
-					selectedPlace.getChildren());
-			currentLevelPlacesListView.setAdapter(placeAdapter);
-			currentLevelPlacesListView
-					.setOnItemClickListener(onChildClickListener);
-		}
+		placeAdapter.replaceItems(selectedPlace.getChildren());
 
 		Util.fixListHeight(currentLevelPlacesListView);
 

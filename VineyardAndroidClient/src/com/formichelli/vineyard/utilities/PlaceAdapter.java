@@ -53,7 +53,7 @@ public class PlaceAdapter extends ArrayAdapter<Place> {
 
 		View item = inflater.inflate(resource, parent, false);
 
-		item.findViewById(R.id.place_list_item).setTag(p);
+		item.setTag(p);
 
 		((TextView) item.findViewById(R.id.place_list_item_label)).setText(p
 				.getName());
@@ -79,7 +79,11 @@ public class PlaceAdapter extends ArrayAdapter<Place> {
 	 *            new objects of the ListView
 	 */
 	public void replaceItems(ArrayList<Place> objects) {
-		this.objects = objects;
+		if (objects != null)
+			this.objects = objects;
+		else
+			this.objects = new ArrayList<Place>();
+		
 		notifyDataSetChanged();
 	}
 }

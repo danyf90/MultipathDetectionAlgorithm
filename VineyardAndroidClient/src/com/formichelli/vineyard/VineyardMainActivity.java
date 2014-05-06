@@ -258,7 +258,6 @@ public class VineyardMainActivity extends ImmersiveActivity implements
 		@Override
 		protected void onPreExecute() {
 			// TODO why can't I call setTitle from fragments?
-			VineyardMainActivity.this.setTitle(getString(R.string.loading));
 			mNavigationDrawerFragment.lock();
 			switchFragment(loadingFragment);
 		}
@@ -285,7 +284,6 @@ public class VineyardMainActivity extends ImmersiveActivity implements
 
 				if (rootPlace == null || statsJSON == null) {
 					Log.w(TAG, "rootPlace not available in sharedPreference");
-					VineyardMainActivity.this.setTitle(getString(R.string.loading_error));
 					loadingFragment.setError();
 					return;
 				}

@@ -11,6 +11,7 @@ import com.formichelli.vineyard.utilities.VineyardServer;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -165,12 +166,19 @@ public class IssuesFragment extends Fragment {
 					issuesJSON = activity.getCache().getPlaceIssuesJSON(
 							activity.getCurrentPlace().getId());
 
+					if (issuesJSON == null) {
+						Log.w(TAG, "issues not available in sharedPreference");
+						activity.getLoadingFragment().setError();
+						return;
+					}
+
 					Toast.makeText(activity,
 							activity.getString(R.string.cache_data_used),
 							Toast.LENGTH_SHORT).show();
 				}
 
 				activity.getCurrentPlace().setIssues(issuesJSON);
+				activity.setTitle(activity.getCurrentPlace().getName());
 				activity.switchFragment();
 
 			} catch (JSONException e) {

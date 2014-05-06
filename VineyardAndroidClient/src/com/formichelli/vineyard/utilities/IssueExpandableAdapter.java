@@ -216,8 +216,11 @@ public class IssueExpandableAdapter extends BaseExpandableListAdapter {
 	 *            new objects of the ExpandableListView
 	 */
 	public void replaceItems(ArrayList<IssueTask> objects) {
-		this.objects.clear();
-		this.objects.addAll(objects);
+		if (objects != null)
+		this.objects = objects;
+		else
+			this.objects = new ArrayList<IssueTask>();
+
 		notifyDataSetChanged();
 	}
 }
