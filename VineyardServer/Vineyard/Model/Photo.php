@@ -140,6 +140,7 @@ class Photo implements IResource {
         header('Content-Type: image/jpg');
         header('Content-Length: ' . filesize($filename));
         readfile($filename);
+        
     }
 }
 

@@ -153,6 +153,19 @@ Implemented APIs
 
         DELETE http://vineyard-server.org/issue/<id>/photo/<photoUrl>
 
+---
+
+### Worker
+
+* Worker Login (unsecure, but easy way)
+
+		POST http://vineyard-server.org/worker/login/
+		
+		POST DATA:
+		email=...
+		password=...
+		
+
 Not Implemented Yet
 -------------------
 
