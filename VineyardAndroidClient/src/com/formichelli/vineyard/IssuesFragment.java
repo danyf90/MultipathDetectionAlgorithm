@@ -31,6 +31,7 @@ public class IssuesFragment extends Fragment {
 	MenuItem upItem;
 	TextView noIssuesMessage;
 	boolean first;
+	AsyncHttpRequests asyncTask;
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -56,6 +57,13 @@ public class IssuesFragment extends Fragment {
 				.findViewById(R.id.issues_no_issues);
 	}
 
+	@Override
+	public void onDetach() {
+		super.onDetach();
+		
+		asyncTask.cancel(true);
+	}
+	
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		inflater.inflate(R.menu.issues, menu);
@@ -101,7 +109,8 @@ public class IssuesFragment extends Fragment {
 				vineyardServer.getUrl() + VineyardServer.PLACE_ISSUES_API, activity
 						.getCurrentPlace().getId());
 
-		new PlaceIssuesAsyncHttpRequest().execute(placeIssuesAndTasksRequest);
+		asyncTask = new PlaceIssuesAsyncHttpRequest();
+		asyncTask.execute(placeIssuesAndTasksRequest);
 	}
 
 	@Override

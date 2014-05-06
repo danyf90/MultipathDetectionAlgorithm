@@ -18,6 +18,7 @@ import android.util.Log;
  */
 public class AsyncHttpRequests extends
 		AsyncTask<String, Void, ArrayList<String>> {
+	private final static String TAG = "AsyncHttpRequest";
 
 	/**
 	 * Sends a request to params[i] for each element i of @p params
@@ -30,7 +31,7 @@ public class AsyncHttpRequests extends
 				if (request == null)
 					return null;
 
-				Log.e("AsyncHttpRequest", "Sending GET request to " + request);
+				Log.i(TAG, "Sending GET request to " + request);
 				HttpResponse response = new DefaultHttpClient()
 						.execute(new HttpGet(request));
 				StatusLine statusLine = response.getStatusLine();

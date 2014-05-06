@@ -49,6 +49,7 @@ public class VineyardMainActivity extends ImmersiveActivity implements
 	SharedPreferences sp;
 	Cache cache;
 	boolean preloadAll;
+	AsyncHttpRequests asyncTask;
 
 	/**
 	 * Fragment managing the behaviors, interactions and presentation of the
@@ -61,7 +62,7 @@ public class VineyardMainActivity extends ImmersiveActivity implements
 		super.onCreate(savedInstanceState);
 
 		actionBar = getSupportActionBar();
-		
+
 		placeViewerFragment = new PlaceViewerFragment();
 		issuesFragment = new IssuesFragment();
 		tasksFragment = new TasksFragment();
@@ -93,6 +94,13 @@ public class VineyardMainActivity extends ImmersiveActivity implements
 		serverInit();
 	}
 
+	@Override
+	protected void onStop() {
+		super.onStop();
+		
+		asyncTask.cancel(true);
+	}
+
 	private void serverInit() {
 		vineyardServer = new VineyardServer(serverUrl);
 
@@ -116,12 +124,14 @@ public class VineyardMainActivity extends ImmersiveActivity implements
 		final String placesStatsRequest = vineyardServer.getUrl()
 				+ VineyardServer.PLACES_STATS_API;
 
-		new RootPlaceAsyncHttpRequest().execute(placesHierarchyRequest,
+		asyncTask = new RootPlaceAsyncHttpRequest();
+		asyncTask.execute(placesHierarchyRequest,
 				placesStatsRequest);
 	}
 
 	@Override
-	public void onNavigationDrawerItemSelected(int position) {switch (position) {
+	public void onNavigationDrawerItemSelected(int position) {
+		switch (position) {
 		case 0:
 			switchFragment(placeViewerFragment);
 			break;
@@ -276,7 +286,8 @@ public class VineyardMainActivity extends ImmersiveActivity implements
 				statsJSON = cache.getPlacesStatsJSON();
 
 				if (rootPlace == null || statsJSON == null) {
-					Log.w(TAG, "rootPlace not available in sharedPreference");
+					Log.e(TAG,
+							"rootPlace not available neither from server nor from sharedPreference");
 					loadingFragment.setError();
 					return;
 				}

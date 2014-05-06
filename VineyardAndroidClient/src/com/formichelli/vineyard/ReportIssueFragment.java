@@ -20,7 +20,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -260,7 +259,6 @@ public class ReportIssueFragment extends Fragment {
 
 		// Save a file: path for use with ACTION_VIEW intents
 		currentPhotoPath = image.getAbsolutePath();
-		Log.e("PATH", currentPhotoPath);
 
 		return image;
 	}
