@@ -11,6 +11,7 @@
     <string name="issue_place_button">Scegli luogo</string>
     <string name="issue_priority_label">Priorità: </string>
     <string name="issue_assigned_worker_label">Operatore: </string>
+    <string name="issues_no_issues">Non ci sono problemi in questo luogo</string>
 
     <string-array name="issue_priorities">
         <item>--</item>

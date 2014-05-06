@@ -9,8 +9,16 @@
     <ExpandableListView
         android:id="@+id/issues_issues_list"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:groupIndicator="@null"
         android:padding="10dp" />
+    
+    <TextView android:id="@+id/issues_no_issues"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:groupIndicator="@null"
+        android:padding="10dp"
+        android:text="@string/issues_no_issues"
+        android:gravity="center" />
 
 </LinearLayout>

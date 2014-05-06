@@ -67,7 +67,10 @@ public class IssueExpandableAdapter extends BaseExpandableListAdapter {
 		this.context = (FragmentActivity) context;
 		this.groupResource = groupResource;
 		this.childResource = childResource;
-		this.objects = objects;
+		if (objects != null)
+			this.objects = objects;
+		else 
+			this.objects = new ArrayList<IssueTask>();
 		this.reportIssueOnClickListener = reportIssueOnClickListener;
 		this.editOnClickListener = editOnClickListener;
 		this.doneOnClickListener = doneOnClickListener;

@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.widget.ExpandableListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class IssuesFragment extends Fragment {
@@ -27,7 +28,8 @@ public class IssuesFragment extends Fragment {
 	ExpandableListView issuesList;
 	IssueExpandableAdapter issueAdapter;
 	MenuItem upItem;
-
+	TextView noIssuesMessage;
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -46,6 +48,9 @@ public class IssuesFragment extends Fragment {
 		issuesList = (ExpandableListView) activity
 				.findViewById(R.id.issues_issues_list);
 
+		noIssuesMessage = (TextView) activity
+				.findViewById(R.id.issues_no_issues);
+		
 		if (upItem != null)
 			init();
 	}
@@ -71,12 +76,18 @@ public class IssuesFragment extends Fragment {
 		if (activity.getCurrentPlace().getIssues() == null)
 			sendPlaceIssuesAndTasksRequest();
 		else {
+			ArrayList<IssueTask> i = activity
+					.getCurrentPlace().getIssues();
 			issueAdapter = new IssueExpandableAdapter(activity,
-					R.layout.issues_list_item, R.layout.issue_view, activity
-							.getCurrentPlace().getIssues(),
+					R.layout.issues_list_item, R.layout.issue_view, i,
 					reportIssueOnClickListener, editOnClickListener,
 					doneOnClickListener);
 			issuesList.setAdapter(issueAdapter);
+			
+			if (i.size() != 0)
+				noIssuesMessage.setVisibility(View.INVISIBLE);
+			else
+				noIssuesMessage.setVisibility(View.VISIBLE);
 
 		}
 		
