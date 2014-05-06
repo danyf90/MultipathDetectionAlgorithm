@@ -1,7 +1,6 @@
 package com.formichelli.vineyard;
 
 import java.util.ArrayList;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -91,6 +90,8 @@ public class VineyardMainActivity extends ImmersiveActivity implements
 
 		cache = new Cache(sp);
 
+		
+		
 		serverInit();
 	}
 

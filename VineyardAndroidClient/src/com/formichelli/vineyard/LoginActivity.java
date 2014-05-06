@@ -1,12 +1,22 @@
 package com.formichelli.vineyard;
 
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
+import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import com.formichelli.vineyard.utilities.AsyncHttpPostRequest;
+import com.formichelli.vineyard.utilities.VineyardServer;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -23,18 +33,7 @@ import android.widget.TextView;
  * well.
  */
 public class LoginActivity extends Activity {
-	/**
-	 * A dummy authentication store containing known user names and passwords.
-	 * TODO: remove after connecting to a real authentication system.
-	 */
-	private static final String[] DUMMY_CREDENTIALS = new String[] {
-			"foo@example.com:hello", "bar@example.com:world" };
-
-	/**
-	 * The default email to populate the email field with.
-	 */
-	public static final String EXTRA_EMAIL = "com.example.android.authenticatordemo.extra.EMAIL";
-
+	private final static String ID = "id";
 	/**
 	 * Keep track of the login task to ensure we can cancel it if requested.
 	 */
@@ -81,18 +80,18 @@ public class LoginActivity extends Activity {
 		mServerUrlView.setText(sp.getString(
 				getString(R.string.preference_server_url), null));
 		mServerUrlView
-		.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-			@Override
-			public boolean onEditorAction(TextView textView, int id,
-					KeyEvent keyEvent) {
-				
-				if (id == R.id.login || id == EditorInfo.IME_NULL) {
-					attemptLogin();
-					return true;
-				}
-				return false;
-			}
-		});
+				.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+					@Override
+					public boolean onEditorAction(TextView textView, int id,
+							KeyEvent keyEvent) {
+
+						if (id == R.id.login || id == EditorInfo.IME_NULL) {
+							attemptLogin();
+							return true;
+						}
+						return false;
+					}
+				});
 
 		mLoginFormView = findViewById(R.id.login_form);
 		mLoginStatusView = findViewById(R.id.login_status);
@@ -132,6 +131,9 @@ public class LoginActivity extends Activity {
 		mEmail = mEmailView.getText().toString();
 		mPassword = mPasswordView.getText().toString();
 		mServerUrl = mServerUrlView.getText().toString();
+
+		if (!mServerUrl.startsWith("http://"))
+			mServerUrl = "http://" + mServerUrl;
 
 		sp.edit()
 				.putString(getString(R.string.preference_user_email), mEmail)
@@ -224,47 +226,55 @@ public class LoginActivity extends Activity {
 	 * Represents an asynchronous login/registration task used to authenticate
 	 * the user.
 	 */
-	public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
-		@Override
-		protected Boolean doInBackground(Void... params) {
-			// TODO: attempt authentication against a network service.
+	public class UserLoginTask extends AsyncHttpPostRequest {
+
+		public UserLoginTask() {
+
+			setServerUrl(mServerUrl + VineyardServer.LOGIN_API);
+
+			addPair(new BasicNameValuePair("email", mEmail));
 
 			try {
-				// Simulate network access.
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				return false;
+				String passwordHash = getHexString(MessageDigest.getInstance(
+						"MD5").digest(mPassword.getBytes()));
+				addPair(new BasicNameValuePair("password", passwordHash));
+			} catch (NoSuchAlgorithmException e) {
 			}
+		}
 
-			for (String credential : DUMMY_CREDENTIALS) {
-				String[] pieces = credential.split(":");
-				if (pieces[0].equals(mEmail)) {
-					// Account exists, return true if the password matches.
-					return pieces[1].equals(mPassword);
-				}
-			}
-
-			// TODO: register the new account here.
-			return true;
+		private String getHexString(byte[] digest) {
+			return String.format("%032x", new BigInteger(1, digest));
 		}
 
 		@Override
-		protected void onPostExecute(final Boolean success) {
+		protected void onPostExecute(String result) {
 			mAuthTask = null;
 			showProgress(false);
 
-			if (success) {
-				sp.edit()
-						.putString(getString(R.string.preference_user_id),
-								mEmail).commit();
+			if (result != null) {
+				try {
+					String userId = new JSONObject(result).getString(ID);
+					sp.edit()
+							.putString(getString(R.string.preference_user_id),
+									userId).commit();
+				} catch (JSONException e) {
+					e.printStackTrace();
+					setError();
+				}
+
 				startActivity(new Intent(LoginActivity.this,
 						VineyardMainActivity.class));
 				finish();
 			} else {
-				mPasswordView
-						.setError(getString(R.string.error_incorrect_password));
-				mPasswordView.requestFocus();
+				setError();
 			}
+		}
+
+		private void setError() {
+			mPasswordView
+					.setError(getString(R.string.error_incorrect_password));
+			mPasswordView.requestFocus();
+
 		}
 
 		@Override
