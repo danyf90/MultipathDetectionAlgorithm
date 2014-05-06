@@ -76,22 +76,23 @@ public class LoginActivity extends Activity {
 		mPasswordView = (EditText) findViewById(R.id.password);
 		mPasswordView.setText(sp.getString(
 				getString(R.string.preference_user_password), null));
-		mPasswordView
-				.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-					@Override
-					public boolean onEditorAction(TextView textView, int id,
-							KeyEvent keyEvent) {
-						if (id == R.id.login || id == EditorInfo.IME_NULL) {
-							attemptLogin();
-							return true;
-						}
-						return false;
-					}
-				});
 
 		mServerUrlView = (EditText) findViewById(R.id.server_url);
 		mServerUrlView.setText(sp.getString(
 				getString(R.string.preference_server_url), null));
+		mServerUrlView
+		.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+			@Override
+			public boolean onEditorAction(TextView textView, int id,
+					KeyEvent keyEvent) {
+				
+				if (id == R.id.login || id == EditorInfo.IME_NULL) {
+					attemptLogin();
+					return true;
+				}
+				return false;
+			}
+		});
 
 		mLoginFormView = findViewById(R.id.login_form);
 		mLoginStatusView = findViewById(R.id.login_status);

@@ -186,7 +186,7 @@ public class VineyardMainActivity extends ImmersiveActivity implements
 				return new AlertDialog.Builder(activity)
 						.setIcon(
 								activity.getResources().getDrawable(
-										R.drawable.action_place_dark))
+										R.drawable.action_info_dark))
 						.setTitle(activity.getString(R.string.dialog_title))
 						.setMessage(
 								activity.getString(R.string.dialog_exit_message))
