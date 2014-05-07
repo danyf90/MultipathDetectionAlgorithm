@@ -59,14 +59,6 @@ public class ReportIssueFragment extends Fragment {
 		this.i = i;
 	}
 
-	public void setIssuePlace(int placeId) {
-		i.setPlaceId(placeId);
-	}
-
-	public int getIssuePlace() {
-		return i.getPlaceId();
-	}
-
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -150,15 +142,15 @@ public class ReportIssueFragment extends Fragment {
 		if (i == null) {
 			i = new IssueTask();
 			i.setIssuer(activity.sp.getInt(LoginActivity.USERID, 0));
-			i.setPlaceId(activity.getCurrentPlace().getId());
+			i.setPlace(activity.getCurrentPlace());
 		} else {
 			title.setText(i.getTitle());
 			description.setText(i.getDescription());
-			placeButton.setText(String.valueOf(i.getPlaceId()));
+			placeButton.setText(String.valueOf(i.getPlace().getName()));
 			if (i.getPriority() != null)
 				priorities.setSelection(i.getPriority().toInt() + 1);
 
-			// for (URL photo: i.getPhotos()) { // TODO
+			// for (String photo: i.getPhotos()) { // TODO
 			// ImageView i = new ImageView(activity);
 			// gallery.a
 			// imageLoader = new ImageLoader(activity, header, progress);
@@ -293,7 +285,7 @@ public class ReportIssueFragment extends Fragment {
 				}
 
 				placeButton.setText(selectedPlace.getName());
-				i.setPlaceId(selectedPlace.getId());
+				i.setPlace(selectedPlace);
 			}
 			break;
 		}

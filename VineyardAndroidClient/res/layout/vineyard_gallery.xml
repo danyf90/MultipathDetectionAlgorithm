@@ -15,7 +15,7 @@
             android:id="@+id/com_formichelli_vineyard_gallery_action_add_delete_photo"
             android:layout_width="@dimen/gallery_height"
             android:layout_height="@dimen/gallery_height"
-            android:layout_margin="5dp"
+            android:layout_margin="@dimen/gallery_padding"
             android:background="@drawable/white_with_wine_border"
             android:contentDescription="@string/action_add_photo"
             android:src="@drawable/action_camera_dark" />

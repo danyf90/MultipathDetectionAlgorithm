@@ -62,9 +62,9 @@ public interface Task {
 
 	public void setPriority(String priority);
 
-	public int getPlaceId();
+	public Place getPlace();
 
-	public void setPlaceId(int p);
+	public void setPlace(Place place);
 
 	public String getTitle();
 
@@ -78,12 +78,12 @@ public interface Task {
 
 	public void setLongitude(double longitude);
 
-	public int getAssignedWorkerId();
+	public Worker getAssignedWorker();
 
-	public void setAssignedWorkerId(int assignedWorkerId);
+	public void setAssignedWorker(Worker assignedWorker);
 
-	public int getAssignedGroupId();
+	public WorkGroup getAssignedGroup();
 
-	public void setAssignedGroupId(int assignedGroupId);
+	public void setAssignedGroup(WorkGroup assignedGroup);
 
 }

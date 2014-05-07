@@ -1,23 +1,54 @@
 package com.formichelli.vineyard.entities;
 
 import java.util.ArrayList;
+import java.util.List;
+
 import com.formichelli.vineyard.entities.Worker;
 
 public class WorkGroup {
+	private int id;
 	private String name;
 	private String description;
-	private Worker[] workers;
-	public ArrayList<Worker> unnamed_Worker_ = new ArrayList<Worker>();
+	private List<Worker> workers;
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
 
 	public String getName() {
-		return this.name;
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public String getDescription() {
-		return this.description;
+		return description;
 	}
 
-	public Worker[] getWorkers() {
-		return this.workers;
+	public void setDescription(String description) {
+		this.description = description;
 	}
+
+	public List<Worker> getWorkers() {
+		return workers;
+	}
+
+	public void setWorkers(List<Worker> workers) {
+		if (workers == null)
+			this.workers = new ArrayList<Worker>();
+		else
+			this.workers = workers;
+	}
+
+	public void addWorker(Worker worker) {
+		if (worker == null)
+			workers.add(worker);
+	}
+
 }

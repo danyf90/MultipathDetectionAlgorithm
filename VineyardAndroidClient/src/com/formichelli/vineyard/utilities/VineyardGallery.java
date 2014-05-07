@@ -22,11 +22,14 @@ import android.support.v4.app.Fragment;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 
 import com.formichelli.vineyard.R;
+import com.formichelli.vineyard.VineyardMainActivity;
 
 /**
  * A Gallery is an horizontal LinearLayout that can contain zero or more photos
@@ -140,6 +143,10 @@ public class VineyardGallery extends HorizontalScrollView {
 	public ImageView addImage(String path) {
 		ImageView v;
 		Bitmap b;
+
+		if (path.startsWith("http://") || path.startsWith("https://"))
+			new GalleryImageLoader((VineyardMainActivity) getContext())
+					.execute(path);
 
 		b = getThumbnailFromFilePath(path, size);
 		if (b == null)
@@ -319,5 +326,35 @@ public class VineyardGallery extends HorizontalScrollView {
 		if (resultCode == Activity.RESULT_OK) {
 			addImage(currentPhotoPath);
 		}
+	}
+
+	private class GalleryImageLoader extends ImageLoader {
+		@SuppressWarnings("deprecation")
+		public GalleryImageLoader(Activity activity) {
+			super(activity);
+
+			container = new FrameLayout(activity);
+			progress = new ProgressBar(activity);
+			int size = activity.getResources().getDimensionPixelSize(
+					R.dimen.gallery_height);
+			int margin = activity.getResources().getDimensionPixelSize(
+					R.dimen.gallery_padding);
+			Drawable background = activity.getResources().getDrawable(
+					R.drawable.wine_light_with_wine_dark_border);
+
+			FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
+					size / 2, size / 2);
+			params.setMargins(size / 4 + margin, size / 4 + margin, size / 4
+					+ margin, size / 4 + margin);
+			progress.setLayoutParams(params);
+			container.addView(progress);
+
+			params = new FrameLayout.LayoutParams(size, size);
+			params.setMargins(margin, margin, margin, margin);
+			container.setLayoutParams(params);
+			container.setBackgroundDrawable(background);
+			gallery.addView(container, 0);
+		}
+
 	}
 }

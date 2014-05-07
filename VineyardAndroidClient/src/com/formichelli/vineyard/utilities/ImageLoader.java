@@ -3,7 +3,6 @@ package com.formichelli.vineyard.utilities;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Locale;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -11,8 +10,7 @@ import org.apache.http.StatusLine;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 
-import com.formichelli.vineyard.VineyardMainActivity;
-
+import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -22,18 +20,20 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
 public class ImageLoader extends AsyncTask<String, Void, Bitmap> {
-	VineyardMainActivity activity;
+	Activity activity;
 	ViewGroup container;
 	ProgressBar progress;
-	String filename;
+	String localName;
 
-	public ImageLoader(VineyardMainActivity activity, ViewGroup container,
+	public ImageLoader(Activity activity) {
+
+	}
+
+	public ImageLoader(Activity activity, ViewGroup container,
 			ProgressBar progress) {
 		this.activity = activity;
 		this.container = container;
 		this.progress = progress;
-
-		filename = activity.getExternalCacheDir().getAbsolutePath() + "/";
 	}
 
 	@Override
@@ -44,20 +44,20 @@ public class ImageLoader extends AsyncTask<String, Void, Bitmap> {
 
 	@Override
 	protected Bitmap doInBackground(String... params) {
-		filename += params[0];
+		if (container == null || progress == null || params == null
+				|| params[0] == null)
+			return null;
 
-		if ((new File(filename)).exists())
-			return BitmapFactory.decodeFile(filename);
+		final String request = params[0];
+		
+		// get the filename only
+		localName = activity.getExternalCacheDir().getAbsolutePath()
+				+ request.substring(request.lastIndexOf('/'), request.lastIndexOf('?'));
+
+		if ((new File(localName)).exists())
+			return BitmapFactory.decodeFile(localName);
 
 		try {
-			final String request = String.format(
-					Locale.US,
-					activity.getServer().getUrl()
-							+ String.format(Locale.US,
-									VineyardServer.PHOTO_API, params[0],
-									container.getMeasuredWidth(),
-									container.getMeasuredHeight()));
-			android.util.Log.e("ASD", request);
 			HttpResponse response = new DefaultHttpClient()
 					.execute(new HttpGet(request));
 			StatusLine statusLine = response.getStatusLine();
@@ -77,12 +77,12 @@ public class ImageLoader extends AsyncTask<String, Void, Bitmap> {
 		progress.setVisibility(View.INVISIBLE);
 
 		if (photo == null) {
-			android.util.Log.e("ASD", "null");
+			android.util.Log.e("ImageLoader", "null");
 			// TODO set no image
 			return;
 		}
 
-		saveBitmap(photo, filename);
+		saveBitmap(photo, localName);
 		container.setBackgroundDrawable(new BitmapDrawable(photo));
 	}
 

@@ -1,7 +1,5 @@
 package com.formichelli.vineyard.entities;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,10 +14,10 @@ public class IssueTask extends SimpleTask {
 	private final static String PHOTOS = "photos";
 
 	private int issuer;
-	private List<URL> photos;
+	private List<String> photos;
 
 	public IssueTask() {
-		photos = new ArrayList<URL>();
+		photos = new ArrayList<String>();
 	}
 
 	public IssueTask(JSONObject jsonObject) throws JSONException {
@@ -30,7 +28,7 @@ public class IssueTask extends SimpleTask {
 		if (jsonObject.has(PHOTOS))
 			setPhotos(jsonObject.getJSONArray(PHOTOS));
 		else
-			setPhotos(new ArrayList<URL>());
+			setPhotos(new ArrayList<String>());
 	}
 
 	public int getIssuer() {
@@ -41,41 +39,41 @@ public class IssueTask extends SimpleTask {
 		this.issuer = issuer;
 	}
 
-	public List<URL> getPhotos() {
+	public List<String> getPhotos() {
 		return this.photos;
 	}
 
-	public void setPhotos(List<URL> photos) {
+	public void setPhotos(List<String> photos) {
 		if (photos != null)
 			this.photos = photos;
 		else
-			this.photos = new ArrayList<URL>();
+			this.photos = new ArrayList<String>();
 	}
 
 	public void setPhotos(JSONArray photos) {
-		this.photos = new ArrayList<URL>();
+		this.photos = new ArrayList<String>();
 
 		for (int i = 0, l = photos.length(); i < l; i++) {
 			try {
-				this.photos.add(new URL(photos.getString(i)));
-			} catch (MalformedURLException | JSONException e) {
+				this.photos.add(photos.getString(i));
+			} catch (JSONException e) {
 				e.printStackTrace();
 			}
 		}
 	}
 
-	public void addPhoto(URL photo) {
+	public void addPhoto(String photo) {
 		photos.add(photo);
 	}
 
-	public void removePhoto(URL photo) {
+	public void removePhoto(String photo) {
 		photos.remove(photo);
 	}
 
 	public void removeAllPhotos() {
 		photos.clear();
 	}
-	
+
 	@Override
 	public List<NameValuePair> getParams() {
 		List<NameValuePair> params = super.getParams();

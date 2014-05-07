@@ -3,10 +3,17 @@ package com.formichelli.vineyard;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
 
 import com.formichelli.vineyard.entities.IssueTask;
+import com.formichelli.vineyard.entities.SimpleTask;
+import com.formichelli.vineyard.entities.Task;
 import com.formichelli.vineyard.utilities.AsyncHttpGetRequests;
+import com.formichelli.vineyard.utilities.AsyncHttpPostRequest;
 import com.formichelli.vineyard.utilities.IssueExpandableAdapter;
 import com.formichelli.vineyard.utilities.VineyardServer;
 
@@ -142,8 +149,7 @@ public class IssuesFragment extends Fragment {
 	OnClickListener doneOnClickListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
-			Toast.makeText(activity, "TODO: mark the issue as resolved",
-					Toast.LENGTH_SHORT).show();
+			new AsyncMarkIssueAsDone(activity.getServer() + VineyardServer.ADD_ISSUE_API, (IssueTask) v.getTag());
 		}
 	};
 
@@ -194,4 +200,39 @@ public class IssuesFragment extends Fragment {
 			}
 		}
 	}
+
+	private class AsyncMarkIssueAsDone extends AsyncHttpPostRequest {
+
+		public AsyncMarkIssueAsDone(String serverUrl, IssueTask i) {
+			super();
+
+			this.setServerUrl(serverUrl);
+
+			List<NameValuePair> params = new ArrayList<NameValuePair>();
+			params.add(new BasicNameValuePair(SimpleTask.ID, String.valueOf(i
+					.getId())));
+			params.add(new BasicNameValuePair(SimpleTask.STATUS,
+					Task.Status.DONE.toString()));
+
+			this.setParams(i.getParams());
+		}
+
+		@Override
+		protected void onPreExecute() {
+			activity.switchFragment(activity.getLoadingFragment());
+		}
+
+		@Override
+		protected void onPostExecute(HttpResponse response) {
+			if (response != null
+					&& response.getStatusLine().getStatusCode() == HttpStatus.SC_ACCEPTED) {
+				activity.switchFragment(activity.getIssuesFragment());
+			} else {
+				Toast.makeText(activity,
+						activity.getString(R.string.issue_report_error),
+						Toast.LENGTH_SHORT).show();
+				activity.switchFragment(activity.getIssuesFragment());
+			}
+		}
+	};
 }

@@ -1,6 +1,5 @@
 package com.formichelli.vineyard.utilities;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -124,17 +123,22 @@ public class IssueExpandableAdapter extends BaseExpandableListAdapter {
 				.setText(context.getResources().getStringArray(
 						R.array.issue_priorities)[object.getPriority().toInt()]);
 
+		if (object.getAssignedWorker() != null)
 		((TextView) childView
 				.findViewById(R.id.issue_view_assigned_worker_name))
-				.setText(getWorkerString(object.getAssignedWorkerId()));
+				.setText(String.valueOf(object.getAssignedWorker().getId()));
+		else
+			((TextView) childView
+					.findViewById(R.id.issue_view_assigned_worker_name))
+					.setText("--");
 
-		VineyardGallery gallery = (VineyardGallery) childView.findViewById(R.id.issue_view_gallery);
-		List<URL> photos = object.getPhotos();
-		if (photos.size() == 0)
-			childView.removeView(gallery);
-		else 
-			for (URL p : photos)
-				gallery.addImage(p.getPath());
+//		VineyardGallery gallery = (VineyardGallery) childView.findViewById(R.id.issue_view_gallery);
+//		List<URL> photos = object.getPhotos();
+//		if (photos.size() == 0)
+//			childView.removeView(gallery);
+//		else 
+//			for (URL p : photos)
+//				gallery.addImage(p.getPath());
 
 		childView.findViewById(R.id.issue_view_edit).setOnClickListener(
 				editOnClickListener);
@@ -146,11 +150,6 @@ public class IssueExpandableAdapter extends BaseExpandableListAdapter {
 		childView.findViewById(R.id.issue_view_done).setTag(object);
 
 		return childView;
-	}
-
-	private String getWorkerString(int workerId) {
-		// TODO print id or get name from server?
-		return workerId != 0 ? String.valueOf(workerId) : "--";
 	}
 
 	@Override

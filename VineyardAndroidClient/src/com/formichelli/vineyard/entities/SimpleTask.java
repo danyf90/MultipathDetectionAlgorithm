@@ -15,18 +15,18 @@ import org.json.JSONObject;
 import android.annotation.SuppressLint;
 
 public class SimpleTask implements Task {
-	private final static String ID = "id";
+	public final static String ID = "id";
 	private final static String ASSIGNEE = "assignee";
 	private final static String CREATE_TIME = "create_time";
 	private final static String ASSIGN_TIME = "assign_time";
 	private final static String DUE_TIME = "due_time";
-	private final static String STATUS = "status";
+	public final static String STATUS = "status";
 	private final static String PRIORITY = "priority";
 	private final static String PLACE = "place";
 	private final static String TITLE = "title";
 	private final static String DESCRIPTION = "description";
-//	private final static String LATITUDE = "latitude";
-//	private final static String LONGITUDE = "longitude";
+	// private final static String LATITUDE = "latitude";
+	// private final static String LONGITUDE = "longitude";
 	private final static String ASSIGNED_WORKER = "assigned_worker";
 	private final static String ASSIGNED_GROUP = "assigned_group";
 
@@ -39,13 +39,13 @@ public class SimpleTask implements Task {
 	private Date dueTime;
 	private Status status;
 	private Priority priority;
-	private int placeId;
+	private Place place;
 	private String title;
 	private String description;
 	private double latitude;
 	private double longitude;
-	private int assignedWorkerId;
-	private int assignedGroupId;
+	private Worker assignedWorker;
+	private WorkGroup assignedGroup;
 
 	public SimpleTask() {
 		priority = Priority.NOT_SET;
@@ -79,7 +79,9 @@ public class SimpleTask implements Task {
 
 		setPriority(jsonObject.getString(PRIORITY));
 
-		setPlaceId(jsonObject.getInt(PLACE));
+		Place p = new Place();
+		p.setId(jsonObject.getInt(PLACE));
+		setPlace(p);
 
 		setTitle(jsonObject.getString(TITLE));
 
@@ -88,16 +90,22 @@ public class SimpleTask implements Task {
 		else
 			setDescription(null);
 
-//		if (!jsonObject.isNull(LATITUDE))
-//			setLatitude(jsonObject.getDouble(LATITUDE));
-//		if (!jsonObject.isNull(LONGITUDE))
-//			setLongitude(jsonObject.getDouble(LONGITUDE));
+		// if (!jsonObject.isNull(LATITUDE))
+		// setLatitude(jsonObject.getDouble(LATITUDE));
+		// if (!jsonObject.isNull(LONGITUDE))
+		// setLongitude(jsonObject.getDouble(LONGITUDE));
 
-		if (!jsonObject.isNull(ASSIGNED_WORKER))
-			setAssignedWorkerId(jsonObject.getInt(ASSIGNED_WORKER));
+		if (!jsonObject.isNull(ASSIGNED_WORKER)) {
+			Worker w = new Worker();
+			w.setId(jsonObject.getInt(ASSIGNED_WORKER));
+			setAssignedWorker(w);
+		}
 
-		if (!jsonObject.isNull(ASSIGNED_GROUP))
-			setAssignedGroupId(jsonObject.getInt(ASSIGNED_GROUP));
+		if (!jsonObject.isNull(ASSIGNED_GROUP)) {
+			WorkGroup wg = new WorkGroup();
+			wg.setId(jsonObject.getInt(ASSIGNED_GROUP));
+			setAssignedGroup(wg);
+		}
 	}
 
 	@Override
@@ -186,13 +194,13 @@ public class SimpleTask implements Task {
 	}
 
 	@Override
-	public int getPlaceId() {
-		return placeId;
+	public Place getPlace() {
+		return place;
 	}
 
 	@Override
-	public void setPlaceId(int placeId) {
-		this.placeId = placeId;
+	public void setPlace(Place place) {
+		this.place = place;
 	}
 
 	@Override
@@ -232,23 +240,23 @@ public class SimpleTask implements Task {
 	}
 
 	@Override
-	public int getAssignedWorkerId() {
-		return assignedWorkerId;
+	public Worker getAssignedWorker() {
+		return assignedWorker;
 	}
 
 	@Override
-	public void setAssignedWorkerId(int assignedWorkerId) {
-		this.assignedWorkerId = assignedWorkerId;
+	public void setAssignedWorker(Worker assignedWorker) {
+		this.assignedWorker = assignedWorker;
 	}
 
 	@Override
-	public int getAssignedGroupId() {
-		return assignedGroupId;
+	public WorkGroup getAssignedGroup() {
+		return assignedGroup;
 	}
 
 	@Override
-	public void setAssignedGroupId(int assignedGroupId) {
-		this.assignedGroupId = assignedGroupId;
+	public void setAssignedGroup(WorkGroup assignedGroup) {
+		this.assignedGroup = assignedGroup;
 	}
 
 	public List<NameValuePair> getParams() {
@@ -256,13 +264,14 @@ public class SimpleTask implements Task {
 		List<NameValuePair> params = new ArrayList<NameValuePair>();
 
 		params.add(new BasicNameValuePair(PRIORITY, getPriority().toString()));
-		params.add(new BasicNameValuePair(PLACE, String.valueOf(getPlaceId())));
+		params.add(new BasicNameValuePair(PLACE, String.valueOf(getPlace()
+				.getId())));
 		params.add(new BasicNameValuePair(TITLE, title));
 		params.add(new BasicNameValuePair(DESCRIPTION, description));
-//		params.add(new BasicNameValuePair(LATITUDE, String
-//				.valueOf(getLatitude())));
-//		params.add(new BasicNameValuePair(LONGITUDE, String
-//				.valueOf(getLongitude())));
+		// params.add(new BasicNameValuePair(LATITUDE, String
+		// .valueOf(getLatitude())));
+		// params.add(new BasicNameValuePair(LONGITUDE, String
+		// .valueOf(getLongitude())));
 
 		return params;
 	}

@@ -2,11 +2,13 @@ package com.formichelli.vineyard;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 import com.formichelli.vineyard.entities.Place;
 import com.formichelli.vineyard.utilities.ImageLoader;
 import com.formichelli.vineyard.utilities.PlaceAdapter;
 import com.formichelli.vineyard.utilities.Util;
+import com.formichelli.vineyard.utilities.VineyardServer;
 
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
@@ -54,7 +56,7 @@ public class PlaceViewerFragment extends Fragment {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		
+
 		first = true;
 
 		activity = (VineyardMainActivity) getActivity();
@@ -190,8 +192,13 @@ public class PlaceViewerFragment extends Fragment {
 		if (imageLoader != null)
 			imageLoader.cancel(true);
 		header.setBackgroundColor(getResources().getColor(R.color.wine_light));
-		imageLoader = new ImageLoader(activity, header, progress);
-		imageLoader.execute(p.getPhoto());
+		if (p.getPhoto() != null) {
+			imageLoader = new ImageLoader(activity, header, progress);
+			imageLoader.execute(activity.getServer().getUrl()
+					+ String.format(Locale.US, VineyardServer.PHOTO_API,
+							p.getPhoto(), header.getMeasuredWidth(),
+							header.getMeasuredHeight()));
+		}
 
 		// set issues count
 		c = p.getIssuesCount();
