@@ -1,0 +1,24 @@
+<HorizontalScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    class="com.formichelli.vineyard.utilities.VineyardGallery"
+    android:background="@color/wine_light" >
+
+    <LinearLayout
+        android:id="@+id/com_formichelli_vineyard_gallery_linear_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <ImageView
+            android:id="@+id/com_formichelli_vineyard_gallery_action_add_delete_photo"
+            android:layout_width="@dimen/gallery_height"
+            android:layout_height="@dimen/gallery_height"
+            android:layout_margin="5dp"
+            android:background="@drawable/white_with_wine_border"
+            android:contentDescription="@string/action_add_photo"
+            android:src="@drawable/action_camera_dark" />
+    </LinearLayout>
+
+</HorizontalScrollView>
