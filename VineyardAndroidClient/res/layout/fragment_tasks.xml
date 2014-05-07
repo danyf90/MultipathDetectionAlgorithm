@@ -17,4 +17,9 @@
         android:layout_height="wrap_content"
         android:text="@string/title_section_tasks" />
 
+    <com.tyczj.extendedcalendarview.ExtendedCalendarView
+        android:id="@+id/calendar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
 </LinearLayout>
