@@ -14,7 +14,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 /**
@@ -69,7 +68,7 @@ public class IssueExpandableAdapter extends BaseExpandableListAdapter {
 		this.childResource = childResource;
 		if (objects != null)
 			this.objects = objects;
-		else 
+		else
 			this.objects = new ArrayList<IssueTask>();
 		this.reportIssueOnClickListener = reportIssueOnClickListener;
 		this.editOnClickListener = editOnClickListener;
@@ -128,20 +127,13 @@ public class IssueExpandableAdapter extends BaseExpandableListAdapter {
 				.findViewById(R.id.issue_view_assigned_worker_name))
 				.setText(getWorkerString(object.getAssignedWorkerId()));
 
+		VineyardGallery gallery = (VineyardGallery) childView.findViewById(R.id.issue_view_gallery);
 		ArrayList<URL> photos = object.getPhotos();
-		if (photos == null || photos.size() == 0) {
-			childView.removeView(childView
-					.findViewById(R.id.issue_view_gallery_container));
-		} else {
-			LinearLayout galleryLayout = (LinearLayout) childView
-					.findViewById(R.id.issue_view_gallery);
-
-			Gallery gallery = new Gallery(context, galleryLayout, false, null);
-
-			for (URL p : photos) {
+		if (photos.size() == 0)
+			childView.removeView(gallery);
+		else 
+			for (URL p : photos)
 				gallery.addImage(p.getPath());
-			}
-		}
 
 		childView.findViewById(R.id.issue_view_edit).setOnClickListener(
 				editOnClickListener);
@@ -217,7 +209,7 @@ public class IssueExpandableAdapter extends BaseExpandableListAdapter {
 	 */
 	public void replaceItems(ArrayList<IssueTask> objects) {
 		if (objects != null)
-		this.objects = objects;
+			this.objects = objects;
 		else
 			this.objects = new ArrayList<IssueTask>();
 

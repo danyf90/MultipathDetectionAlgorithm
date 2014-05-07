@@ -83,31 +83,14 @@
             android:layout_alignBaseline="@+id/report_issue_priority_label"
             android:layout_alignParentRight="true" />
 
-        <HorizontalScrollView
-            android:id="@+id/report_issue_gallery_container"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/report_issue_priority_label"
-            android:layout_marginTop="30dp"
-            android:background="@color/wine_light" >
+       <com.formichelli.vineyard.utilities.VineyardGallery
+           android:id="@+id/report_issue_gallery"
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:layout_below="@+id/report_issue_priority_label"
+           android:layout_marginTop="30dp"
+           android:background="@color/wine_light" />
 
-            <LinearLayout
-                android:id="@+id/report_issue_gallery"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal" >
-
-                <ImageView
-                    android:id="@+id/action_add_photo"
-                    android:layout_width="@dimen/gallery_height"
-                    android:layout_height="@dimen/gallery_height"
-                    android:layout_margin="5dp"
-                    android:background="@drawable/white_with_wine_border"
-                    android:contentDescription="@string/action_add_photo"
-                    android:src="@drawable/action_camera_dark" />
-
-            </LinearLayout>
-        </HorizontalScrollView>
     </RelativeLayout>
 
 </ScrollView>

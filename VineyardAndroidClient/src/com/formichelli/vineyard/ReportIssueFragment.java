@@ -2,16 +2,9 @@ package com.formichelli.vineyard;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-
-import com.formichelli.vineyard.entities.IssueTask;
-import com.formichelli.vineyard.entities.Place;
-import com.formichelli.vineyard.utilities.VineyardServer;
-import com.formichelli.vineyard.utilities.Gallery;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -31,8 +24,12 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.Spinner;
+
+import com.formichelli.vineyard.entities.IssueTask;
+import com.formichelli.vineyard.entities.Place;
+import com.formichelli.vineyard.utilities.VineyardGallery;
+import com.formichelli.vineyard.utilities.VineyardServer;
 
 public class ReportIssueFragment extends Fragment {
 	public static final int REQUEST_TAKE_PHOTO = 1;
@@ -43,7 +40,7 @@ public class ReportIssueFragment extends Fragment {
 	VineyardServer vineyardServer;
 	IssueTask i;
 	String currentPhotoPath;
-	Gallery gallery;
+	VineyardGallery gallery;
 	Button placeButton;
 	Spinner priorities;
 	ImageView addPhoto;
@@ -83,7 +80,7 @@ public class ReportIssueFragment extends Fragment {
 		activity = (VineyardMainActivity) getActivity();
 		vineyardServer = activity.getServer();
 
-		addPhoto = (ImageView) activity.findViewById(R.id.action_add_photo);
+		// addPhoto = (ImageView) activity.findViewById(R.id.action_add_photo);
 		imagePadding = getResources().getDimensionPixelSize(
 				R.dimen.gallery_padding);
 		priorities = (Spinner) activity
@@ -95,7 +92,7 @@ public class ReportIssueFragment extends Fragment {
 
 		activity.setTitle(getString(R.string.title_report_issue));
 
-		addPhoto.setOnClickListener(dispatchTakePictureIntent);
+		// addPhoto.setOnClickListener(dispatchTakePictureIntent);
 
 		setSpinnerAdapter(priorities, R.array.issue_priorities);
 
@@ -140,9 +137,7 @@ public class ReportIssueFragment extends Fragment {
 	// This function must be called after both onActivityCreated and
 	// onCreateOptionMenu but only once
 	private void init() {
-		gallery = new Gallery(activity, (LinearLayout) activity
-				.findViewById(R.id.report_issue_gallery), true,
-				menu.findItem(R.id.action_report_issue_delete_selected_photos));
+		gallery = (VineyardGallery) activity.findViewById(R.id.report_issue_gallery);
 
 		if (i == null) {
 			i = new IssueTask();
@@ -153,7 +148,13 @@ public class ReportIssueFragment extends Fragment {
 			placeButton.setText(String.valueOf(i.getPlaceId()));
 			if (i.getPriority() != null)
 				priorities.setSelection(i.getPriority().toInt() + 1);
-			// TODO add photos
+
+			// for (URL photo: i.getPhotos()) {
+			// ImageView i = new ImageView(activity);
+			// gallery.a
+			// imageLoader = new ImageLoader(activity, header, progress);
+			// imageLoader.execute(p.getPhoto());
+			// }
 		}
 	}
 
@@ -267,15 +268,8 @@ public class ReportIssueFragment extends Fragment {
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		switch (requestCode) {
 		case REQUEST_TAKE_PHOTO:
-			if (resultCode == Activity.RESULT_OK) {
-				try {
-					i.addPhoto(new URL(currentPhotoPath));
-				} catch (MalformedURLException e) {
-				}
-
-				// create an image view and put it in the gallery
-				gallery.addImage(currentPhotoPath);
-			}
+			android.util.Log.e("AD","ASDA");
+			gallery.onActivityResult(requestCode, resultCode, data);
 			break;
 		case REQUEST_PLACE:
 			if (resultCode == Activity.RESULT_OK) {

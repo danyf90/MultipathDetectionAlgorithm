@@ -90,15 +90,13 @@ public class VineyardMainActivity extends ImmersiveActivity implements
 
 		cache = new Cache(sp);
 
-		
-		
 		serverInit();
 	}
 
 	@Override
 	protected void onStop() {
 		super.onStop();
-		
+
 		asyncTask.cancel(true);
 	}
 
@@ -126,8 +124,7 @@ public class VineyardMainActivity extends ImmersiveActivity implements
 				+ VineyardServer.PLACES_STATS_API;
 
 		asyncTask = new RootPlaceAsyncHttpRequest();
-		asyncTask.execute(placesHierarchyRequest,
-				placesStatsRequest);
+		asyncTask.execute(placesHierarchyRequest, placesStatsRequest);
 	}
 
 	@Override
@@ -379,5 +376,10 @@ public class VineyardMainActivity extends ImmersiveActivity implements
 	public void setNavigationDrawerLocked(boolean lock) {
 		mNavigationDrawerFragment.setLocked(lock);
 	};
+
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		currentFragment.onActivityResult(requestCode, resultCode, data);
+	}
 
 }

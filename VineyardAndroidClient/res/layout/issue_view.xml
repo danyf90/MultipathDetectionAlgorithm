@@ -1,5 +1,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:custom="http://schemas.android.com/apk/res/com.formichelli.vineyard"
     android:id="@+id/issue_view_main_layout"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
@@ -61,21 +62,13 @@
             android:textAppearance="?android:attr/textAppearanceSmall" />
     </RelativeLayout>
 
-    <HorizontalScrollView
-        android:id="@+id/issue_view_gallery_container"
-        android:layout_width="fill_parent"
+    <com.formichelli.vineyard.utilities.VineyardGallery
+        android:id="@+id/issue_view_gallery"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="30dp"
-        android:layout_marginTop="30dp"
-        android:background="@color/wine_light" >
-
-        <LinearLayout
-            android:id="@+id/issue_view_gallery"
-            android:layout_width="wrap_content"
-            android:layout_height="@dimen/gallery_height"
-            android:orientation="horizontal"
-            android:padding="5dp" />
-    </HorizontalScrollView>
+        android:layout_marginTop="20dp"
+        android:background="@color/wine_light"
+        custom:locked="true" />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -92,7 +85,7 @@
             android:background="#0000"
             android:contentDescription="@string/action_edit"
             android:src="@drawable/action_edit_dark" />
-        
+
         <ImageButton
             android:id="@+id/issue_view_done"
             android:layout_width="wrap_content"
@@ -101,7 +94,6 @@
             android:background="#0000"
             android:contentDescription="@string/action_done"
             android:src="@drawable/action_done_dark" />
-
     </LinearLayout>
 
 </LinearLayout>

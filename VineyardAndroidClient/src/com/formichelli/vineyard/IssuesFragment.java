@@ -60,8 +60,6 @@ public class IssuesFragment extends Fragment {
 	@Override
 	public void onDetach() {
 		super.onDetach();
-
-		asyncTask.cancel(true);
 	}
 
 	@Override

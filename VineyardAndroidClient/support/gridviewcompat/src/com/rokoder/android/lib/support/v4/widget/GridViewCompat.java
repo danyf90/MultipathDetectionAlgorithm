@@ -50,6 +50,7 @@ import java.lang.reflect.Method;
  * https://github.com/android/platform_frameworks_base/blob/master/core/java/android/widget/GridView.java
  * </pre>
  */
+@SuppressWarnings("all")
 public class GridViewCompat extends GridView {
     private static final String TAG = GridViewCompat.class.getSimpleName();
     /**
@@ -78,7 +79,7 @@ public class GridViewCompat extends GridView {
     private static Method gridView_getCheckedItemIds;
     private static Method gridView_isItemChecked;
     private static Method gridView_getCheckedItemPosition;
-    private static Method gridView_getCheckedItemPositions;
+	private static Method gridView_getCheckedItemPositions;
     private static Method gridView_clearChoices;
     private static Method gridView_setItemChecked;
     private static Method gridView_setChoiceMode;

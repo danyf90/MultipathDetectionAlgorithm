@@ -8,9 +8,6 @@ import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.formichelli.vineyard.utilities.AsyncHttpPostRequest;
-import com.formichelli.vineyard.utilities.VineyardServer;
-
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
@@ -27,6 +24,9 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import com.formichelli.vineyard.utilities.AsyncHttpPostRequest;
+import com.formichelli.vineyard.utilities.VineyardServer;
 
 /**
  * Activity which displays a login screen to the user, offering registration as

@@ -23,9 +23,11 @@ public class IssueTask extends SimpleTask {
 		super(jsonObject);
 
 		setIssuer(jsonObject.getInt(ISSUER));
-		
+
 		if (jsonObject.has(PHOTOS))
 			setPhotos(jsonObject.getJSONArray(PHOTOS));
+		else
+			setPhotos(new ArrayList<URL>());
 	}
 
 	public int getIssuer() {
@@ -41,24 +43,25 @@ public class IssueTask extends SimpleTask {
 	}
 
 	public void setPhotos(ArrayList<URL> photos) {
-		this.photos = photos;
+		if (photos != null)
+			this.photos = photos;
+		else
+			this.photos = new ArrayList<URL>();
 	}
 
 	public void setPhotos(JSONArray photos) {
+		this.photos = new ArrayList<URL>();
+
 		for (int i = 0, l = photos.length(); i < l; i++) {
 			try {
 				this.photos.add(new URL(photos.getString(i)));
 			} catch (MalformedURLException | JSONException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
 	}
 
 	public void addPhoto(URL photo) {
-		if (photos == null)
-			photos = new ArrayList<URL>();
-
 		photos.add(photo);
 	}
 
@@ -67,6 +70,6 @@ public class IssueTask extends SimpleTask {
 	}
 
 	public void removeAllPhotos() {
-		photos = new ArrayList<URL>();
+		photos.clear();
 	}
 }
