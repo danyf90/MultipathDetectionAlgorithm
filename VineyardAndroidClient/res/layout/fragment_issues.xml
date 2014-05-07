@@ -19,6 +19,7 @@
         android:groupIndicator="@null"
         android:padding="10dp"
         android:text="@string/issues_no_issues"
-        android:gravity="center" />
+        android:gravity="center"
+        android:visibility="invisible" />
 
 </LinearLayout>

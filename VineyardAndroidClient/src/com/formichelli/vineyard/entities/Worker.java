@@ -1,7 +1,7 @@
 package com.formichelli.vineyard.entities;
 
 import java.util.ArrayList;
-import com.formichelli.vineyard.entities.WorkGroup;
+import java.util.List;
 
 public class Worker {
 	private String username;
@@ -9,8 +9,12 @@ public class Worker {
 	private String email;
 	private String password;
 	private int role;
-	public ArrayList<WorkGroup> unnamed_WorkGroup_ = new ArrayList<WorkGroup>();
+	private List<WorkGroup> groups;
 
+	public Worker() {
+		groups = new ArrayList<WorkGroup>();
+	}
+	
 	public String getUsername() {
 		return this.username;
 	}
@@ -50,4 +54,19 @@ public class Worker {
 	public void setRole(int role) {
 		this.role = role;
 	}
+
+	public List<WorkGroup> getGroups() {
+		return groups;
+	}
+
+	public void setGroups(List<WorkGroup> groups) {
+		if (groups == null)
+			this.groups = new ArrayList<WorkGroup>();
+		
+		this.groups = groups;
+	}
+	public void addGroup(WorkGroup group) {
+		groups.add(group);
+	}
+
 }

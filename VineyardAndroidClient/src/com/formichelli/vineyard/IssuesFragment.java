@@ -1,6 +1,7 @@
 package com.formichelli.vineyard;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.json.JSONException;
 
@@ -85,7 +86,7 @@ public class IssuesFragment extends Fragment {
 		if (activity.getCurrentPlace().getIssues() == null)
 			sendPlaceIssuesAndTasksRequest();
 		else {
-			ArrayList<IssueTask> i = activity.getCurrentPlace().getIssues();
+			List<IssueTask> i = activity.getCurrentPlace().getIssues();
 			issueAdapter = new IssueExpandableAdapter(activity,
 					R.layout.issues_list_item, R.layout.issue_view, i,
 					reportIssueOnClickListener, editOnClickListener,

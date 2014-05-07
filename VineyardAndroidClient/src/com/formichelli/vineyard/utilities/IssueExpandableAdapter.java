@@ -2,6 +2,7 @@ package com.formichelli.vineyard.utilities;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 
 import com.formichelli.vineyard.R;
 import com.formichelli.vineyard.entities.IssueTask;
@@ -22,7 +23,7 @@ import android.widget.TextView;
  */
 public class IssueExpandableAdapter extends BaseExpandableListAdapter {
 	private final FragmentActivity context;
-	ArrayList<IssueTask> objects;
+	List<IssueTask> objects;
 	int groupResource, childResource;
 	OnClickListener reportIssueOnClickListener, editOnClickListener,
 			doneOnClickListener;
@@ -58,7 +59,7 @@ public class IssueExpandableAdapter extends BaseExpandableListAdapter {
 	 *            will be added as a tag to the associated view
 	 */
 	public IssueExpandableAdapter(Activity context, int groupResource,
-			int childResource, ArrayList<IssueTask> objects,
+			int childResource, List<IssueTask> objects,
 			OnClickListener reportIssueOnClickListener,
 			OnClickListener editOnClickListener,
 			OnClickListener doneOnClickListener) {
@@ -128,7 +129,7 @@ public class IssueExpandableAdapter extends BaseExpandableListAdapter {
 				.setText(getWorkerString(object.getAssignedWorkerId()));
 
 		VineyardGallery gallery = (VineyardGallery) childView.findViewById(R.id.issue_view_gallery);
-		ArrayList<URL> photos = object.getPhotos();
+		List<URL> photos = object.getPhotos();
 		if (photos.size() == 0)
 			childView.removeView(gallery);
 		else 
@@ -207,7 +208,7 @@ public class IssueExpandableAdapter extends BaseExpandableListAdapter {
 	 * @param objects
 	 *            new objects of the ExpandableListView
 	 */
-	public void replaceItems(ArrayList<IssueTask> objects) {
+	public void replaceItems(List<IssueTask> objects) {
 		if (objects != null)
 			this.objects = objects;
 		else

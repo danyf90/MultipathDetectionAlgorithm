@@ -1,6 +1,7 @@
 package com.formichelli.vineyard.utilities;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.formichelli.vineyard.R;
 import com.formichelli.vineyard.entities.Place;
@@ -17,7 +18,7 @@ import android.widget.TextView;
  */
 public class PlaceAdapter extends ArrayAdapter<Place> {
 	private final Context context;
-	ArrayList<Place> objects;
+	List<Place> objects;
 	int resource;
 
 	/**
@@ -31,7 +32,7 @@ public class PlaceAdapter extends ArrayAdapter<Place> {
 	 * @param objects
 	 *            places to be added to the ListView
 	 */
-	public PlaceAdapter(Context context, int resource, ArrayList<Place> objects) {
+	public PlaceAdapter(Context context, int resource, List<Place> objects) {
 		super(context, resource, objects);
 
 		
@@ -78,7 +79,7 @@ public class PlaceAdapter extends ArrayAdapter<Place> {
 	 * @param objects
 	 *            new objects of the ListView
 	 */
-	public void replaceItems(ArrayList<Place> objects) {
+	public void replaceItems(List<Place> objects) {
 		if (objects != null)
 			this.objects = objects;
 		else

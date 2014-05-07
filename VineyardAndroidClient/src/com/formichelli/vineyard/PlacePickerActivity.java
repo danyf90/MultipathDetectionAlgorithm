@@ -22,9 +22,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 public class PlacePickerActivity extends ImmersiveActivity {
-	public final static String HIERARCHY= "placeHierarchy";
-	public final static String ANCESTORS= "selectedPlaceAncestors";
-	
+	public final static String HIERARCHY = "placeHierarchy";
+	public final static String ANCESTORS = "selectedPlaceAncestors";
+
 	ListView currentLevelPlacesListView;
 	PlaceAdapter placeAdapter;
 	Place selectedPlace;
@@ -39,11 +39,9 @@ public class PlacePickerActivity extends ImmersiveActivity {
 
 		ancestorsList = (ViewGroup) findViewById(R.id.place_picker_ancestors_list);
 		currentLevelPlacesListView = (ListView) findViewById(R.id.place_picker_current_level_places);
-		placeAdapter = new PlaceAdapter(this, R.layout.place_list_item,
-				null);
+		placeAdapter = new PlaceAdapter(this, R.layout.place_list_item, null);
 		currentLevelPlacesListView.setAdapter(placeAdapter);
-		currentLevelPlacesListView
-				.setOnItemClickListener(onChildClickListener);
+		currentLevelPlacesListView.setOnItemClickListener(onChildClickListener);
 
 		Place rootPlace;
 		try {

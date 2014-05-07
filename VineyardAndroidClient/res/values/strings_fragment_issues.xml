@@ -12,6 +12,7 @@
     <string name="issue_priority_label">Priority: </string>
     <string name="issue_assigned_worker_label">Worker: </string>
     <string name="issues_no_issues">No issues in this place</string>
+    <string name="issue_report_error">An error occurred, the issues has not been reported</string>
 
     <string-array name="issue_priorities">
         <item>--</item>

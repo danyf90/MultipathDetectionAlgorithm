@@ -3,7 +3,10 @@ package com.formichelli.vineyard.entities;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -13,7 +16,7 @@ public class IssueTask extends SimpleTask {
 	private final static String PHOTOS = "photos";
 
 	private int issuer;
-	private ArrayList<URL> photos;
+	private List<URL> photos;
 
 	public IssueTask() {
 		photos = new ArrayList<URL>();
@@ -38,11 +41,11 @@ public class IssueTask extends SimpleTask {
 		this.issuer = issuer;
 	}
 
-	public ArrayList<URL> getPhotos() {
+	public List<URL> getPhotos() {
 		return this.photos;
 	}
 
-	public void setPhotos(ArrayList<URL> photos) {
+	public void setPhotos(List<URL> photos) {
 		if (photos != null)
 			this.photos = photos;
 		else
@@ -71,5 +74,14 @@ public class IssueTask extends SimpleTask {
 
 	public void removeAllPhotos() {
 		photos.clear();
+	}
+	
+	@Override
+	public List<NameValuePair> getParams() {
+		List<NameValuePair> params = super.getParams();
+
+		params.add(new BasicNameValuePair(ISSUER, String.valueOf(getIssuer())));
+
+		return params;
 	}
 }

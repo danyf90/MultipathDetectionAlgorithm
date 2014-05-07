@@ -2,14 +2,17 @@ package com.formichelli.vineyard.entities;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.annotation.SuppressLint;
-import android.location.Location;
 
 public class SimpleTask implements Task {
 	private final static String ID = "id";
@@ -22,14 +25,15 @@ public class SimpleTask implements Task {
 	private final static String PLACE = "place";
 	private final static String TITLE = "title";
 	private final static String DESCRIPTION = "description";
-	// private final static String LOCATION = "location";
+//	private final static String LATITUDE = "latitude";
+//	private final static String LONGITUDE = "longitude";
 	private final static String ASSIGNED_WORKER = "assigned_worker";
 	private final static String ASSIGNED_GROUP = "assigned_group";
 
 	private final static String dateFormat = "yyyy-MM-dd HH:mm:ss";
 
 	private int id;
-	private int assigneeId;
+	private int assignerId;
 	private Date createTime;
 	private Date assignTime;
 	private Date dueTime;
@@ -38,7 +42,8 @@ public class SimpleTask implements Task {
 	private int placeId;
 	private String title;
 	private String description;
-	private Location location;
+	private double latitude;
+	private double longitude;
 	private int assignedWorkerId;
 	private int assignedGroupId;
 
@@ -52,7 +57,7 @@ public class SimpleTask implements Task {
 		setId(jsonObject.getInt(ID));
 
 		if (!jsonObject.isNull(ASSIGNEE))
-			setAssigneeId(jsonObject.getInt(ASSIGNEE));
+			setAssignerId(jsonObject.getInt(ASSIGNEE));
 
 		try {
 			if (!jsonObject.isNull(CREATE_TIME))
@@ -67,28 +72,30 @@ public class SimpleTask implements Task {
 				setDueTime(new SimpleDateFormat(dateFormat).parse(jsonObject
 						.getString(DUE_TIME)));
 		} catch (ParseException e1) {
-			// TODO what to do? 
+			// TODO what to do?
 		}
 
 		setStatus(jsonObject.getString(STATUS));
-		
+
 		setPriority(jsonObject.getString(PRIORITY));
 
 		setPlaceId(jsonObject.getInt(PLACE));
-		
+
 		setTitle(jsonObject.getString(TITLE));
-		
 
 		if (!jsonObject.isNull(DESCRIPTION))
 			setDescription(jsonObject.getString(DESCRIPTION));
 		else
 			setDescription(null);
-		
-		// TODO location
-		
+
+//		if (!jsonObject.isNull(LATITUDE))
+//			setLatitude(jsonObject.getDouble(LATITUDE));
+//		if (!jsonObject.isNull(LONGITUDE))
+//			setLongitude(jsonObject.getDouble(LONGITUDE));
+
 		if (!jsonObject.isNull(ASSIGNED_WORKER))
 			setAssignedWorkerId(jsonObject.getInt(ASSIGNED_WORKER));
-		
+
 		if (!jsonObject.isNull(ASSIGNED_GROUP))
 			setAssignedGroupId(jsonObject.getInt(ASSIGNED_GROUP));
 	}
@@ -104,13 +111,13 @@ public class SimpleTask implements Task {
 	}
 
 	@Override
-	public int getAssigneeId() {
-		return assigneeId;
+	public int getAssignerId() {
+		return assignerId;
 	}
 
 	@Override
-	public void setAssigneeId(int assigneeId) {
-		this.assigneeId = assigneeId;
+	public void setAssignerId(int assignerId) {
+		this.assignerId = assignerId;
 	}
 
 	@Override
@@ -166,7 +173,7 @@ public class SimpleTask implements Task {
 	@Override
 	public void setPriority(String priority) {
 		priority = priority.toUpperCase(Locale.ENGLISH).replace('-', '_');
-		
+
 		this.priority = Priority.valueOf(priority);
 	}
 
@@ -174,7 +181,7 @@ public class SimpleTask implements Task {
 	public void setPriority(Priority priority) {
 		if (priority == null)
 			this.priority = Priority.NOT_SET;
-		
+
 		this.priority = priority;
 	}
 
@@ -208,14 +215,20 @@ public class SimpleTask implements Task {
 		this.description = description;
 	}
 
-	@Override
-	public Location getLocation() {
-		return location;
+	public double getLatitude() {
+		return latitude;
 	}
 
-	@Override
-	public void setLocation(Location location) {
-		this.location = location;
+	public void setLatitude(double latitude) {
+		this.latitude = latitude;
+	};
+
+	public double getLongitude() {
+		return longitude;
+	}
+
+	public void setLongitude(double longitude) {
+		this.longitude = longitude;
 	}
 
 	@Override
@@ -236,6 +249,22 @@ public class SimpleTask implements Task {
 	@Override
 	public void setAssignedGroupId(int assignedGroupId) {
 		this.assignedGroupId = assignedGroupId;
+	}
+
+	public List<NameValuePair> getParams() {
+
+		List<NameValuePair> params = new ArrayList<NameValuePair>();
+
+		params.add(new BasicNameValuePair(PRIORITY, getPriority().toString()));
+		params.add(new BasicNameValuePair(PLACE, String.valueOf(getPlaceId())));
+		params.add(new BasicNameValuePair(TITLE, title));
+		params.add(new BasicNameValuePair(DESCRIPTION, description));
+//		params.add(new BasicNameValuePair(LATITUDE, String
+//				.valueOf(getLatitude())));
+//		params.add(new BasicNameValuePair(LONGITUDE, String
+//				.valueOf(getLongitude())));
+
+		return params;
 	}
 
 }

@@ -18,6 +18,7 @@ import android.graphics.drawable.Drawable;
 import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.support.v4.app.Fragment;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -42,6 +43,7 @@ public class VineyardGallery extends HorizontalScrollView {
 	HashSet<ImageView> selected;
 	HashMap<ImageView, String> images;
 	Drawable add, delete;
+	Fragment fragment;
 
 	public VineyardGallery(Context context) {
 		super(context);
@@ -62,9 +64,13 @@ public class VineyardGallery extends HorizontalScrollView {
 
 	private void readAttributes(AttributeSet attrs) {
 		TypedArray a = getContext().getTheme().obtainStyledAttributes(attrs,
-		        R.styleable.VineyardGallery, 0, 0);
-		
+				R.styleable.VineyardGallery, 0, 0);
+
 		locked = a.getBoolean(R.styleable.VineyardGallery_locked, false);
+	}
+
+	public void setFragment(Fragment fragment) {
+		this.fragment = fragment;
 	}
 
 	private void initView() {
@@ -93,9 +99,9 @@ public class VineyardGallery extends HorizontalScrollView {
 
 		if (locked)
 			gallery.removeView(addDeletePhoto);
-		
+
 		addDeletePhoto.setImageDrawable(add);
-		addDeletePhoto.setOnClickListener(dispatchTakePictureIntent);			
+		addDeletePhoto.setOnClickListener(dispatchTakePictureIntent);
 	}
 
 	public boolean isLocked() {
@@ -105,7 +111,7 @@ public class VineyardGallery extends HorizontalScrollView {
 	public void setLocked(boolean locked) {
 		if (this.locked == locked)
 			return;
-		
+
 		this.locked = locked;
 
 		if (locked) {
@@ -263,8 +269,13 @@ public class VineyardGallery extends HorizontalScrollView {
 
 				takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,
 						Uri.fromFile(photoFile));
-				((Activity) context).startActivityForResult(takePictureIntent,
-						REQUEST_TAKE_PHOTO);
+
+				if (fragment != null)
+					fragment.startActivityForResult(takePictureIntent,
+							REQUEST_TAKE_PHOTO);
+				else
+					((Activity) context).startActivityForResult(
+							takePictureIntent, REQUEST_TAKE_PHOTO);
 			}
 		}
 	};

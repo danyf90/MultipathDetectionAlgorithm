@@ -6,6 +6,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
@@ -25,9 +28,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.formichelli.vineyard.entities.IssueTask;
 import com.formichelli.vineyard.entities.Place;
+import com.formichelli.vineyard.entities.Task.Priority;
+import com.formichelli.vineyard.utilities.AsyncHttpPostRequest;
 import com.formichelli.vineyard.utilities.VineyardGallery;
 import com.formichelli.vineyard.utilities.VineyardServer;
 
@@ -137,10 +143,13 @@ public class ReportIssueFragment extends Fragment {
 	// This function must be called after both onActivityCreated and
 	// onCreateOptionMenu but only once
 	private void init() {
-		gallery = (VineyardGallery) activity.findViewById(R.id.report_issue_gallery);
+		gallery = (VineyardGallery) activity
+				.findViewById(R.id.report_issue_gallery);
+		gallery.setFragment(this);
 
 		if (i == null) {
 			i = new IssueTask();
+			i.setIssuer(activity.sp.getInt(LoginActivity.USERID, 0));
 			i.setPlaceId(activity.getCurrentPlace().getId());
 		} else {
 			title.setText(i.getTitle());
@@ -149,7 +158,7 @@ public class ReportIssueFragment extends Fragment {
 			if (i.getPriority() != null)
 				priorities.setSelection(i.getPriority().toInt() + 1);
 
-			// for (URL photo: i.getPhotos()) {
+			// for (URL photo: i.getPhotos()) { // TODO
 			// ImageView i = new ImageView(activity);
 			// gallery.a
 			// imageLoader = new ImageLoader(activity, header, progress);
@@ -171,18 +180,14 @@ public class ReportIssueFragment extends Fragment {
 	public boolean onOptionsItemSelected(MenuItem item) {
 
 		switch (item.getItemId()) {
-		case R.id.action_report_issue_delete_selected_photos:
-			// remove selected images from gallery
-			gallery.removeSelectedImages();
-			break;
 		case R.id.action_report_issue_cancel:
 			activity.switchFragment(activity.issuesFragment);
 			break;
 		case R.id.action_report_issue_send:
 			if (parseFields()) {
-				vineyardServer.sendIssue(i);
-				gallery.removeAllImages();
-				activity.switchFragment(activity.issuesFragment);
+
+				new AsyncIssueSend(vineyardServer.getUrl()
+						+ VineyardServer.ADD_ISSUE_API, i).execute();
 				break;
 			}
 		default:
@@ -195,30 +200,31 @@ public class ReportIssueFragment extends Fragment {
 
 	// Checks if the fields are valid and populates issueTask
 	private boolean parseFields() {
-		Activity activity = getActivity();
-		EditText t;
 		String s;
 
-		t = (EditText) activity.findViewById(R.id.report_issue_title);
-		if (t == null)
+		s = title.getText().toString();
+		if (s.compareTo("") == 0) {
+			title.setError(getString(R.string.issue_title_error));
 			return false;
-		else {
-			s = t.getText().toString();
-			if (s.compareTo("") == 0) {
-				t.setError(getString(R.string.issue_title_error));
-				return false;
-			}
-
-			i.setTitle(s);
 		}
+		i.setTitle(s);
 
-		t = (EditText) activity.findViewById(R.id.report_issue_description);
-		if (t == null)
-			return false;
-		else {
-			s = t.getText().toString();
-			if (s.compareTo("") != 0)
-				i.setDescription(s);
+		s = description.getText().toString();
+		if (s.compareTo("") != 0)
+			i.setDescription(s);
+
+		switch (priorities.getSelectedItemPosition()) {
+		case 1:
+			i.setPriority(Priority.LOW);
+			break;
+		case 2:
+			i.setPriority(Priority.MEDIUM);
+			break;
+		case 3:
+			i.setPriority(Priority.HIGH);
+			break;
+		default:
+			i.setPriority(Priority.NOT_SET);
 		}
 
 		return true;
@@ -268,7 +274,6 @@ public class ReportIssueFragment extends Fragment {
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		switch (requestCode) {
 		case REQUEST_TAKE_PHOTO:
-			android.util.Log.e("AD","ASDA");
 			gallery.onActivityResult(requestCode, resultCode, data);
 			break;
 		case REQUEST_PLACE:
@@ -294,4 +299,32 @@ public class ReportIssueFragment extends Fragment {
 		}
 	}
 
+	private class AsyncIssueSend extends AsyncHttpPostRequest {
+
+		public AsyncIssueSend(String serverUrl, IssueTask i) {
+			super();
+
+			this.setServerUrl(serverUrl);
+			this.setParams(i.getParams());
+		}
+
+		@Override
+		protected void onPreExecute() {
+			activity.switchFragment(activity.getLoadingFragment());
+		}
+
+		@Override
+		protected void onPostExecute(HttpResponse response) {
+			if (response != null
+					&& response.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
+				// TODO delete photos from sdcard
+				activity.switchFragment(activity.getIssuesFragment());
+			} else {
+				Toast.makeText(activity,
+						activity.getString(R.string.issue_report_error),
+						Toast.LENGTH_SHORT).show();
+				activity.switchFragment(activity.getIssuesFragment());
+			}
+		}
+	};
 };

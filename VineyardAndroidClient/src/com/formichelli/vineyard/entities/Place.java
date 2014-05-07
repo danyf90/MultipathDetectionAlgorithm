@@ -1,6 +1,7 @@
 package com.formichelli.vineyard.entities;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -25,9 +26,9 @@ public class Place {
 	private String photo;
 	private Location location;
 	private Place parent;
-	private ArrayList<Place> children;
-	private ArrayList<IssueTask> issues;
-	private ArrayList<SimpleTask> tasks;
+	private List<Place> children;
+	private List<IssueTask> issues;
+	private List<SimpleTask> tasks;
 	private HashMap<String, String> attributes;
 	private int issuesCount;
 	private int tasksCount;
@@ -38,10 +39,10 @@ public class Place {
 	}
 
 	public Place(int id, String name, String description, String photo,
-			Location location, Place parent, ArrayList<Place> children,
+			Location location, Place parent, List<Place> children,
 			HashMap<String, String> attributes, int issuesCount,
-			int tasksCount, ArrayList<IssueTask> issues,
-			ArrayList<SimpleTask> tasks) {
+			int tasksCount, List<IssueTask> issues,
+			List<SimpleTask> tasks) {
 		setId(id);
 		setName(name);
 		setDescription(description);
@@ -130,11 +131,11 @@ public class Place {
 		this.parent = parent;
 	}
 
-	public ArrayList<Place> getChildren() {
+	public List<Place> getChildren() {
 		return this.children;
 	}
 
-	public void setChildren(ArrayList<Place> children) {
+	public void setChildren(List<Place> children) {
 		this.children = children;
 	}
 
@@ -165,11 +166,11 @@ public class Place {
 			children.add(child);
 	}
 
-	public ArrayList<IssueTask> getIssues() {
+	public List<IssueTask> getIssues() {
 		return issues;
 	}
 
-	public void setIssues(ArrayList<IssueTask> issues) {
+	public void setIssues(List<IssueTask> issues) {
 		this.issues = issues;
 	}
 
@@ -194,11 +195,11 @@ public class Place {
 			issues.add(issue);
 	}
 
-	public ArrayList<SimpleTask> getTasks() {
+	public List<SimpleTask> getTasks() {
 		return tasks;
 	}
 
-	public void setTasks(ArrayList<SimpleTask> tasks) {
+	public void setTasks(List<SimpleTask> tasks) {
 		this.tasks = tasks;
 	}
 

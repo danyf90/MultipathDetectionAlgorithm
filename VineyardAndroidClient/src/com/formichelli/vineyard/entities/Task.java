@@ -2,8 +2,6 @@ package com.formichelli.vineyard.entities;
 
 import java.util.Date;
 
-import android.location.Location;
-
 public interface Task {
 
 	public enum Status {
@@ -32,9 +30,9 @@ public interface Task {
 
 	public void setId(int id);
 
-	public int getAssigneeId();
+	public int getAssignerId();
 
-	public void setAssigneeId(int assigneeId);
+	public void setAssignerId(int assignerId);
 
 	public Date getCreateTime();
 
@@ -72,9 +70,13 @@ public interface Task {
 
 	public void setTitle(String title);
 
-	public Location getLocation();
+	public double getLatitude();
 
-	public void setLocation(Location location);
+	public void setLatitude(double latitude);
+
+	public double getLongitude();
+
+	public void setLongitude(double longitude);
 
 	public int getAssignedWorkerId();
 

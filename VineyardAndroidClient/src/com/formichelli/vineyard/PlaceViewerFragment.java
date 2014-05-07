@@ -1,7 +1,7 @@
 package com.formichelli.vineyard;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import com.formichelli.vineyard.entities.Place;
 import com.formichelli.vineyard.utilities.ImageLoader;
@@ -231,7 +231,7 @@ public class PlaceViewerFragment extends Fragment {
 				attributesValues.addView(t);
 			}
 
-		ArrayList<Place> children = p.getChildren();
+		List<Place> children = p.getChildren();
 
 		if (children.size() != 0) {
 			placeAdapter.replaceItems(children);

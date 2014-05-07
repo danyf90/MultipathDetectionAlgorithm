@@ -1,9 +1,13 @@
 package com.formichelli.vineyard;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -18,6 +22,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.View;
@@ -33,7 +38,7 @@ import com.formichelli.vineyard.utilities.VineyardServer;
  * well.
  */
 public class LoginActivity extends Activity {
-	private final static String ID = "id";
+	public static final String USERID = "id";
 	/**
 	 * Keep track of the login task to ensure we can cancel it if requested.
 	 */
@@ -247,27 +252,31 @@ public class LoginActivity extends Activity {
 		}
 
 		@Override
-		protected void onPostExecute(String result) {
+		protected void onPostExecute(HttpResponse response) {
 			mAuthTask = null;
 			showProgress(false);
 
-			if (result != null) {
+			if (response.getStatusLine().getStatusCode() == HttpStatus.SC_ACCEPTED) {
+
 				try {
-					String userId = new JSONObject(result).getString(ID);
-					sp.edit()
-							.putString(getString(R.string.preference_user_id),
-									userId).commit();
-				} catch (JSONException e) {
-					e.printStackTrace();
+					ByteArrayOutputStream out = new ByteArrayOutputStream();
+					response.getEntity().writeTo(out);
+					out.close();
+					String result = out.toString();
+
+					int userId = new JSONObject(result).getInt(USERID);
+					sp.edit().putInt(USERID, userId).commit();
+				} catch (IOException | JSONException e) {
+					Log.e(TAG, e.toString());
 					setError();
 				}
 
 				startActivity(new Intent(LoginActivity.this,
 						VineyardMainActivity.class));
 				finish();
-			} else {
+
+			} else
 				setError();
-			}
 		}
 
 		private void setError() {

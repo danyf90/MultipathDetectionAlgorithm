@@ -42,11 +42,12 @@ public class VineyardMainActivity extends ImmersiveActivity implements
 	Menu menu;
 	Place currentPlace, rootPlace;
 	String placesStatsJSON;
-	String serverUrl, userId;
+	String serverUrl;
 	ActionBar actionBar;
 	VineyardServer vineyardServer;
 	SharedPreferences sp;
 	Cache cache;
+	int userId;
 	boolean preloadAll;
 	AsyncHttpGetRequests asyncTask;
 
@@ -72,11 +73,11 @@ public class VineyardMainActivity extends ImmersiveActivity implements
 
 		sp = PreferenceManager.getDefaultSharedPreferences(this);
 
-		userId = sp.getString(getString(R.string.preference_user_id), null);
+		userId = sp.getInt(LoginActivity.USERID, 0);
 		serverUrl = sp.getString(getString(R.string.preference_server_url),
 				null);
 
-		if (userId == null || serverUrl == null) {
+		if (userId == 0 || serverUrl == null) {
 			startLoginActivity();
 			return;
 		}
@@ -373,13 +374,11 @@ public class VineyardMainActivity extends ImmersiveActivity implements
 		return loadingFragment;
 	}
 
+	public IssuesFragment getIssuesFragment() {
+		return issuesFragment;
+	}
+
 	public void setNavigationDrawerLocked(boolean lock) {
 		mNavigationDrawerFragment.setLocked(lock);
 	};
-
-	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		currentFragment.onActivityResult(requestCode, resultCode, data);
-	}
-
 }
