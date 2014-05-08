@@ -140,7 +140,9 @@ public class IssuesFragment extends Fragment {
 		@Override
 		public void onClick(View v) {
 			ReportIssueFragment r = new ReportIssueFragment();
-			r.setIssue((IssueTask) v.getTag());
+			IssueTask issue = (IssueTask) v.getTag();
+			issue.setPlace(activity.getCurrentPlace());
+			r.setIssue(issue);
 			activity.switchFragment(r);
 		}
 	};
@@ -148,11 +150,13 @@ public class IssuesFragment extends Fragment {
 	OnClickListener doneOnClickListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
-			new AsyncMarkIssueAsDone(activity.getServer().getUrl() + VineyardServer.ADD_ISSUE_API, (IssueTask) v.getTag()).execute();
+			new AsyncMarkIssueAsDone(activity.getServer().getUrl()
+					+ VineyardServer.ADD_ISSUE_API, (IssueTask) v.getTag())
+					.execute();
 		}
 	};
 
-	class PlaceIssuesAsyncHttpRequest extends AsyncHttpGetRequests {
+	private class PlaceIssuesAsyncHttpRequest extends AsyncHttpGetRequests {
 		private static final String TAG = "PlaceIssuesAsyncHttpRequest";
 
 		@Override
@@ -205,14 +209,16 @@ public class IssuesFragment extends Fragment {
 
 		public AsyncMarkIssueAsDone(String serverUrl, IssueTask issue) {
 			super();
-			
+
 			this.issue = issue;
 
 			this.setServerUrl(serverUrl);
 
 			List<NameValuePair> params = new ArrayList<NameValuePair>();
-			params.add(new BasicNameValuePair(SimpleTask.ID, String.valueOf(issue
-					.getId())));
+			params.add(new BasicNameValuePair(SimpleTask.ID, String
+					.valueOf(issue.getId())));
+			params.add(new BasicNameValuePair(SimpleTask.MODIFIER, String
+					.valueOf(activity.getUserId())));
 			params.add(new BasicNameValuePair(SimpleTask.STATUS,
 					Task.Status.DONE.toString()));
 
@@ -230,13 +236,13 @@ public class IssuesFragment extends Fragment {
 				// TODO remove issue;
 				issue.getPlace().removeIssue(issue);
 				activity.switchFragment(activity.getIssuesFragment());
-				
+
 			} else {
 				Toast.makeText(activity,
 						activity.getString(R.string.issue_mark_done_error),
 						Toast.LENGTH_SHORT).show();
 				Log.e(TAG, "SC: " + response);
-				
+
 				activity.switchFragment(activity.getIssuesFragment());
 			}
 		}

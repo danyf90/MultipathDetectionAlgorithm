@@ -16,6 +16,7 @@ import android.annotation.SuppressLint;
 
 public class SimpleTask implements Task {
 	public final static String ID = "id";
+	public final static String MODIFIER = "modifier";
 	private final static String ASSIGNEE = "assignee";
 	private final static String CREATE_TIME = "create_time";
 	private final static String ASSIGN_TIME = "assign_time";

@@ -44,7 +44,7 @@ public class ReportIssueFragment extends Fragment {
 
 	VineyardMainActivity activity;
 	VineyardServer vineyardServer;
-	IssueTask i;
+	IssueTask issue;
 	String currentPhotoPath;
 	VineyardGallery gallery;
 	Button placeButton;
@@ -55,8 +55,8 @@ public class ReportIssueFragment extends Fragment {
 	int imagePadding;
 	boolean first;
 
-	public void setIssue(IssueTask i) {
-		this.i = i;
+	public void setIssue(IssueTask issue) {
+		this.issue = issue;
 	}
 
 	@Override
@@ -139,16 +139,16 @@ public class ReportIssueFragment extends Fragment {
 				.findViewById(R.id.report_issue_gallery);
 		gallery.setFragment(this);
 
-		if (i == null) {
-			i = new IssueTask();
-			i.setIssuer(activity.sp.getInt(LoginActivity.USERID, 0));
-			i.setPlace(activity.getCurrentPlace());
+		if (issue == null) {
+			issue = new IssueTask();
+			issue.setIssuer(activity.getUserId());
+			issue.setPlace(activity.getCurrentPlace());
 		} else {
-			title.setText(i.getTitle());
-			description.setText(i.getDescription());
-			placeButton.setText(String.valueOf(i.getPlace().getName()));
-			if (i.getPriority() != null)
-				priorities.setSelection(i.getPriority().toInt() + 1);
+			title.setText(issue.getTitle());
+			description.setText(issue.getDescription());
+			placeButton.setText(String.valueOf(issue.getPlace().getName()));
+			if (issue.getPriority() != null)
+				priorities.setSelection(issue.getPriority().toInt());
 
 			// for (String photo: i.getPhotos()) { // TODO
 			// ImageView i = new ImageView(activity);
@@ -179,7 +179,7 @@ public class ReportIssueFragment extends Fragment {
 			if (parseFields()) {
 
 				new AsyncIssueSend(vineyardServer.getUrl()
-						+ VineyardServer.ADD_ISSUE_API, i).execute();
+						+ VineyardServer.ADD_ISSUE_API, issue).execute();
 				break;
 			}
 		default:
@@ -199,24 +199,24 @@ public class ReportIssueFragment extends Fragment {
 			title.setError(getString(R.string.issue_title_error));
 			return false;
 		}
-		i.setTitle(s);
+		issue.setTitle(s);
 
 		s = description.getText().toString();
 		if (s.compareTo("") != 0)
-			i.setDescription(s);
+			issue.setDescription(s);
 
 		switch (priorities.getSelectedItemPosition()) {
 		case 1:
-			i.setPriority(Priority.LOW);
+			issue.setPriority(Priority.LOW);
 			break;
 		case 2:
-			i.setPriority(Priority.MEDIUM);
+			issue.setPriority(Priority.MEDIUM);
 			break;
 		case 3:
-			i.setPriority(Priority.HIGH);
+			issue.setPriority(Priority.HIGH);
 			break;
 		default:
-			i.setPriority(Priority.NOT_SET);
+			issue.setPriority(Priority.NOT_SET);
 		}
 
 		return true;
@@ -285,7 +285,7 @@ public class ReportIssueFragment extends Fragment {
 				}
 
 				placeButton.setText(selectedPlace.getName());
-				i.setPlace(selectedPlace);
+				issue.setPlace(selectedPlace);
 			}
 			break;
 		}
@@ -299,7 +299,7 @@ public class ReportIssueFragment extends Fragment {
 
 			this.issue = issue;
 			this.setServerUrl(serverUrl);
-			this.setParams(i.getParams());
+			this.setParams(issue.getParams());
 		}
 
 		@Override

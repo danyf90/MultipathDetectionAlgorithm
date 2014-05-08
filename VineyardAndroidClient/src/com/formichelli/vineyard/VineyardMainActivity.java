@@ -380,5 +380,9 @@ public class VineyardMainActivity extends ImmersiveActivity implements
 
 	public void setNavigationDrawerLocked(boolean lock) {
 		mNavigationDrawerFragment.setLocked(lock);
+	}
+
+	public int getUserId() {
+		return userId;
 	};
 }
