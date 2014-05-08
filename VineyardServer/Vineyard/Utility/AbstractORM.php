@@ -22,7 +22,6 @@ abstract class AbstractORM implements JsonSerializable {
      */
     abstract public function check();
     
-    
     /**
      * Must return the table name containing data for this type.
      * @return string
@@ -86,11 +85,19 @@ abstract class AbstractORM implements JsonSerializable {
 		else $this->_insert();
 		
 	}
+    
+    /**
+     * Overridable event, triggered before the instance is inserted in the DB.
+     */
+    protected function onPreInsert() {}
 	
     /**
      * Inserts a new entry corresponding to this instance in the db.
      */
 	private function _insert() {
+        
+        $this->onPreInsert();
+        
 		$pdo = DB::getConnection();
 		$tableName = static::getTableName();
 				
@@ -111,13 +118,20 @@ abstract class AbstractORM implements JsonSerializable {
 		$sql->execute();
 		
 		$this->_data['id'] = $pdo->lastInsertId();
+        
+        $this->onPostInsert();
 	}
-	
+    
+    /**
+     * Overridable event, triggered after the instance is inserted in the DB.
+     */
+    protected function onPostInsert() {}
     
     /**
      * Updates the entry correspondent to this instance in the db.
      */
 	private function _update() {
+        
 		$pdo = DB::getConnection();
 		$tableName = static::getTableName();
 
@@ -150,8 +164,7 @@ abstract class AbstractORM implements JsonSerializable {
 		$this->_data = $sql->fetch(PDO::FETCH_ASSOC);
 		$this->touchedFields = array();
 	}
-	
-    
+	   
     /**
      * Populates this instance with $data.
      */
@@ -236,7 +249,7 @@ abstract class AbstractORM implements JsonSerializable {
 		try {
 			$s->save();
             http_response_code(201); // Created
-			return $s->id;
+			return array( 'id' => $s->id );
 		} catch (ORMException $e) {
             http_response_code(400); // Bad Request
             return $e->getMessage() . ": " . implode(",", $e->getWrongFields());
@@ -283,6 +296,5 @@ abstract class AbstractORM implements JsonSerializable {
             return $e->getMessage() . ": " . implode(",", $e->getWrongFields());
 		}
 	}
-    
 }
 ?>

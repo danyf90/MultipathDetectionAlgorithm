@@ -13,7 +13,7 @@ trait TCrudRequestHandlers {
                 
                 case 'POST': // create a new resource instance
                     $response = static::insert();
-                    return $response; // the new id or an error message
+                    return json_encode($response); // the new id or an error message
                 break;
                 
                 case 'PUT':
