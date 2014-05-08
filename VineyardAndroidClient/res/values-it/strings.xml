@@ -23,6 +23,7 @@
     <string name="action_send">Invia</string>
     <string name="action_settings_restore">Ripristina predefiniti</string>
     <string name="action_up">Su</string>
+    <string name="loading_message">Caricamento&#8230;</string>
     <string name="loading_error_message">Il server non risponde e le informazioni richieste non sono presenti in cache</string>
     <string name="issues_label">Problemi: </string>
     <string name="tasks_label">Lavori: </string>

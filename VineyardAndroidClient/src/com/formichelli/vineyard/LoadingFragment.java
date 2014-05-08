@@ -10,7 +10,7 @@ import android.widget.ImageButton;
 
 public class LoadingFragment extends Fragment {
 	VineyardMainActivity activity;
-	ViewGroup mainLayout, progressLayout, errorLayout;
+	ViewGroup mainLayout, progressView, errorView;
 	ImageButton retry;
 
 	@Override
@@ -31,39 +31,27 @@ public class LoadingFragment extends Fragment {
 
 		activity = (VineyardMainActivity) getActivity();
 
-		// inflate both the progress and error layout and attach the former to
-		// the container
-		progressLayout = (ViewGroup) activity.getLayoutInflater().inflate(
-				R.layout.fragment_loading_progress, mainLayout, false);
-		errorLayout = (ViewGroup) activity.getLayoutInflater().inflate(
-				R.layout.fragment_loading_error, mainLayout, false);
+		progressView = (ViewGroup) activity.findViewById(R.id.loading_progress);
+		errorView = (ViewGroup) activity.findViewById(R.id.loading_error);
 		
-		retry = (ImageButton) errorLayout
-				.findViewById(R.id.loading_error_retry);
+		retry = (ImageButton) activity.findViewById(R.id.loading_error_retry);
 		retry.setOnClickListener(retryOnClickListener);
 		
-		setLoading();
+		setLoading(true);
 	}
 
-	public void setLoading() {
-		activity.setNavigationDrawerLocked(true);
-		activity.setTitle(activity.getString(R.string.loading));
-		mainLayout.removeAllViews();
-		mainLayout.addView(progressLayout);
+	public void setLoading(boolean loading) {
+		activity.setNavigationDrawerLocked(loading);
+		activity.setTitle(activity.getString(loading ? R.string.loading : R.string.loading_error));
+		progressView.setVisibility(loading ? View.VISIBLE : View.GONE);
+		errorView.setVisibility(loading ? View.GONE : View.VISIBLE);
 	}
-
-	public void setError() {
-		activity.setNavigationDrawerLocked(false);
-		activity.setTitle(activity.getString(R.string.loading_error));
-		mainLayout.removeAllViews();
-		mainLayout.addView(errorLayout);
-	}
-
+	
 	OnClickListener retryOnClickListener = new OnClickListener() {
 
 		@Override
 		public void onClick(View v) {
-			setLoading();
+			setLoading(true);
 			activity.sendRootPlaceRequest();
 		}
 	};

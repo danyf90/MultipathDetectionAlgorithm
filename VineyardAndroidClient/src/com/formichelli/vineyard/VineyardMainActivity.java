@@ -287,7 +287,7 @@ public class VineyardMainActivity extends ImmersiveActivity implements
 				if (rootPlace == null || statsJSON == null) {
 					Log.e(TAG,
 							"rootPlace not available neither from server nor from sharedPreference");
-					loadingFragment.setError();
+					loadingFragment.setLoading(false);
 					return;
 				}
 
@@ -305,7 +305,7 @@ public class VineyardMainActivity extends ImmersiveActivity implements
 				switchFragment(lastFragment);
 			} catch (JSONException e) {
 				Log.e(TAG, e.getLocalizedMessage());
-				loadingFragment.setError();
+				loadingFragment.setLoading(false);
 			}
 		}
 

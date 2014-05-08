@@ -181,7 +181,7 @@ public class IssuesFragment extends Fragment {
 
 					if (issuesJSON == null) {
 						Log.w(TAG, "issues not available in sharedPreference");
-						activity.getLoadingFragment().setError();
+						activity.getLoadingFragment().setLoading(false);
 						return;
 					}
 
@@ -196,7 +196,7 @@ public class IssuesFragment extends Fragment {
 
 			} catch (JSONException e) {
 				android.util.Log.e(TAG, e.getLocalizedMessage());
-				activity.getLoadingFragment().setError();
+				activity.getLoadingFragment().setLoading(false);
 			}
 		}
 	}

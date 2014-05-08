@@ -90,7 +90,7 @@ public class TasksFragment extends Fragment {
 
 			} catch (JSONException e) {
 				android.util.Log.e(TAG, e.getLocalizedMessage());
-				activity.getLoadingFragment().setError();
+				activity.getLoadingFragment().setLoading(false);
 			}
 		}
 	}
