@@ -40,9 +40,7 @@ public class Place {
 
 	public Place(int id, String name, String description, String photo,
 			Location location, Place parent, List<Place> children,
-			HashMap<String, String> attributes, int issuesCount,
-			int tasksCount, List<IssueTask> issues,
-			List<SimpleTask> tasks) {
+			HashMap<String, String> attributes, List<IssueTask> issues, List<SimpleTask> tasks) {
 		setId(id);
 		setName(name);
 		setDescription(description);
@@ -53,9 +51,6 @@ public class Place {
 		setAttributes(attributes);
 		setIssues(issues);
 		setTasks(tasks);
-		setIssuesCount(issuesCount);
-		setTasksCount(tasksCount);
-
 	}
 
 	public Place(JSONObject rootPlaceObject) throws JSONException {
@@ -66,17 +61,16 @@ public class Place {
 
 		setDescription(rootPlaceObject.getString(DESCRIPTION));
 
-
 		if (rootPlaceObject.has(PHOTO))
 			setPhoto(rootPlaceObject.getString(PHOTO));
 		else
 			attributes = new HashMap<String, String>();
-		
+
 		if (rootPlaceObject.has(ATTRIBUTES))
 			setAttributes(rootPlaceObject.getJSONObject(ATTRIBUTES));
 		else
 			attributes = new HashMap<String, String>();
-		
+
 		if (rootPlaceObject.has(CHILDREN))
 			setChildren(rootPlaceObject.getJSONArray(CHILDREN));
 		else
@@ -171,21 +165,29 @@ public class Place {
 	}
 
 	public void setIssues(List<IssueTask> issues) {
-		this.issues = issues;
+		if (issues == null)
+			this.issues = new ArrayList<IssueTask>();
+		else
+			this.issues = issues;
+		
+		this.setIssuesCount(this.issues.size());
 	}
 
 	public void setIssues(String issuesJSON) throws JSONException {
 		JSONArray issuesArray = new JSONArray(issuesJSON);
 
-		setIssues(new ArrayList<IssueTask>());
+		List<IssueTask> issues = new ArrayList<IssueTask>();
 
 		for (int i = 0, l = issuesArray.length(); i < l; i++) {
 			try {
-				addIssue(new IssueTask(issuesArray.getJSONObject(i)));
+				issues.add(new IssueTask(issuesArray.getJSONObject(i)));
 			} catch (JSONException e) {
 				android.util.Log.e("Place.setIsues", e.getLocalizedMessage());
 			}
 		}
+		
+		setIssues(issues);
+		
 	}
 
 	public void addIssue(IssueTask issue) {
@@ -193,6 +195,8 @@ public class Place {
 			issues = new ArrayList<IssueTask>();
 		else
 			issues.add(issue);
+		
+		this.issuesCount++;
 	}
 
 	public List<SimpleTask> getTasks() {
@@ -200,20 +204,27 @@ public class Place {
 	}
 
 	public void setTasks(List<SimpleTask> tasks) {
-		this.tasks = tasks;
+		if (tasks == null)
+			this.tasks = new ArrayList<SimpleTask>();
+		else
+			this.tasks = tasks;
+		
+		setTasksCount(this.tasks.size());
 	}
 
 	public void setTasks(String tasksJSON) throws JSONException {
 		JSONArray tasksArray = new JSONArray(tasksJSON);
 
-		setTasks(new ArrayList<SimpleTask>());
+		List<SimpleTask> tasks = new ArrayList<SimpleTask>();
 
 		for (int i = 0, l = tasksArray.length(); i < l; i++) {
 			try {
-				addTask(new SimpleTask(tasksArray.getJSONObject(i)));
+				tasks.add(new SimpleTask(tasksArray.getJSONObject(i)));
 			} catch (JSONException e) {
 			}
 		}
+		
+		this.setTasks(tasks);
 	}
 
 	public void addTask(SimpleTask task) {
@@ -221,6 +232,8 @@ public class Place {
 			tasks = new ArrayList<SimpleTask>();
 		else
 			tasks.add(task);
+		
+		this.tasksCount++;
 	}
 
 	public HashMap<String, String> getAttributes() {
@@ -252,7 +265,7 @@ public class Place {
 	public void addAttribute(String key, String value) {
 		if (attributes == null)
 			attributes = new HashMap<String, String>();
-		
+
 		attributes.put(key, value);
 	}
 

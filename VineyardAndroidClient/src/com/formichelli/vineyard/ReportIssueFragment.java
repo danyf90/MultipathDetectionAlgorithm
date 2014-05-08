@@ -292,10 +292,12 @@ public class ReportIssueFragment extends Fragment {
 	}
 
 	private class AsyncIssueSend extends AsyncHttpPostRequest {
-
-		public AsyncIssueSend(String serverUrl, IssueTask i) {
+		IssueTask issue;
+		
+		public AsyncIssueSend(String serverUrl, IssueTask issue) {
 			super();
 
+			this.issue = issue;
 			this.setServerUrl(serverUrl);
 			this.setParams(i.getParams());
 		}
@@ -304,13 +306,16 @@ public class ReportIssueFragment extends Fragment {
 		protected void onPreExecute() {
 			activity.switchFragment(activity.getLoadingFragment());
 		}
-
+;
 		@Override
 		protected void onPostExecute(HttpResponse response) {
 			if (response != null
 					&& response.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
 				// TODO delete photos from sdcard
 				activity.switchFragment(activity.getIssuesFragment());
+				
+				issue.getPlace().addIssue(issue);
+				
 			} else {
 				Toast.makeText(activity,
 						activity.getString(R.string.issue_report_error),
@@ -318,5 +323,6 @@ public class ReportIssueFragment extends Fragment {
 				activity.switchFragment(activity.getIssuesFragment());
 			}
 		}
+		
 	};
 };
