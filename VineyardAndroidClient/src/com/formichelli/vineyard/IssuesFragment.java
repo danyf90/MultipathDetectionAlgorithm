@@ -3,7 +3,6 @@ package com.formichelli.vineyard;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -13,7 +12,7 @@ import com.formichelli.vineyard.entities.IssueTask;
 import com.formichelli.vineyard.entities.SimpleTask;
 import com.formichelli.vineyard.entities.Task;
 import com.formichelli.vineyard.utilities.AsyncHttpGetRequests;
-import com.formichelli.vineyard.utilities.AsyncHttpPostRequest;
+import com.formichelli.vineyard.utilities.AsyncHttpPutRequest;
 import com.formichelli.vineyard.utilities.IssueExpandableAdapter;
 import com.formichelli.vineyard.utilities.VineyardServer;
 
@@ -149,7 +148,7 @@ public class IssuesFragment extends Fragment {
 	OnClickListener doneOnClickListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
-			new AsyncMarkIssueAsDone(activity.getServer() + VineyardServer.ADD_ISSUE_API, (IssueTask) v.getTag());
+			new AsyncMarkIssueAsDone(activity.getServer().getUrl() + VineyardServer.ADD_ISSUE_API, (IssueTask) v.getTag()).execute();
 		}
 	};
 
@@ -201,20 +200,23 @@ public class IssuesFragment extends Fragment {
 		}
 	}
 
-	private class AsyncMarkIssueAsDone extends AsyncHttpPostRequest {
+	private class AsyncMarkIssueAsDone extends AsyncHttpPutRequest {
+		IssueTask issue;
 
-		public AsyncMarkIssueAsDone(String serverUrl, IssueTask i) {
+		public AsyncMarkIssueAsDone(String serverUrl, IssueTask issue) {
 			super();
+			
+			this.issue = issue;
 
 			this.setServerUrl(serverUrl);
 
 			List<NameValuePair> params = new ArrayList<NameValuePair>();
-			params.add(new BasicNameValuePair(SimpleTask.ID, String.valueOf(i
+			params.add(new BasicNameValuePair(SimpleTask.ID, String.valueOf(issue
 					.getId())));
 			params.add(new BasicNameValuePair(SimpleTask.STATUS,
 					Task.Status.DONE.toString()));
 
-			this.setParams(i.getParams());
+			this.setParams(params);
 		}
 
 		@Override
@@ -223,14 +225,18 @@ public class IssuesFragment extends Fragment {
 		}
 
 		@Override
-		protected void onPostExecute(HttpResponse response) {
-			if (response != null
-					&& response.getStatusLine().getStatusCode() == HttpStatus.SC_ACCEPTED) {
+		protected void onPostExecute(Integer response) {
+			if (response == HttpStatus.SC_ACCEPTED) {
+				// TODO remove issue;
+				issue.getPlace().removeIssue(issue);
 				activity.switchFragment(activity.getIssuesFragment());
+				
 			} else {
 				Toast.makeText(activity,
-						activity.getString(R.string.issue_report_error),
+						activity.getString(R.string.issue_mark_done_error),
 						Toast.LENGTH_SHORT).show();
+				Log.e(TAG, "SC: " + response);
+				
 				activity.switchFragment(activity.getIssuesFragment());
 			}
 		}

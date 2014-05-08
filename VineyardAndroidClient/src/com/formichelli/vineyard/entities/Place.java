@@ -40,7 +40,8 @@ public class Place {
 
 	public Place(int id, String name, String description, String photo,
 			Location location, Place parent, List<Place> children,
-			HashMap<String, String> attributes, List<IssueTask> issues, List<SimpleTask> tasks) {
+			HashMap<String, String> attributes, List<IssueTask> issues,
+			List<SimpleTask> tasks) {
 		setId(id);
 		setName(name);
 		setDescription(description);
@@ -160,6 +161,10 @@ public class Place {
 			children.add(child);
 	}
 
+	public void removeChild(Place child) {
+		children.remove(child);
+	}
+
 	public List<IssueTask> getIssues() {
 		return issues;
 	}
@@ -169,7 +174,7 @@ public class Place {
 			this.issues = new ArrayList<IssueTask>();
 		else
 			this.issues = issues;
-		
+
 		this.setIssuesCount(this.issues.size());
 	}
 
@@ -185,9 +190,9 @@ public class Place {
 				android.util.Log.e("Place.setIsues", e.getLocalizedMessage());
 			}
 		}
-		
+
 		setIssues(issues);
-		
+
 	}
 
 	public void addIssue(IssueTask issue) {
@@ -195,8 +200,13 @@ public class Place {
 			issues = new ArrayList<IssueTask>();
 		else
 			issues.add(issue);
-		
-		this.issuesCount++;
+
+		issuesCount++;
+	}
+
+	public void removeIssue(IssueTask issue) {
+		if (issues.remove(issue))
+			issuesCount--;
 	}
 
 	public List<SimpleTask> getTasks() {
@@ -208,7 +218,7 @@ public class Place {
 			this.tasks = new ArrayList<SimpleTask>();
 		else
 			this.tasks = tasks;
-		
+
 		setTasksCount(this.tasks.size());
 	}
 
@@ -223,7 +233,7 @@ public class Place {
 			} catch (JSONException e) {
 			}
 		}
-		
+
 		this.setTasks(tasks);
 	}
 
@@ -232,8 +242,13 @@ public class Place {
 			tasks = new ArrayList<SimpleTask>();
 		else
 			tasks.add(task);
-		
-		this.tasksCount++;
+
+		tasksCount++;
+	}
+
+	public void removeTask(SimpleTask task) {
+		if (tasks.remove(task))
+			tasksCount--;
 	}
 
 	public HashMap<String, String> getAttributes() {
@@ -267,6 +282,9 @@ public class Place {
 			attributes = new HashMap<String, String>();
 
 		attributes.put(key, value);
+	}
+	public void removeAttribute(String key) {
+		attributes.remove(key);
 	}
 
 	public int getIssuesCount() {
@@ -302,4 +320,5 @@ public class Place {
 
 		return tasksCount;
 	}
+
 }

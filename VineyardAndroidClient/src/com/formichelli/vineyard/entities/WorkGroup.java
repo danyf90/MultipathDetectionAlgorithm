@@ -51,4 +51,9 @@ public class WorkGroup {
 			workers.add(worker);
 	}
 
+	public void removeWorker(Worker worker) {
+		if (worker == null)
+			workers.remove(worker);
+	}
+
 }

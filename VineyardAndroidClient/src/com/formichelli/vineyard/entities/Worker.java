@@ -74,8 +74,13 @@ public class Worker {
 		
 		this.groups = groups;
 	}
+
 	public void addGroup(WorkGroup group) {
 		groups.add(group);
+	}
+
+	public void removeGroup(WorkGroup group) {
+		groups.remove(group);
 	}
 
 }

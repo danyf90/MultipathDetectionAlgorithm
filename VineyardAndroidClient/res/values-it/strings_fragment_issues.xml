@@ -13,6 +13,7 @@
     <string name="issue_assigned_worker_label">Operatore: </string>
     <string name="issues_no_issues">Non ci sono problemi in questo luogo</string>
     <string name="issue_report_error">Si è verificato un errore, il problema non è stato segnalato</string>
+    <string name="issue_mark_done_error">Si è verificato un errore, il problema non è stato marcato come risolto</string>
 
     <string-array name="issue_priorities">
         <item>--</item>
