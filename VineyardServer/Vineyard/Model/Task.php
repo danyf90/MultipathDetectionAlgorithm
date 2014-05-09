@@ -12,18 +12,18 @@ use \Vineyard\Utility\Validate;
 use \Vineyard\Model\Photo;
 
 class Task extends TemporalORM implements IResource {
-    
+
     use TCrudRequestHandlers;
-    
+
     static $statusEnum = array('new','assigned','resolved');
     static $priorityEnum = array('low','medium','high');
 
     // TODO check method!
     public function check() {
         $v = new Validate($this);
-        
+
         // title
-        $v->nonNull('title');		
+        $v->nonNull('title');
         // place
         $v->nonNull('place');
         $v->id('place', "Place");
@@ -54,39 +54,39 @@ class Task extends TemporalORM implements IResource {
         $v->notSet('start_time');
         // end_time
         $v->notSet('end_time');
-        
+
         return $v->getWrongFields();
     }
-    
+
     public static function getTableName() { return 'task'; }
-    
+
     // Override AbstractORM::onPostInsert()
     protected function onPostInsert() {
             $pdo = DB::getConnection();
             $sql = $pdo->prepare("UPDATE `task` SET `create_time` = `start_time` WHERE `id` = ? AND `end_time` IS NULL");
             $sql->execute(array($this->id));
     }
-    
+
     // Override AbstractORM::getById() to include task photos in object instance
     static public function getById($id) {
 		if (!is_numeric($id)) {
 			http_response_code(400);
 			return;
 		}
-		
+
 		$s = new static();
 		$s->load($id);
-        
+
         // add attributes to place instance
         $pdo = DB::getConnection();
-        
+
         try {
             $sql = $pdo->prepare("SELECT `url` FROM `task_photo` WHERE `task` = ?");
             $sql->execute(array($id));
             // TODO better empty array if no photos?
             if ($sql->rowCount() > 0)
                 $s->photos = $sql->fetchAll(PDO::FETCH_COLUMN, 0);
-            
+
         } catch (PDOException $e) {
             // check which SQL error occured
             switch ($e->getCode()) {
@@ -97,7 +97,7 @@ class Task extends TemporalORM implements IResource {
 
 		return $s;
 	}
-    
+
     public static function handleRequest($method, array $requestParameters) {
 
         switch (count($requestParameters)) {
@@ -108,7 +108,7 @@ class Task extends TemporalORM implements IResource {
             case 1: // api/task/<id>
                 if ($requestParameters[0] == "open")
                     return static::handleOpenTasksRequest($method);
-            
+
                 return static::handleRequestsToUriWithId($method, $requestParameters);
             break;
 
@@ -135,7 +135,7 @@ class Task extends TemporalORM implements IResource {
                 }
 
             break;
-            
+
             case 3: //api/task/<id>/photo/<filename>
                 if ($requestParameters[1] != "photo") {
                     http_response_code(400); // Bad Request
@@ -146,17 +146,17 @@ class Task extends TemporalORM implements IResource {
                 /* "photo" = */ array_shift($requestParameters);
                 $filename = array_shift($requestParameters);
 
-                switch ($method) {            
-                    
+                switch ($method) {
+
                     case "DELETE":
                         return static::deletePhoto($id, $filename);
                     break;
-                    
+
                     case "POST": // cannot create with given filename: bad request
                         http_response_code(400); // Bad Request
                         return;
                     break;
-                    
+
                     // case "PUT": not implemented, delete and recreate it!
                     // case "GET": implemented in "Photo" resource
                     default:
@@ -171,62 +171,62 @@ class Task extends TemporalORM implements IResource {
 
         }
     }
-    
+
     /**
      * PHOTO MANAGEMENT
      */
-    
+
     public static function insertPhoto($id) {
-        
+
         // same interface of an upload
 
         $filename = "i" . time() . "_" . $id;
-        
+
         $filepath = Photo::getFullPhotoPath($filename);
-        
+
         if (move_uploaded_file($_FILES['photo']['tmp_name'], $filepath)) {
-            
+
             $pdo = DB::getConnection();
             try {
-                
+
                 $sql = $pdo->prepare("INSERT INTO `task_photo` (`task`, `url`) VALUES (?, ?)");
                 $sql->execute(array($id, $filename));
-                
+
                 http_response_code(201); // Created
                 return; // TODO return URL: /api/task/$id/photo/asdf.jpg
-                
+
             } catch (PDOException $e) {
                 // check which SQL error occured
                 switch ($e->getCode()) {
                     default:
                         http_response_code(400); // Bad Request
                 }
-                
+
                 unlink($filepath);
             }
         } else {
             http_response_code(500); // Internal Server Error
             return;
         }
-        
+
     }
-    
+
     public static function deletePhoto($id, $filename) {
-        
+
         $filepath = Photo::getFullPhotoPath($filename);
-        
+
         if (file_exists($filepath)) {
-            
+
             $pdo = DB::getConnection();
-            
+
             try {
                 $sql = $pdo->prepare("DELETE FROM `task_photo` WHERE `task` = ? AND `url` = ?");
                 $sql->execute(array($id, $filename));
-                
+
                 if ($sql->rowCount() == 1)
                     http_response_code(202); // Accepted
                 else http_response_code(406); // Not Acceptable
-                
+
                 unlink($filepath);
                 return;
             } catch (PDOException $e) {
@@ -239,23 +239,23 @@ class Task extends TemporalORM implements IResource {
         } else
             http_response_code(400); // Bad Request
     }
-    
+
     /**
      * OPEN TASK LIST
      */
-    
+
     public static function handleOpenTasksRequest($method) {
         if ($method != "GET") {
             http_response_code(501); // Not Implemeted
             return;
         }
-        
+
         $tasks = array();
-        
+
         Task::get(function($task) use (&$tasks) {
             $tasks[] = clone $task;
-        }, "`status` <> 'done'");
-        
+        }, "`status` <> 'resolved'");
+
         return json_encode($tasks);
     }
 }
