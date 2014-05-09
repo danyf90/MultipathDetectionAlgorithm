@@ -236,6 +236,19 @@ abstract class AbstractORM implements JsonSerializable {
         
         return $list;
     }
+    
+    static public function exists($id) {
+        $pdo = DB::getConnection();
+		$tableName = static::getTableName();
+
+		$sql = $pdo->prepare("SELECT 1 FROM `" . $tableName . "` WHERE `id` = ?");
+		$id = (int) $id;
+		$sql->execute(array($id));
+        
+        if ($sql->rowCount() > 0)
+            return true;
+        return false;
+    }
 	
 	static public function insert() {
 		

@@ -110,6 +110,10 @@ Implemented APIs
 * Get all Task instances
 
         GET http://vineyard-server.org/task
+        
+* Get all Task instances with status not equal to 'done'
+
+        GET http://vineyard-server.org/task/open
 
 * Get the Task instance with specified id:
 

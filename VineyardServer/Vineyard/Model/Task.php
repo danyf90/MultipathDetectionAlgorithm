@@ -7,6 +7,7 @@ use \Vineyard\Utility\DB;
 use \Vineyard\Utility\IResource;
 use \Vineyard\Utility\TemporalORM;
 use \Vineyard\Utility\TCrudRequestHandlers;
+use \Vineyard\Utility\Validate;
 
 use \Vineyard\Model\Photo;
 
@@ -14,9 +15,60 @@ class Task extends TemporalORM implements IResource {
     
     use TCrudRequestHandlers;
     
+    static $statusEnum = array('new','assigned','resolved');
+    static $priorityEnum = array('not_set','low','medium','high');
+
     // TODO check method!
-    public function check() { return array(); }
+    public function check() {
+        
+        $v = new Validate($this);
+        
+        // title
+        $v->nonNull('title');
+        		
+        // place
+        $v->nonNull('place');
+        $v->id('place', "Place");
+        
+        // assign_time
+        $v->nullTimestamp('assign_time');
+        // due_time
+        $v->nullTimestamp('due_time');
+        // issuer
+        $v->nullId('issuer', "Worker");
+        // latitute
+        $v->nullNumeric('latitude');
+        // longitude
+        $v->nullNumeric('longitude');
+        // assigned_worker
+        $v->nullId('assigned_worker', "Worker");
+        // assigned_group
+        $v->nullId('assigned_group', "Group");
+        // assigner
+        $v->nullId('assigner', "Worker");
+        // create_time
+        $v->timestamp('create_time');
+        // status
+        $v->enum('status', self::$statusEnum);
+        // priority
+        $v->enum('priority' self::$priorityEnum);
+        // description
+        // start_time
+        $v->notSet('start_time');
+        // end_time
+        $v->notSet('end_time');
+        
+        return $v->getWrongFields();
+    }
+    
     public static function getTableName() { return 'task'; }
+    
+    // Override AbstractORM::onPostInsert)
+    protected function onPostInsert() {
+            $pdo = DB::getConnection();
+            $sql = $pdo->prepare("UPDATE `task` SET `create_time` = `start_time` WHERE `id` = ? AND `end_time` IS NULL");
+            $sql->execute(array($this->id));
+    }
     
     // Override AbstractORM::getById() to include task photos in object instance
     static public function getById($id) {
@@ -57,6 +109,9 @@ class Task extends TemporalORM implements IResource {
             break;
 
             case 1: // api/task/<id>
+                if ($requestParameters[0] == "open")
+                    return static::handleOpenTasksRequest($method);
+            
                 return static::handleRequestsToUriWithId($method, $requestParameters);
             break;
 
@@ -120,6 +175,10 @@ class Task extends TemporalORM implements IResource {
         }
     }
     
+    /**
+     * PHOTO MANAGEMENT
+     */
+    
     public static function insertPhoto($id) {
         
         // same interface of an upload
@@ -182,6 +241,25 @@ class Task extends TemporalORM implements IResource {
             }
         } else
             http_response_code(400); // Bad Request
+    }
+    
+    /**
+     * OPEN TASK LIST
+     */
+    
+    public static function handleOpenTasksRequest($method) {
+        if ($method != "GET") {
+            http_response_code(501); // Not Implemeted
+            return;
+        }
+        
+        $tasks = array();
+        
+        Task::get(function($task) use (&$tasks) {
+            $tasks[] = clone $task;
+        }, "`status` <> 'done'");
+        
+        return json_encode($tasks);
     }
 }
 

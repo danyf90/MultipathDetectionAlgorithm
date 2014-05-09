@@ -6,6 +6,7 @@ use \PDO;
 use \PDOException;
 use \Vineyard\Utility\DB;
 use \Vineyard\Utility\IResource;
+use \Vineyard\Utility\Validator;
 use \Vineyard\Utility\AbstractORM;
 use \Vineyard\Utility\TCrudRequestHandlers;
 
@@ -15,8 +16,18 @@ class Place extends AbstractORM implements IResource {
     
     use TCrudRequestHandlers; // introduces handleRequestToBaseUri() and handleRequestToUriWithId()
 
-    // TODO check method!
-    public function check() { return array(); }
+    public function check() {
+        $v = new Validator($this);
+        
+        $v->nonNull('name');
+        $v->nullId('parent', 'Place');
+        $v->notSet('photo');
+        $v->nullNumeric('latitude');
+        $v->nullNumeric('longitude');
+        
+        return $v->getWrongFields();
+    }
+    
     public static function getTableName() { return 'place'; }
     
     // Override AbstractORM::getById() to include place attributes in object instance
@@ -236,7 +247,7 @@ class Place extends AbstractORM implements IResource {
         
         Task::get(function($issue) use (&$issues) {
             $issues[] = clone $issue;
-        }, "`place` = ? AND `issuer` IS NOT NULL", array($id));
+        }, "`place` = ? AND `issuer` IS NOT NULL AND `status` <> 'done'", array($id));
         
         return json_encode($issues);
     }
@@ -251,7 +262,7 @@ class Place extends AbstractORM implements IResource {
         
         Task::get(function($task) use (&$tasks) {
             $tasks[] = clone $task;
-        }, "`place` = ? AND `issuer` IS NULL", array($id));
+        }, "`place` = ? AND `issuer` IS NULL AND `status` <> 'done'", array($id));
         
         return json_encode($tasks);
     }
