@@ -168,6 +168,24 @@ Implemented APIs
 		POST DATA:
 		email=...
 		password=...
+
+---
+
+### Group
+
+* get group(s)
+
+        GET http://vineyard-server.org/group/
+        GET http://vineyard-server.org/group/<id>
+
+* CRUD on group id
+
+        POST http://vineyard-server.org/group/
+        PUT/DELETE http://vineyard-server.org/group/<id>
+
+* add/remove a worker from a group
+
+        PUT/DELETE http://vineyard-server.org/group/<gid>/worker/<wid>
 		
 
 Not Implemented Yet
@@ -185,22 +203,6 @@ Not Implemented Yet
         POST http://vineyard-server.org/worker/
         PUT/DELETE http://vineyard-server.org/worker/87
         PUT/DELETE http://vineyard-server.org/worker/pinco.pallo
-
-### Group
-
-* get group(s)
-
-        GET http://vineyard-server.org/group/
-        GET http://vineyard-server.org/group/<id>
-
-* CRUD on group id
-
-        POST http://vineyard-server.org/group/
-        PUT/DELETE http://vineyard-server.org/group/<id>
-
-* add/remove a worker from a group
-
-        PUT/DELETE http://vineyard-server.org/group/<gid>/worker/<wid>
 
 ### Task/Issue
 
