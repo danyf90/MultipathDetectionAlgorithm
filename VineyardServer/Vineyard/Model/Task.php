@@ -16,20 +16,17 @@ class Task extends TemporalORM implements IResource {
     use TCrudRequestHandlers;
     
     static $statusEnum = array('new','assigned','resolved');
-    static $priorityEnum = array('not_set','low','medium','high');
+    static $priorityEnum = array('low','medium','high');
 
     // TODO check method!
     public function check() {
-        
         $v = new Validate($this);
         
         // title
-        $v->nonNull('title');
-        		
+        $v->nonNull('title');		
         // place
         $v->nonNull('place');
         $v->id('place', "Place");
-        
         // assign_time
         $v->nullTimestamp('assign_time');
         // due_time
@@ -51,7 +48,7 @@ class Task extends TemporalORM implements IResource {
         // status
         $v->enum('status', self::$statusEnum);
         // priority
-        $v->enum('priority' self::$priorityEnum);
+        $v->nullEnum('priority', self::$priorityEnum);
         // description
         // start_time
         $v->notSet('start_time');
@@ -63,7 +60,7 @@ class Task extends TemporalORM implements IResource {
     
     public static function getTableName() { return 'task'; }
     
-    // Override AbstractORM::onPostInsert)
+    // Override AbstractORM::onPostInsert()
     protected function onPostInsert() {
             $pdo = DB::getConnection();
             $sql = $pdo->prepare("UPDATE `task` SET `create_time` = `start_time` WHERE `id` = ? AND `end_time` IS NULL");

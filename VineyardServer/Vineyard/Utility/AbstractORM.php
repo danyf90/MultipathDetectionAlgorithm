@@ -180,7 +180,9 @@ abstract class AbstractORM implements JsonSerializable {
      * By default, JSON-encoding encodes only database data.
      */
 	public function jsonSerialize() {
-		return $this->_data;
+		return array_filter($this->_data, function($prop) {
+            return !is_null($prop);
+        });
 	}
 	
     /**************************************

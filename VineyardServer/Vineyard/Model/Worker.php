@@ -60,7 +60,7 @@ class Worker extends AbstractORM implements IResource {
     }
     
      /**************************
-     * HIERARCHY HANDLING
+     * LOGIN HANDLING
      **************************/
     
     public static function handleLoginRequest() {
