@@ -10,8 +10,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class IssueTask extends SimpleTask {
-	private final static String ISSUER = "issuer";
-	private final static String PHOTOS = "photos";
+	public final static String ISSUER = "issuer";
+	public final static String PHOTOS = "photos";
 
 	private int issuer;
 	private List<String> photos;

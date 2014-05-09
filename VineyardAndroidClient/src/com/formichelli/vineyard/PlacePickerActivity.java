@@ -11,6 +11,7 @@ import com.formichelli.vineyard.utilities.Util;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,7 +22,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public class PlacePickerActivity extends ImmersiveActivity {
+public class PlacePickerActivity extends ActionBarActivity {
 	public final static String HIERARCHY = "placeHierarchy";
 	public final static String ANCESTORS = "selectedPlaceAncestors";
 

@@ -1,6 +1,5 @@
 package com.formichelli.vineyard;
 
-import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -17,7 +16,6 @@ import android.preference.PreferenceCategory;
 import android.preference.PreferenceScreen;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.MenuItem.OnMenuItemClickListener;
 import android.widget.Toast;
 
@@ -264,31 +262,4 @@ public class SettingsActivity extends PreferenceActivity implements
 			setPreferenceSummary(findPreference(getString(id)));
 		}
 	};
-
-	@TargetApi(Build.VERSION_CODES.KITKAT)
-	@Override
-	public void onWindowFocusChanged(boolean hasFocus) {
-		super.onWindowFocusChanged(hasFocus);
-
-		boolean immersiveMode = ps
-				.getPreferenceManager()
-				.getSharedPreferences()
-				.getBoolean(
-						getString(R.string.preference_immersive_mode),
-						Boolean.valueOf(getString(R.string.preference_immersive_mode_default)));
-
-		if (immersiveMode) {
-			if (hasFocus && android.os.Build.VERSION.SDK_INT >= 19)
-				getWindow().getDecorView().setSystemUiVisibility(
-						View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-								| View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-								| View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-								| View.SYSTEM_UI_FLAG_FULLSCREEN
-								| View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
-		} else {
-			getWindow().getDecorView().setSystemUiVisibility(
-					View.SYSTEM_UI_FLAG_VISIBLE);
-		}
-	}
-
 }

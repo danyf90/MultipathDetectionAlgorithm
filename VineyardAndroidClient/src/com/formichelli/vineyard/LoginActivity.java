@@ -1,12 +1,9 @@
 package com.formichelli.vineyard;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
@@ -19,6 +16,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
+import android.util.Pair;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.View;
@@ -26,7 +24,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.formichelli.vineyard.utilities.AsyncHttpPostRequest;
+import com.formichelli.vineyard.utilities.AsyncHttpRequest;
 import com.formichelli.vineyard.utilities.VineyardServer;
 
 /**
@@ -177,7 +175,7 @@ public class LoginActivity extends Activity {
 			// perform the user login attempt.
 			mLoginStatusMessageView.setText(R.string.login_progress_signing_in);
 			showProgress(true);
-			mAuthTask = new UserLoginTask();
+			mAuthTask = new UserLoginTask(mEmail, mPassword, mServerUrl);
 			mAuthTask.execute();
 		}
 	}
@@ -186,27 +184,28 @@ public class LoginActivity extends Activity {
 	 * Shows the progress UI and hides the login form.
 	 */
 	private void showProgress(final boolean show) {
-			mLoginStatusView.setVisibility(show ? View.VISIBLE : View.GONE);
-			mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+		mLoginStatusView.setVisibility(show ? View.VISIBLE : View.GONE);
+		mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
 	}
 
 	/**
 	 * Represents an asynchronous login/registration task used to authenticate
 	 * the user.
 	 */
-	public class UserLoginTask extends AsyncHttpPostRequest {
+	public class UserLoginTask extends AsyncHttpRequest {
 
-		public UserLoginTask() {
+		public UserLoginTask(String email, String password, String serverUrl) {
+			super(serverUrl + VineyardServer.LOGIN_API,
+					AsyncHttpRequest.Type.POST);
 
-			setServerUrl(mServerUrl + VineyardServer.LOGIN_API);
-
-			addPair(new BasicNameValuePair("email", mEmail));
+			addParam(new BasicNameValuePair("email", mEmail));
 
 			try {
 				String passwordHash = getHexString(MessageDigest.getInstance(
 						"MD5").digest(mPassword.getBytes()));
-				addPair(new BasicNameValuePair("password", passwordHash));
+				addParam(new BasicNameValuePair("password", passwordHash));
 			} catch (NoSuchAlgorithmException e) {
+				this.cancel(true);
 			}
 		}
 
@@ -215,21 +214,18 @@ public class LoginActivity extends Activity {
 		}
 
 		@Override
-		protected void onPostExecute(HttpResponse response) {
+		protected void onPostExecute(Pair<Integer, String> response) {
 			mAuthTask = null;
 			showProgress(false);
 
-			if (response.getStatusLine().getStatusCode() == HttpStatus.SC_ACCEPTED) {
+			if (response.first == HttpStatus.SC_ACCEPTED) {
 
 				try {
-					ByteArrayOutputStream out = new ByteArrayOutputStream();
-					response.getEntity().writeTo(out);
-					out.close();
-					String result = out.toString();
-
-					int userId = new JSONObject(result).getInt(USERID);
-					sp.edit().putInt(USERID, userId).commit();
-				} catch (IOException | JSONException e) {
+					sp.edit()
+							.putInt(USERID,
+									new JSONObject(response.second)
+											.getInt(USERID)).commit();
+				} catch (JSONException e) {
 					Log.e(TAG, e.toString());
 					setError();
 				}

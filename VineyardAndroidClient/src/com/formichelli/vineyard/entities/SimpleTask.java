@@ -17,19 +17,19 @@ import android.annotation.SuppressLint;
 public class SimpleTask implements Task {
 	public final static String ID = "id";
 	public final static String MODIFIER = "modifier";
-	private final static String ASSIGNEE = "assignee";
-	private final static String CREATE_TIME = "create_time";
-	private final static String ASSIGN_TIME = "assign_time";
-	private final static String DUE_TIME = "due_time";
+	public final static String ASSIGNEE = "assignee";
+	public final static String CREATE_TIME = "create_time";
+	public final static String ASSIGN_TIME = "assign_time";
+	public final static String DUE_TIME = "due_time";
 	public final static String STATUS = "status";
-	private final static String PRIORITY = "priority";
-	private final static String PLACE = "place";
-	private final static String TITLE = "title";
-	private final static String DESCRIPTION = "description";
-	// private final static String LATITUDE = "latitude";
-	// private final static String LONGITUDE = "longitude";
-	private final static String ASSIGNED_WORKER = "assigned_worker";
-	private final static String ASSIGNED_GROUP = "assigned_group";
+	public final static String PRIORITY = "priority";
+	public final static String PLACE = "place";
+	public final static String TITLE = "title";
+	public final static String DESCRIPTION = "description";
+	// public final static String LATITUDE = "latitude";
+	// public final static String LONGITUDE = "longitude";
+	public final static String ASSIGNED_WORKER = "assigned_worker";
+	public final static String ASSIGNED_GROUP = "assigned_group";
 
 	private final static String dateFormat = "yyyy-MM-dd HH:mm:ss";
 

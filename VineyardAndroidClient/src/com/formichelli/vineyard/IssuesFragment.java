@@ -1,24 +1,21 @@
 package com.formichelli.vineyard;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.http.HttpStatus;
-import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
-import org.json.JSONException;
 
 import com.formichelli.vineyard.entities.IssueTask;
 import com.formichelli.vineyard.entities.SimpleTask;
 import com.formichelli.vineyard.entities.Task;
-import com.formichelli.vineyard.utilities.AsyncHttpGetRequests;
-import com.formichelli.vineyard.utilities.AsyncHttpPutRequest;
+import com.formichelli.vineyard.utilities.AsyncHttpRequest;
 import com.formichelli.vineyard.utilities.IssueExpandableAdapter;
 import com.formichelli.vineyard.utilities.VineyardServer;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -38,7 +35,7 @@ public class IssuesFragment extends Fragment {
 	MenuItem upItem;
 	TextView noIssuesMessage;
 	boolean first;
-	AsyncHttpGetRequests asyncTask;
+	AsyncHttpRequest asyncTask;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -89,32 +86,17 @@ public class IssuesFragment extends Fragment {
 		else
 			upItem.setVisible(false);
 
-		if (activity.getCurrentPlace().getIssues() == null)
-			sendPlaceIssuesAndTasksRequest();
-		else {
-			List<IssueTask> i = activity.getCurrentPlace().getIssues();
-			issueAdapter = new IssueExpandableAdapter(activity,
-					R.layout.issues_list_item, R.layout.issue_view, i,
-					reportIssueOnClickListener, editOnClickListener,
-					doneOnClickListener);
-			issuesList.setAdapter(issueAdapter);
+		List<IssueTask> issues = activity.getCurrentPlace().getIssues();
+		issueAdapter = new IssueExpandableAdapter(activity,
+				R.layout.issues_list_item, R.layout.issue_view, issues,
+				reportIssueOnClickListener, editOnClickListener,
+				doneOnClickListener);
+		issuesList.setAdapter(issueAdapter);
 
-			if (i.size() != 0)
-				noIssuesMessage.setVisibility(View.INVISIBLE);
-			else
-				noIssuesMessage.setVisibility(View.VISIBLE);
-
-		}
-
-	}
-
-	public void sendPlaceIssuesAndTasksRequest() {
-		final String placeIssuesAndTasksRequest = String.format(
-				vineyardServer.getUrl() + VineyardServer.PLACE_ISSUES_API,
-				activity.getCurrentPlace().getId());
-
-		asyncTask = new PlaceIssuesAsyncHttpRequest();
-		asyncTask.execute(placeIssuesAndTasksRequest);
+		if (issues.size() != 0)
+			noIssuesMessage.setVisibility(View.INVISIBLE);
+		else
+			noIssuesMessage.setVisibility(View.VISIBLE);
 	}
 
 	@Override
@@ -150,79 +132,24 @@ public class IssuesFragment extends Fragment {
 	OnClickListener doneOnClickListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
-			new AsyncMarkIssueAsDone(activity.getServer().getUrl()
-					+ VineyardServer.ADD_ISSUE_API, (IssueTask) v.getTag())
-					.execute();
+			new AsyncMarkIssueAsDone(activity.getServer().getUrl(),
+					(IssueTask) v.getTag()).execute();
 		}
 	};
 
-	private class PlaceIssuesAsyncHttpRequest extends AsyncHttpGetRequests {
-		private static final String TAG = "PlaceIssuesAsyncHttpRequest";
-
-		@Override
-		protected void onPreExecute() {
-			activity.switchFragment(activity.getLoadingFragment());
-		}
-
-		@Override
-		protected void onPostExecute(ArrayList<String> result) {
-			String issuesJSON;
-
-			try {
-				if (result != null && result.size() == 1
-						&& result.get(0) != null) {
-					// request OK, parse JSON to get issues, cache data and show
-					// retrieved issues
-					issuesJSON = result.get(0);
-
-					activity.getCache().setPlaceIssuesJSON(
-							activity.getCurrentPlace().getId(), issuesJSON);
-
-				} else {
-					issuesJSON = activity.getCache().getPlaceIssuesJSON(
-							activity.getCurrentPlace().getId());
-
-					if (issuesJSON == null) {
-						Log.w(TAG, "issues not available in sharedPreference");
-						activity.getLoadingFragment().setLoading(false);
-						return;
-					}
-
-					Toast.makeText(activity,
-							activity.getString(R.string.cache_data_used),
-							Toast.LENGTH_SHORT).show();
-				}
-
-				activity.getCurrentPlace().setIssues(issuesJSON);
-				activity.setTitle(activity.getCurrentPlace().getName());
-				activity.switchFragment();
-
-			} catch (JSONException e) {
-				android.util.Log.e(TAG, e.getLocalizedMessage());
-				activity.getLoadingFragment().setLoading(false);
-			}
-		}
-	}
-
-	private class AsyncMarkIssueAsDone extends AsyncHttpPutRequest {
+	private class AsyncMarkIssueAsDone extends AsyncHttpRequest {
 		IssueTask issue;
 
 		public AsyncMarkIssueAsDone(String serverUrl, IssueTask issue) {
-			super();
+			super(serverUrl + VineyardServer.EDIT_ISSUE_API + issue.getId(),
+					AsyncHttpRequest.Type.PUT);
 
 			this.issue = issue;
 
-			this.setServerUrl(serverUrl);
-
-			List<NameValuePair> params = new ArrayList<NameValuePair>();
-			params.add(new BasicNameValuePair(SimpleTask.ID, String
-					.valueOf(issue.getId())));
-			params.add(new BasicNameValuePair(SimpleTask.MODIFIER, String
-					.valueOf(activity.getUserId())));
-			params.add(new BasicNameValuePair(SimpleTask.STATUS,
-					Task.Status.DONE.toString()));
-
-			this.setParams(params);
+			addParam(new BasicNameValuePair(SimpleTask.MODIFIER,
+					String.valueOf(activity.getUserId())));
+			addParam(new BasicNameValuePair(SimpleTask.STATUS,
+					Task.Status.RESOLVED.toString()));
 		}
 
 		@Override
@@ -231,17 +158,15 @@ public class IssuesFragment extends Fragment {
 		}
 
 		@Override
-		protected void onPostExecute(Integer response) {
-			if (response == HttpStatus.SC_ACCEPTED) {
-				// TODO remove issue;
+		protected void onPostExecute(Pair<Integer, String> response) {
+			if (response != null && response.first == HttpStatus.SC_OK) {
 				issue.getPlace().removeIssue(issue);
 				activity.switchFragment(activity.getIssuesFragment());
-
 			} else {
 				Toast.makeText(activity,
 						activity.getString(R.string.issue_mark_done_error),
 						Toast.LENGTH_SHORT).show();
-				Log.e(TAG, "SC: " + response);
+				Log.e(TAG, "SC: " + response.first);
 
 				activity.switchFragment(activity.getIssuesFragment());
 			}

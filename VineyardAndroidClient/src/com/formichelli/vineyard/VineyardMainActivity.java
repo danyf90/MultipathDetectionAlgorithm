@@ -1,16 +1,19 @@
 package com.formichelli.vineyard;
 
-import java.util.ArrayList;
+import org.apache.http.HttpStatus;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.formichelli.vineyard.entities.IssueTask;
 import com.formichelli.vineyard.entities.Place;
-import com.formichelli.vineyard.utilities.AsyncHttpGetRequests;
+import com.formichelli.vineyard.entities.SimpleTask;
+import com.formichelli.vineyard.utilities.AsyncHttpRequest;
 import com.formichelli.vineyard.utilities.Cache;
 import com.formichelli.vineyard.utilities.VineyardServer;
 
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.app.AlertDialog;
@@ -28,7 +31,7 @@ import android.view.Menu;
 import android.widget.Toast;
 import android.support.v4.widget.DrawerLayout;
 
-public class VineyardMainActivity extends ImmersiveActivity implements
+public class VineyardMainActivity extends ActionBarActivity implements
 		NavigationDrawerFragment.NavigationDrawerCallbacks {
 	public static final String TAG = "VineyardMainActivity";
 
@@ -47,9 +50,8 @@ public class VineyardMainActivity extends ImmersiveActivity implements
 	VineyardServer vineyardServer;
 	SharedPreferences sp;
 	Cache cache;
+	SparseArray<Place> places;
 	int userId;
-	boolean preloadAll;
-	AsyncHttpGetRequests asyncTask;
 
 	/**
 	 * Fragment managing the behaviors, interactions and presentation of the
@@ -85,47 +87,25 @@ public class VineyardMainActivity extends ImmersiveActivity implements
 		mNavigationDrawerFragment = (NavigationDrawerFragment) getSupportFragmentManager()
 				.findFragmentById(R.id.navigation_drawer);
 
-		// Set up the drawer.
+		// Set up the drawer
 		mNavigationDrawerFragment.setUp(R.id.navigation_drawer,
 				(DrawerLayout) findViewById(R.id.drawer_layout));
 
 		cache = new Cache(sp);
+		places = new SparseArray<Place>();
 
 		serverInit();
-	}
-
-	@Override
-	protected void onStop() {
-		super.onStop();
-
-		asyncTask.cancel(true);
 	}
 
 	private void serverInit() {
 		vineyardServer = new VineyardServer(serverUrl);
 
-		preloadAll = sp.getBoolean(getString(R.string.preference_preload_all),
-				Boolean.valueOf(getString(R.string.preference_preload_all)));
-
-		if (preloadAll) {
-			sendLoadAllRequest();
-		} else
-			sendRootPlaceRequest();
-	}
-
-	public void sendLoadAllRequest() {
-		// TODO
 		sendRootPlaceRequest();
 	}
 
 	public void sendRootPlaceRequest() {
-		final String placesHierarchyRequest = vineyardServer.getUrl()
-				+ VineyardServer.PLACES_HIERARCHY_API;
-		final String placesStatsRequest = vineyardServer.getUrl()
-				+ VineyardServer.PLACES_STATS_API;
-
-		asyncTask = new RootPlaceAsyncHttpRequest();
-		asyncTask.execute(placesHierarchyRequest, placesStatsRequest);
+		new RootPlaceAsyncHttpRequest(vineyardServer.getUrl(),
+				AsyncHttpRequest.Type.GET).execute();
 	}
 
 	@Override
@@ -257,119 +237,6 @@ public class VineyardMainActivity extends ImmersiveActivity implements
 		return vineyardServer;
 	}
 
-	private class RootPlaceAsyncHttpRequest extends AsyncHttpGetRequests {
-
-		@Override
-		protected void onPreExecute() {
-			switchFragment(loadingFragment);
-		}
-
-		@Override
-		protected void onPostExecute(ArrayList<String> result) {
-			String rootPlaceJSON, statsJSON;
-
-			if (result != null && result.size() == 2 && result.get(0) != null
-					&& result.get(1) != null) {
-				// request OK, parse JSON to get rootPlace, cache data and show
-				// previous
-				// fragment
-
-				rootPlaceJSON = result.get(0);
-				statsJSON = result.get(1);
-
-				cache.setRootPlaceJSON(rootPlaceJSON);
-				cache.setPlacesStatsJSON(statsJSON);
-
-			} else {
-				rootPlaceJSON = cache.getRootPlaceJSON();
-				statsJSON = cache.getPlacesStatsJSON();
-
-				if (rootPlace == null || statsJSON == null) {
-					Log.e(TAG,
-							"rootPlace not available neither from server nor from sharedPreference");
-					loadingFragment.setLoading(false);
-					return;
-				}
-
-				Toast.makeText(VineyardMainActivity.this,
-						getString(R.string.cache_data_used), Toast.LENGTH_SHORT)
-						.show();
-			}
-
-			try {
-				rootPlace = new Place(new JSONObject(rootPlaceJSON));
-				setCurrentPlace(rootPlace);
-				setStats(rootPlace, getStats(statsJSON));
-
-				setNavigationDrawerLocked(false);
-				switchFragment(lastFragment);
-			} catch (JSONException e) {
-				Log.e(TAG, e.getLocalizedMessage());
-				loadingFragment.setLoading(false);
-			}
-		}
-
-		private void setStats(Place place,
-				SparseArray<Pair<Integer, Integer>> stats) {
-			final int placeId = place.getId();
-
-			if (stats.get(placeId) != null) {
-				place.setIssuesCount(stats.get(placeId).first);
-				place.setTasksCount(stats.get(placeId).second);
-			} else {
-				place.setIssuesCount(0);
-				place.setTasksCount(0);
-			}
-
-			for (Place child : place.getChildren())
-				setStats(child, stats);
-		}
-
-		private SparseArray<Pair<Integer, Integer>> getStats(String placesStats) {
-			int place, issues, tasks;
-			final String PLACE = "place";
-			final String ISSUES = "issues";
-			final String TASKS = "tasks";
-
-			SparseArray<Pair<Integer, Integer>> stats = new SparseArray<Pair<Integer, Integer>>();
-
-			JSONArray placesStatsArray;
-			try {
-				placesStatsArray = new JSONArray(placesStats);
-			} catch (JSONException e1) {
-				return null;
-			}
-
-			for (int i = 0, l = placesStatsArray.length(); i < l; i++) {
-				JSONObject placeStats;
-				try {
-					placeStats = placesStatsArray.getJSONObject(i);
-					place = placeStats.getInt(PLACE);
-				} catch (JSONException e) {
-					break;
-				}
-
-				try {
-					issues = placeStats.getInt(ISSUES);
-				} catch (JSONException e) {
-					issues = 0;
-				}
-				try {
-					tasks = placeStats.getInt(TASKS);
-				} catch (JSONException e) {
-					tasks = 0;
-				}
-
-				stats.put(place, new Pair<Integer, Integer>(issues, tasks));
-			}
-
-			cache.setPlacesStatsJSON(placesStats);
-
-			return stats;
-
-		}
-	}
-
 	public LoadingFragment getLoadingFragment() {
 		return loadingFragment;
 	}
@@ -384,5 +251,145 @@ public class VineyardMainActivity extends ImmersiveActivity implements
 
 	public int getUserId() {
 		return userId;
-	};
+	}
+
+	private class RootPlaceAsyncHttpRequest extends AsyncHttpRequest {
+		private final static String TAG = "RootPlaceAsyncHttpRequest";
+		String server;
+
+		public RootPlaceAsyncHttpRequest(String serverUrl, Type type) {
+			super(serverUrl + VineyardServer.PLACES_HIERARCHY_API, type);
+			server = serverUrl;
+		}
+
+		@Override
+		protected void onPreExecute() {
+			switchFragment(loadingFragment);
+		}
+
+		@Override
+		protected void onPostExecute(Pair<Integer, String> response) {
+			String rootPlaceJSON;
+
+			if (response != null && response.first == HttpStatus.SC_OK) {
+
+				rootPlaceJSON = response.second;
+				cache.putPlaces(rootPlaceJSON);
+
+			} else {
+
+				rootPlaceJSON = cache.getPlaces();
+				if (rootPlace == null) {
+					Log.e(TAG,
+							"places not available neither from server nor from sharedPreference");
+					loadingFragment.setLoading(false);
+					return;
+				}
+
+				Toast.makeText(VineyardMainActivity.this,
+						getString(R.string.cache_data_used), Toast.LENGTH_SHORT)
+						.show();
+			}
+
+			try {
+
+				rootPlace = new Place(new JSONObject(rootPlaceJSON));
+				setCurrentPlace(rootPlace);
+				addPlaceToHashMap(rootPlace);
+
+				new IssuesAndTasksAsyncHttpRequest(server,
+						AsyncHttpRequest.Type.GET).execute();
+
+			} catch (JSONException e) {
+				Log.e(TAG, e.getLocalizedMessage());
+				loadingFragment.setLoading(false);
+			}
+		}
+
+	}
+
+	private void addPlaceToHashMap(Place place) {
+		places.put(place.getId(), place);
+
+		for (Place child : place.getChildren())
+			addPlaceToHashMap(child);
+	}
+
+	private class IssuesAndTasksAsyncHttpRequest extends AsyncHttpRequest {
+		private final static String TAG = "IssuesAndTasksAsyncHttpRequest";
+
+		public IssuesAndTasksAsyncHttpRequest(String serverUrl, Type type) {
+			super(serverUrl + VineyardServer.ISSUES_AND_TASKS_API, type);
+		}
+
+		@Override
+		protected void onPreExecute() {
+			switchFragment(loadingFragment);
+		}
+
+		@Override
+		protected void onPostExecute(Pair<Integer, String> response) {
+			String issuesAndTasksJSON;
+
+			if (response != null && response.first == HttpStatus.SC_OK) {
+
+				issuesAndTasksJSON = response.second;
+
+				cache.putIssuesAndTasks(issuesAndTasksJSON);
+
+			} else {
+				issuesAndTasksJSON = cache.getIssuesAndTasks();
+
+				if (issuesAndTasksJSON == null) {
+					Log.e(TAG,
+							"issuesAndTasks not available neither from server nor from sharedPreference");
+					loadingFragment.setLoading(false);
+					return;
+				}
+
+				if (response == null
+						|| response.first != HttpStatus.SC_NOT_MODIFIED)
+					Toast.makeText(VineyardMainActivity.this,
+							getString(R.string.cache_data_used),
+							Toast.LENGTH_SHORT).show();
+				else
+					Log.e(TAG, "not modified");
+			}
+
+			try {
+				JSONArray issuesAndTasks = new JSONArray(issuesAndTasksJSON);
+
+				for (int i = 0, l = issuesAndTasks.length(); i < l; i++) {
+					JSONObject object = issuesAndTasks.getJSONObject(i);
+					Place place = places.get(object.getInt(SimpleTask.PLACE));
+
+					if (place != null) {
+						// TODO change in has()
+						if (!object.isNull(IssueTask.ISSUER)) {
+							IssueTask issue = new IssueTask(object);
+							issue.setPlace(place);
+							place.addIssue(issue);
+						} else {
+							SimpleTask task = new SimpleTask(object);
+							task.setPlace(place);
+							place.addTask(task);
+						}
+					} else
+						Log.e(TAG,
+								"Place not found: "
+										+ String.valueOf(object
+												.getInt(SimpleTask.PLACE)));
+				}
+			} catch (JSONException e) {
+				e.printStackTrace();
+				Log.e(TAG,
+						"Error parsing issues and tasks JSON: "
+								+ e.getLocalizedMessage());
+
+			}
+
+			setNavigationDrawerLocked(false);
+			switchFragment(lastFragment);
+		}
+	}
 }

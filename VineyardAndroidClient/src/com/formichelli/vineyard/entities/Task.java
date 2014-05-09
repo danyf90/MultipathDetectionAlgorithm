@@ -5,7 +5,7 @@ import java.util.Date;
 public interface Task {
 
 	public enum Status {
-		NEW, ASSIGNED, DONE;
+		NEW, ASSIGNED, RESOLVED;
 	};
 
 	public enum Priority {

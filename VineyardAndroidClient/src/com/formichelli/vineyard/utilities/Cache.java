@@ -3,10 +3,8 @@ package com.formichelli.vineyard.utilities;
 import android.content.SharedPreferences;
 
 public class Cache {
-	public final static String PLACES_HIERARCHY = "places";
-	public final static String PLACES_STATS = "stats";
-	public final static String PLACES_ISSUES = "places";
-	public final static String PLACES_TASKS = "places";
+	public final static String PLACES = "places";
+	public final static String ISSUES_AND_TASKS = "places";
 
 	SharedPreferences sp;
 
@@ -14,52 +12,21 @@ public class Cache {
 		this.sp = sp;
 	}
 
-	public void setRootPlaceJSON(String rootPlaceJSON) {
-		sp.edit().putString(PLACES_HIERARCHY, rootPlaceJSON).apply();
+	public void putPlaces(String placesJSON) {
+		sp.edit().putString(PLACES, placesJSON).apply();
 	}
 
-	public String getRootPlaceJSON() {
-		return sp.getString(PLACES_HIERARCHY, null);
+	public String getPlaces() {
+		return sp.getString(PLACES, null);
 	}
 
-	public void setPlacesStatsJSON(String placesStatsJSON) {
-		sp.edit().putString(PLACES_STATS, placesStatsJSON).apply();
+
+	public void putIssuesAndTasks(String issuesAndTasksJSON) {
+		sp.edit().putString(ISSUES_AND_TASKS, issuesAndTasksJSON).apply();		
 	}
 
-	public String getPlacesStatsJSON() {
-		return sp.getString(PLACES_STATS, null);
-	}
-
-	public void setPlacesIssuesJSON(String placesIssuesJSON) {
-		sp.edit().putString(PLACES_ISSUES, placesIssuesJSON).apply();
-	}
-
-	public void setPlaceIssuesJSON(int placeId, String placeIssuesJSON) {
-		sp.edit().putString(PLACES_ISSUES + placeId, placeIssuesJSON).apply();
-	}
-
-	public String getPlacesIssuesJSON() {
-		return sp.getString(PLACES_ISSUES, null);
-	}
-
-	public String getPlaceIssuesJSON(int placeId) {
-		return sp.getString(PLACES_ISSUES + placeId, null);
-	}
-
-	public void setPlacesTasksJSON(String placesTasksJSON) {
-		sp.edit().putString(PLACES_TASKS, placesTasksJSON).apply();
-	}
-
-	public void setPlaceTasksJSON(int placeId, String placeTasksJSON) {
-		sp.edit().putString(PLACES_TASKS + placeId, placeTasksJSON).apply();
-	}
-
-	public String getPlacesTasksJSON() {
-		return sp.getString(PLACES_TASKS, null);
-	}
-
-	public String getPlaceTasksJSON(int placeId) {
-		return sp.getString(PLACES_TASKS + placeId, null);
+	public String getIssuesAndTasks() {
+		return sp.getString(ISSUES_AND_TASKS, null);		
 	}
 
 }

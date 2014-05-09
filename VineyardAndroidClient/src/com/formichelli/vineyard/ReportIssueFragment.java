@@ -6,7 +6,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
-import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 
 import android.annotation.SuppressLint;
@@ -16,6 +15,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -33,7 +33,7 @@ import android.widget.Toast;
 import com.formichelli.vineyard.entities.IssueTask;
 import com.formichelli.vineyard.entities.Place;
 import com.formichelli.vineyard.entities.Task.Priority;
-import com.formichelli.vineyard.utilities.AsyncHttpPostRequest;
+import com.formichelli.vineyard.utilities.AsyncHttpRequest;
 import com.formichelli.vineyard.utilities.VineyardGallery;
 import com.formichelli.vineyard.utilities.VineyardServer;
 
@@ -102,7 +102,7 @@ public class ReportIssueFragment extends Fragment {
 
 				// Put the place hierarchy to the intent
 				placePicker.putExtra(PlacePickerActivity.HIERARCHY, activity
-						.getCache().getRootPlaceJSON());
+						.getCache().getPlaces());
 
 				// Put the id of the selected place and of all its ancestors
 				ArrayList<Integer> ids = new ArrayList<Integer>();
@@ -178,8 +178,7 @@ public class ReportIssueFragment extends Fragment {
 		case R.id.action_report_issue_send:
 			if (parseFields()) {
 
-				new AsyncIssueSend(vineyardServer.getUrl()
-						+ VineyardServer.ADD_ISSUE_API, issue).execute();
+				new AsyncIssueSend(vineyardServer.getUrl(), issue).execute();
 				break;
 			}
 		default:
@@ -291,15 +290,11 @@ public class ReportIssueFragment extends Fragment {
 		}
 	}
 
-	private class AsyncIssueSend extends AsyncHttpPostRequest {
+	private class AsyncIssueSend extends AsyncHttpRequest {
 		IssueTask issue;
 		
 		public AsyncIssueSend(String serverUrl, IssueTask issue) {
-			super();
-
-			this.issue = issue;
-			this.setServerUrl(serverUrl);
-			this.setParams(issue.getParams());
+			super(serverUrl + VineyardServer.ADD_ISSUE_API, AsyncHttpRequest.Type.POST, issue.getParams());
 		}
 
 		@Override
@@ -308,9 +303,9 @@ public class ReportIssueFragment extends Fragment {
 		}
 ;
 		@Override
-		protected void onPostExecute(HttpResponse response) {
+		protected void onPostExecute(Pair<Integer, String> response) {
 			if (response != null
-					&& response.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
+					&& response.first == HttpStatus.SC_CREATED) {
 				// TODO delete photos from sdcard
 				activity.switchFragment(activity.getIssuesFragment());
 				

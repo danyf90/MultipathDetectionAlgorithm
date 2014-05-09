@@ -76,6 +76,9 @@ public class Place {
 			setChildren(rootPlaceObject.getJSONArray(CHILDREN));
 		else
 			children = new ArrayList<Place>();
+
+		setIssues(new ArrayList<IssueTask>());
+		setTasks(new ArrayList<SimpleTask>());
 	}
 
 	public int getId() {
@@ -192,7 +195,6 @@ public class Place {
 		}
 
 		setIssues(issues);
-
 	}
 
 	public void addIssue(IssueTask issue) {
