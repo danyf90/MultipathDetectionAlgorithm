@@ -83,14 +83,30 @@
             android:layout_alignBaseline="@+id/report_issue_priority_label"
             android:layout_alignParentRight="true" />
 
-       <com.formichelli.vineyard.utilities.VineyardGallery
-           android:id="@+id/report_issue_gallery"
-           android:layout_width="match_parent"
-           android:layout_height="wrap_content"
-           android:layout_below="@+id/report_issue_priority_label"
-           android:layout_marginTop="30dp"
-           android:background="@color/wine_light" />
+        <TextView
+            android:id="@+id/report_issue_use_location_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@id/report_issue_priority_label"
+            android:layout_marginTop="30dp"
+            android:text="@string/use_location_label" />
 
+        <ToggleButton
+            android:id="@+id/report_issue_use_location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/report_issue_use_location_label"
+            android:layout_alignParentRight="true"
+            android:enabled="false" />
+
+        <com.formichelli.vineyard.utilities.VineyardGallery
+            android:id="@+id/report_issue_gallery"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/report_issue_use_location_label"
+            android:layout_marginTop="30dp"
+            android:background="@color/wine_light" />
     </RelativeLayout>
 
 </ScrollView>

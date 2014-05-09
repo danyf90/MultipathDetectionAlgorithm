@@ -258,8 +258,10 @@ public class SimpleTask implements Task {
 	public List<NameValuePair> getParams() {
 
 		List<NameValuePair> params = new ArrayList<NameValuePair>();
-
-		params.add(new BasicNameValuePair(PRIORITY, getPriority().toString()));
+		
+		if (getPriority() != null)
+			params.add(new BasicNameValuePair(PRIORITY, getPriority().toString()));
+		
 		params.add(new BasicNameValuePair(PLACE, String.valueOf(getPlace()
 				.getId())));
 		params.add(new BasicNameValuePair(TITLE, title));

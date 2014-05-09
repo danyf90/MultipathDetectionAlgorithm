@@ -5,17 +5,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.formichelli.vineyard.entities.IssueTask;
-import com.formichelli.vineyard.entities.Place;
-import com.formichelli.vineyard.entities.SimpleTask;
-import com.formichelli.vineyard.utilities.AsyncHttpRequest;
-import com.formichelli.vineyard.utilities.Cache;
-import com.formichelli.vineyard.utilities.VineyardServer;
-
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -24,12 +13,23 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.util.Pair;
 import android.util.SparseArray;
 import android.view.Menu;
 import android.widget.Toast;
-import android.support.v4.widget.DrawerLayout;
+
+import com.formichelli.vineyard.entities.IssueTask;
+import com.formichelli.vineyard.entities.Place;
+import com.formichelli.vineyard.entities.SimpleTask;
+import com.formichelli.vineyard.utilities.AsyncHttpRequest;
+import com.formichelli.vineyard.utilities.Cache;
+import com.formichelli.vineyard.utilities.VineyardServer;
 
 public class VineyardMainActivity extends ActionBarActivity implements
 		NavigationDrawerFragment.NavigationDrawerCallbacks {

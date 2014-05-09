@@ -13,10 +13,12 @@ import org.apache.http.NameValuePair;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -30,6 +32,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import com.formichelli.vineyard.entities.IssueTask;
 import com.formichelli.vineyard.entities.Place;
@@ -37,6 +40,9 @@ import com.formichelli.vineyard.entities.Task.Priority;
 import com.formichelli.vineyard.utilities.AsyncHttpRequest;
 import com.formichelli.vineyard.utilities.VineyardGallery;
 import com.formichelli.vineyard.utilities.VineyardServer;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesClient;
+import com.google.android.gms.location.LocationClient;
 
 /**
  * Fragment which allows to fill and sends an issue report
@@ -49,11 +55,13 @@ public class ReportIssueFragment extends Fragment {
 
 	VineyardMainActivity activity;
 	VineyardServer vineyardServer;
+	LocationClient locationClient;
 	IssueTask issue;
 	String currentPhotoPath;
 	VineyardGallery gallery;
 	Button placeButton;
 	Spinner priorities;
+	ToggleButton locationButton;
 	EditText title, description;
 	Menu menu;
 	boolean first, editMode;
@@ -82,6 +90,18 @@ public class ReportIssueFragment extends Fragment {
 	}
 
 	@Override
+	public void onStart() {
+		super.onStart();
+		locationClient.connect();
+	}
+
+	@Override
+	public void onStop() {
+		locationClient.disconnect();
+		super.onStop();
+	}
+
+	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 
@@ -90,11 +110,18 @@ public class ReportIssueFragment extends Fragment {
 		activity = (VineyardMainActivity) getActivity();
 		activity.setTitle(getString(R.string.title_report_issue));
 		vineyardServer = activity.getServer();
+		
+		/* Create a LocationClients that connects to Google Play Services. */
+		/* So far, callbacks for connection events are not handled. */
+		LocationClientCallbacks dummyCallbacks = new LocationClientCallbacks();
+		locationClient = new LocationClient(activity, dummyCallbacks, dummyCallbacks);
 
 		title = (EditText) activity.findViewById(R.id.report_issue_title);
 
 		description = (EditText) activity
 				.findViewById(R.id.report_issue_description);
+		
+		locationButton = (ToggleButton) activity.findViewById(R.id.report_issue_use_location);
 
 		placeButton = (Button) activity.findViewById(R.id.report_issue_place);
 		placeButton.setOnClickListener(new OnClickListener() {
@@ -226,7 +253,17 @@ public class ReportIssueFragment extends Fragment {
 		default:
 			break;
 		}
-
+		
+		if (locationButton.isEnabled() && locationButton.isChecked()) {
+			Location loc = locationClient.getLastLocation();
+			if (loc != null) {
+				issue.setLatitude(loc.getLatitude());
+				issue.setLongitude(loc.getLongitude());
+			} else {
+				Log.i("ReportIssue", "No location info available.. sure?");
+			}
+		}
+		
 		return true;
 	}
 
@@ -356,6 +393,32 @@ public class ReportIssueFragment extends Fragment {
 
 			activity.switchFragment();
 		}
+	}
+	
+	/**
+	 * GooglePlayServicesClient callbacks implementation.
+	 * Does notihng so far.
+	 * @author Fabio Carrara
+	 */
+	private class LocationClientCallbacks implements
+		GooglePlayServicesClient.ConnectionCallbacks,
+		GooglePlayServicesClient.OnConnectionFailedListener
+	{
+		@Override
+		public void onConnectionFailed(ConnectionResult arg0) {
+			Log.i("ReportIssue", "Connection to Google Play Services failed..");
+		}
 
-	};
+		@Override
+		public void onConnected(Bundle arg0) {
+			Log.i("ReportIssue", "Connected to Google Play Services");
+			locationButton.setEnabled(true);
+			locationButton.setChecked(true);
+		}
+
+		@Override
+		public void onDisconnected() {}
+		
+	}
+
 };

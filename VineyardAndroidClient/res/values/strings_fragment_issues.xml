@@ -21,5 +21,6 @@
         <item>Medium</item>
         <item>High</item>
     </string-array>
+        <string name="use_location_label">Use current location:</string>
 
 </resources>

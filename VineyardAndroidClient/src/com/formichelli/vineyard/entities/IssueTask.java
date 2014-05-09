@@ -29,8 +29,8 @@ public class IssueTask extends SimpleTask {
 		super(jsonObject);
 
 		setIssuer(jsonObject.getInt(ISSUER));
-
-		setPhotos(new ArrayList<String>());
+		
+		photos = new ArrayList<String>();
 		if (!jsonObject.isNull(PHOTOS))
 			setPhotos(jsonObject.getJSONArray(PHOTOS));
 	}
