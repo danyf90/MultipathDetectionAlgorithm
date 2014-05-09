@@ -30,10 +30,9 @@ public class IssueTask extends SimpleTask {
 
 		setIssuer(jsonObject.getInt(ISSUER));
 
+		setPhotos(new ArrayList<String>());
 		if (!jsonObject.isNull(PHOTOS))
 			setPhotos(jsonObject.getJSONArray(PHOTOS));
-		else
-			setPhotos(new ArrayList<String>());
 	}
 
 	public int getIssuer() {

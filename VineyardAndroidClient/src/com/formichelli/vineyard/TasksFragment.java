@@ -11,6 +11,8 @@ import android.view.ViewGroup;
 
 public class TasksFragment extends Fragment {
 	VineyardMainActivity activity;
+	MenuItem upItem;
+	boolean first;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -24,7 +26,7 @@ public class TasksFragment extends Fragment {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-
+		
 		activity = (VineyardMainActivity) getActivity();
 	}
 
@@ -32,7 +34,22 @@ public class TasksFragment extends Fragment {
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		inflater.inflate(R.menu.tasks, menu);
 
+		upItem = menu.findItem(R.id.action_tasks_up);
+
+		if (first) {
+			// init() must be called just once after that both onActivityCreated
+			// and onCreateOptionMenu are called
+			init();
+			first = false;
+		}
 		super.onCreateOptionsMenu(menu, inflater);
+	}
+
+	private void init() {
+		if (activity.getCurrentPlace().getParent() != null)
+			upItem.setVisible(true);
+		else
+			upItem.setVisible(false);
 	}
 
 	@Override
@@ -41,6 +58,7 @@ public class TasksFragment extends Fragment {
 		switch (item.getItemId()) {
 		case R.id.action_tasks_up:
 			activity.setCurrentPlace(activity.getCurrentPlace().getParent());
+			init();
 			return true;
 		default:
 			return false;

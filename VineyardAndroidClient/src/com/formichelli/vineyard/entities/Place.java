@@ -46,20 +46,17 @@ public class Place {
 
 		setDescription(rootPlaceObject.getString(DESCRIPTION));
 
+		attributes = new HashMap<String, String>();
 		if (!rootPlaceObject.isNull(PHOTO))
 			setPhoto(rootPlaceObject.getString(PHOTO));
-		else
-			attributes = new HashMap<String, String>();
 
+		children = new ArrayList<Place>();
 		if (!rootPlaceObject.isNull(CHILDREN))
 			setChildren(rootPlaceObject.getJSONArray(CHILDREN));
-		else
-			children = new ArrayList<Place>();
 
+		attributes = new HashMap<String, String>();
 		if (!rootPlaceObject.isNull(ATTRIBUTES))
 			setAttributes(rootPlaceObject.getJSONObject(ATTRIBUTES));
-		else
-			attributes = new HashMap<String, String>();
 
 		// issues and tasks are not present in places JSON
 		setIssues(new ArrayList<IssueTask>());

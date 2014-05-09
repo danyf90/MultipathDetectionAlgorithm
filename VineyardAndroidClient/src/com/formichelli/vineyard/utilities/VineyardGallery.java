@@ -43,9 +43,7 @@ public class VineyardGallery extends HorizontalScrollView {
 	ImageView addDeletePhoto;
 	LinearLayout gallery;
 	boolean locked;
-	int selectedColor, notSelectedColor;
-	int size;
-	int padding;
+	int size, padding, selectedColor, notSelectedColor;
 	HashSet<ImageView> selected;
 	HashMap<ImageView, String> images, toBeDeleted;
 	Drawable add, delete;
