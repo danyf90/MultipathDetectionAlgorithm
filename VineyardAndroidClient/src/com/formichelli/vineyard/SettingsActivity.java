@@ -19,6 +19,9 @@ import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
 import android.widget.Toast;
 
+/**
+ * Activity which manages application settings
+ */
 @SuppressWarnings("deprecation")
 public class SettingsActivity extends PreferenceActivity implements
 		OnSharedPreferenceChangeListener, OnPreferenceClickListener {

@@ -5,10 +5,10 @@ import java.util.List;
 
 import com.formichelli.vineyard.R;
 import com.formichelli.vineyard.entities.IssueTask;
+import com.formichelli.vineyard.entities.Task.Priority;
 
 import android.app.Activity;
 import android.content.Context;
-import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -17,11 +17,11 @@ import android.widget.BaseExpandableListAdapter;
 import android.widget.TextView;
 
 /**
- * ExpandableAdapter that shows issues titles and when expandend shows issue
+ * ExpandableAdapter that shows issues titles and when expanded shows issue
  * details
  */
 public class IssueExpandableAdapter extends BaseExpandableListAdapter {
-	private final FragmentActivity context;
+	private final Context context;
 	List<IssueTask> objects;
 	int groupResource, childResource;
 	OnClickListener reportIssueOnClickListener, editOnClickListener,
@@ -32,18 +32,18 @@ public class IssueExpandableAdapter extends BaseExpandableListAdapter {
 	 * @param context
 	 *            Activity context
 	 * @param groupResource
-	 *            resource representing the issue title, it must contain a
-	 *            TextView with id drawer_list_item_label that will contain the
+	 *            resource representing the issue title. It must contain a
+	 *            TextView with id issue_list_item_label that will contain the
 	 *            issue title
 	 * @param childResource
-	 *            resource representing the issue details, it must contain a
+	 *            resource representing the issue details. It must contain a
 	 *            TextView with id issue_view_description that will contain the
 	 *            issue description, a TextView with id
 	 *            issue_view_priority_value that will contain the priority, a
-	 *            TextView with id issue_view_worker_name that will contain the
-	 *            name of the assigned worker, LinearLayout with id
-	 *            issue_view_gallery that will contain the images, a View with
-	 *            id issue_view_edit that will be associated to the
+	 *            TextView with id issue_view_assigned_worker_name that will
+	 *            contain the name of the assigned worker, a VineyardGallery
+	 *            with id issue_view_gallery that will contain the images, a
+	 *            View with id issue_view_edit that will be associated to the
 	 *            editOnClickListener and a View with id issue_view_delete that
 	 *            will be associated to the deleteOnClickListener
 	 * @param objects
@@ -63,7 +63,7 @@ public class IssueExpandableAdapter extends BaseExpandableListAdapter {
 			OnClickListener editOnClickListener,
 			OnClickListener doneOnClickListener) {
 
-		this.context = (FragmentActivity) context;
+		this.context = context;
 		this.groupResource = groupResource;
 		this.childResource = childResource;
 		if (objects != null)
@@ -82,7 +82,7 @@ public class IssueExpandableAdapter extends BaseExpandableListAdapter {
 		LayoutInflater inflater = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		View item = inflater.inflate(groupResource, parent, false);
-		t = (TextView) item.findViewById(R.id.drawer_list_item_label);
+		t = (TextView) item.findViewById(R.id.issue_list_item_label);
 
 		if (groupPosition == 0) {
 			// First item is report issue
@@ -92,6 +92,7 @@ public class IssueExpandableAdapter extends BaseExpandableListAdapter {
 			t.setOnClickListener(reportIssueOnClickListener);
 
 		} else {
+			// Other items are real issues
 			IssueTask object = objects.get(groupPosition - 1);
 
 			t.setText(object.getTitle());
@@ -119,33 +120,39 @@ public class IssueExpandableAdapter extends BaseExpandableListAdapter {
 
 		((TextView) childView.findViewById(R.id.issue_view_description))
 				.setText(object.getDescription());
+
 		((TextView) childView.findViewById(R.id.issue_view_priority_value))
 				.setText(context.getResources().getStringArray(
-						R.array.issue_priorities)[object.getPriority().toInt()]);
+						R.array.issue_priorities)[Priority.getIndex(object
+						.getPriority())]);
 
 		if (object.getAssignedWorker() != null)
-		((TextView) childView
-				.findViewById(R.id.issue_view_assigned_worker_name))
-				.setText(String.valueOf(object.getAssignedWorker().getId()));
+			((TextView) childView
+					.findViewById(R.id.issue_view_assigned_worker_name))
+					.setText(String.valueOf(object.getAssignedWorker().getId()));
 		else
 			((TextView) childView
 					.findViewById(R.id.issue_view_assigned_worker_name))
 					.setText("--");
 
-//		VineyardGallery gallery = (VineyardGallery) childView.findViewById(R.id.issue_view_gallery);
-//		List<URL> photos = object.getPhotos();
-//		if (photos.size() == 0)
-//			childView.removeView(gallery);
-//		else 
-//			for (URL p : photos)
-//				gallery.addImage(p.getPath());
+		// TODO
+		// VineyardGallery gallery = (VineyardGallery)
+		// childView.findViewById(R.id.issue_view_gallery);
+		// List<URL> photos = object.getPhotos();
+		// if (photos.size() == 0)
+		// childView.removeView(gallery);
+		// else
+		// for (URL p : photos)
+		// gallery.addImage(p.getPath());
 
 		childView.findViewById(R.id.issue_view_edit).setOnClickListener(
 				editOnClickListener);
+
 		childView.findViewById(R.id.issue_view_done).setOnClickListener(
 				doneOnClickListener);
 
-		// add the issue as tag of the button
+		// add the issue as tag of the buttons to make it available in the
+		// onClickListener
 		childView.findViewById(R.id.issue_view_edit).setTag(object);
 		childView.findViewById(R.id.issue_view_done).setTag(object);
 
@@ -211,7 +218,7 @@ public class IssueExpandableAdapter extends BaseExpandableListAdapter {
 		if (objects != null)
 			this.objects = objects;
 		else
-			this.objects = new ArrayList<IssueTask>();
+			this.objects.clear();
 
 		notifyDataSetChanged();
 	}

@@ -9,7 +9,7 @@ public class VineyardServer {
 	public static final String LOGIN_API = "/api/worker/login/";
 	public static final String ADD_ISSUE_API = "/api/task/";
 	public static final String EDIT_ISSUE_API = "/api/task/";
-	public static final String ISSUES_AND_TASKS_API = "/api/task/";
+	public static final String OPEN_ISSUES_AND_TASKS_API = "/api/task/open/";
 
 	private String url;
 

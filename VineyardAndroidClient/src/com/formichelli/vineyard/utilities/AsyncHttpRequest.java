@@ -9,6 +9,8 @@ import java.util.List;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
@@ -22,7 +24,8 @@ import android.util.Pair;
 /**
  * Sends an HTTP request and asynchronously returns the response
  */
-public class AsyncHttpRequest extends AsyncTask<Void, Void, Pair<Integer, String>> {
+public class AsyncHttpRequest extends
+		AsyncTask<Void, Void, Pair<Integer, String>> {
 	protected final static String TAG = "AsyncHttpRequest";
 
 	public enum Type {
@@ -32,6 +35,12 @@ public class AsyncHttpRequest extends AsyncTask<Void, Void, Pair<Integer, String
 	protected String serverUrl;
 	protected List<NameValuePair> params;
 	protected Type type;
+
+	public AsyncHttpRequest() {
+		this.serverUrl = null;
+		this.type = null;
+		this.params = new ArrayList<NameValuePair>();
+	}
 
 	public AsyncHttpRequest(Type type) {
 		this.serverUrl = null;
@@ -105,11 +114,12 @@ public class AsyncHttpRequest extends AsyncTask<Void, Void, Pair<Integer, String
 		if (type != Type.GET)
 			for (NameValuePair param : this.params)
 				Log.i(TAG, param.getName() + " = " + param.getValue());
-		
+
+		// create the right request
 		switch (type) {
 		case DELETE:
-			// TODO
-			return null;
+			request = new HttpDelete(serverUrl);
+			break;
 
 		case GET:
 			request = new HttpGet(serverUrl);
@@ -117,46 +127,42 @@ public class AsyncHttpRequest extends AsyncTask<Void, Void, Pair<Integer, String
 
 		case POST:
 			request = new HttpPost(serverUrl);
-			if (this.params != null)
-				try {
-					((HttpPost) request).setEntity(new UrlEncodedFormEntity(
-							this.params));
-				} catch (UnsupportedEncodingException e) {
-					Log.e(TAG, "Error: " + e.getLocalizedMessage());
-					return null;
-				}
 			break;
 
 		case PUT:
 			request = new HttpPut(serverUrl);
-			if (this.params != null)
-				try {
-					((HttpPut) request).setEntity(new UrlEncodedFormEntity(
-							this.params));
-				} catch (UnsupportedEncodingException e) {
-					Log.e(TAG, "Error: " + e.getLocalizedMessage());
-					return null;
-				}
 			break;
 
 		default:
 			return null;
 		}
 
+		// add the parameters for DELETE, POST and PUT requests
+		if (type != Type.GET) {
+			if (this.params != null)
+				try {
+					((HttpEntityEnclosingRequestBase) request)
+							.setEntity(new UrlEncodedFormEntity(this.params));
+				} catch (UnsupportedEncodingException e) {
+					Log.e(TAG, "Error: " + e.getLocalizedMessage());
+					return null;
+				}
+		}
+
+		// sends the request and returns response status code and body
 		try {
 			HttpResponse result = new DefaultHttpClient().execute(request);
-			
-			
-			return new Pair<Integer, String>(result.getStatusLine().getStatusCode(), getResponseContent(result));
+
+			return new Pair<Integer, String>(result.getStatusLine()
+					.getStatusCode(), getResponseBody(result));
 		} catch (IOException e) {
 			Log.e(TAG, "Error: " + e.getLocalizedMessage());
 			return null;
 		}
 
-
 	}
-	
-	private String getResponseContent(HttpResponse response) {
+
+	private String getResponseBody(HttpResponse response) {
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 
 		try {

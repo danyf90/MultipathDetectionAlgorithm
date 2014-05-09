@@ -54,11 +54,6 @@ public class LoginActivity extends Activity {
 	SharedPreferences sp;
 
 	@Override
-	public void onBackPressed() {
-		finish();
-	}
-
-	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
@@ -112,6 +107,14 @@ public class LoginActivity extends Activity {
 		return true;
 	}
 
+	@Override
+	public void onBackPressed() {
+		if (mAuthTask != null)
+			mAuthTask.cancel(true);
+		else
+			finish();
+	}
+
 	/**
 	 * Attempts to sign in or register the account specified by the login form.
 	 * If there are form errors (invalid email, missing fields, etc.), the
@@ -149,10 +152,6 @@ public class LoginActivity extends Activity {
 			mPasswordView.setError(getString(R.string.error_field_required));
 			focusView = mPasswordView;
 			cancel = true;
-		} else if (mPassword.length() < 4) {
-			mPasswordView.setError(getString(R.string.error_invalid_password));
-			focusView = mPasswordView;
-			cancel = true;
 		}
 
 		// Check for a valid email address.
@@ -167,11 +166,11 @@ public class LoginActivity extends Activity {
 		}
 
 		if (cancel) {
-			// There was an error; don't attempt login and focus the first
+			// There is an error: don't attempt login and focus the first
 			// form field with an error.
 			focusView.requestFocus();
 		} else {
-			// Show a progress spinner, and kick off a background task to
+			// Show a progress spinner and kick off a background task to
 			// perform the user login attempt.
 			mLoginStatusMessageView.setText(R.string.login_progress_signing_in);
 			showProgress(true);
@@ -205,7 +204,7 @@ public class LoginActivity extends Activity {
 						"MD5").digest(mPassword.getBytes()));
 				addParam(new BasicNameValuePair("password", passwordHash));
 			} catch (NoSuchAlgorithmException e) {
-				this.cancel(true);
+				cancel(true);
 			}
 		}
 

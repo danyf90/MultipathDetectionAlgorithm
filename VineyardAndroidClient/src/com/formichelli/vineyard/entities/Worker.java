@@ -15,7 +15,7 @@ public class Worker {
 	public Worker() {
 		groups = new ArrayList<WorkGroup>();
 	}
-	
+
 	public int getId() {
 		return id;
 	}
@@ -70,13 +70,14 @@ public class Worker {
 
 	public void setGroups(List<WorkGroup> groups) {
 		if (groups == null)
-			this.groups = new ArrayList<WorkGroup>();
-		
-		this.groups = groups;
+			this.groups.clear();
+		else
+			this.groups = groups;
 	}
 
 	public void addGroup(WorkGroup group) {
-		groups.add(group);
+		if (group != null)
+			groups.add(group);
 	}
 
 	public void removeGroup(WorkGroup group) {

@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map.Entry;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -32,7 +33,9 @@ import com.formichelli.vineyard.R;
 import com.formichelli.vineyard.VineyardMainActivity;
 
 /**
- * A Gallery is an horizontal LinearLayout that can contain zero or more photos
+ * A Gallery is an horizontal LinearLayout that can contain zero or more photos,
+ * if it is locked no photos can be added or removed, if it is unlocked photos
+ * can be added (from camera) or deleted.
  */
 public class VineyardGallery extends HorizontalScrollView {
 	public static final int REQUEST_TAKE_PHOTO = 1;
@@ -44,7 +47,7 @@ public class VineyardGallery extends HorizontalScrollView {
 	int size;
 	int padding;
 	HashSet<ImageView> selected;
-	HashMap<ImageView, String> images;
+	HashMap<ImageView, String> images, toBeDeleted;
 	Drawable add, delete;
 	Fragment fragment;
 
@@ -92,6 +95,7 @@ public class VineyardGallery extends HorizontalScrollView {
 
 		selected = new HashSet<ImageView>();
 		images = new HashMap<ImageView, String>();
+		toBeDeleted = new HashMap<ImageView, String>();
 
 		selectedColor = context.getResources().getColor(R.color.white);
 		notSelectedColor = context.getResources().getColor(R.color.wine_light);
@@ -103,8 +107,19 @@ public class VineyardGallery extends HorizontalScrollView {
 		if (locked)
 			gallery.removeView(addDeletePhoto);
 
+		showAddPhoto();
+	}
+
+	private void showAddPhoto() {
 		addDeletePhoto.setImageDrawable(add);
 		addDeletePhoto.setOnClickListener(dispatchTakePictureIntent);
+
+	}
+
+	private void showDeletePhoto() {
+		addDeletePhoto.setImageDrawable(delete);
+		addDeletePhoto.setOnClickListener(deleteSelectedImages);
+
 	}
 
 	public boolean isLocked() {
@@ -118,18 +133,19 @@ public class VineyardGallery extends HorizontalScrollView {
 		this.locked = locked;
 
 		if (locked) {
+			// cancel onClickListeners and hide the button
 			for (int i = 0, l = gallery.getChildCount(); i < l; i++)
 				gallery.getChildAt(i).setOnClickListener(null);
 
 			deselectAll();
-			gallery.removeView(addDeletePhoto);
+			addDeletePhoto.setVisibility(View.GONE);
 		} else {
+			// register onClickListeners and show the button
 			for (int i = 0, l = gallery.getChildCount(); i < l; i++)
 				gallery.getChildAt(i).setOnClickListener(selectOnClick);
 
-			addDeletePhoto.setImageDrawable(add);
-			addDeletePhoto.setOnClickListener(dispatchTakePictureIntent);
-			gallery.addView(addDeletePhoto);
+			showAddPhoto();
+			addDeletePhoto.setVisibility(View.VISIBLE);
 		}
 	}
 
@@ -138,30 +154,39 @@ public class VineyardGallery extends HorizontalScrollView {
 	 * 
 	 * @param path
 	 *            location of the image (either local or remote)
+	 * @param mustBeDeleted
+	 *            indicates if the image must be deleted once it is removed from
+	 *            the gallery
 	 * @return view of the added image
 	 */
-	public ImageView addImage(String path) {
+	public ImageView addImage(String path, boolean mustBeDeleted) {
 		ImageView v;
 		Bitmap b;
 
-		if (path.startsWith("http://") || path.startsWith("https://"))
+		if (path.startsWith("http://") || path.startsWith("https://")) {
+			// the image must be load from a server
 			new GalleryImageLoader((VineyardMainActivity) getContext())
 					.execute(path);
-
-		b = getThumbnailFromFilePath(path, size);
-		if (b == null)
 			return null;
+		} else {
+			// the image is locally stored
+			b = getThumbnailFromFilePath(path, size);
+			if (b == null)
+				return null;
 
-		v = new ImageView(getContext());
-		v.setImageBitmap(b);
-		v.setPadding(padding, padding, padding, padding);
+			v = new ImageView(getContext());
+			v.setImageBitmap(b);
+			v.setPadding(padding, padding, padding, padding);
 
-		if (!locked)
-			v.setOnClickListener(selectOnClick);
+			if (!locked)
+				v.setOnClickListener(selectOnClick);
 
-		gallery.addView(v, 0);
-		images.put(v, path);
-		return v;
+			gallery.addView(v, 0);
+			images.put(v, path);
+			if (mustBeDeleted)
+				toBeDeleted.put(v, path);
+			return v;
+		}
 	}
 
 	/**
@@ -171,68 +196,48 @@ public class VineyardGallery extends HorizontalScrollView {
 	 *            image to be removed
 	 */
 	public void removeImage(ImageView v) {
+		gallery.removeView(v);
+		images.remove(v);
 		selected.remove(v);
 
-		gallery.removeView(v);
-
-		if (images.get(v) != null) {
-			File f = new File(images.get(v));
+		if (toBeDeleted.containsKey(v)) {
+			// delete image from disk
+			File f = new File(toBeDeleted.remove(v));
 			if (f != null)
 				f.delete();
-
-			images.remove(v);
 		}
+
+		if (selected.isEmpty())
+			showAddPhoto();
 	}
 
 	/**
 	 * Removes the images that are currently selected
 	 */
 	public void removeSelectedImages() {
-		for (ImageView v : selected) {
-			gallery.removeView(v);
-
-			if (images.get(v) != null) {
-				File f = new File(images.get(v));
-				if (f != null)
-					f.delete();
-
-				images.remove(v);
-			}
-		}
-
-		selected.clear();
-		addDeletePhoto.setImageDrawable(add);
-		addDeletePhoto.setOnClickListener(dispatchTakePictureIntent);
+		for (ImageView v : (ImageView[]) selected.toArray())
+			removeImage(v);
 	}
 
 	/**
 	 * Remove all the images from the gallery
 	 */
 	public void removeAllImages() {
-		for (ImageView v : images.keySet()) {
-			gallery.removeView(v);
-
-			if (images.get(v) != null) {
-				File f = new File(images.get(v));
-				if (f != null)
-					f.delete();
-
-				images.remove(v);
-			}
-		}
-
-		selected.clear();
-		images.clear();
-
-		addDeletePhoto.setImageDrawable(add);
-		addDeletePhoto.setOnClickListener(dispatchTakePictureIntent);
+		for (Entry<ImageView, String> entry : images.entrySet())
+			removeImage(entry.getKey());
 	}
 
+	/*
+	 * Deselect all the images
+	 */
 	private void deselectAll() {
 		for (ImageView v : selected)
 			setSelected(v, false);
 	}
 
+	/*
+	 * Get a square thumbnail of a locally stored image
+	 */
 	private Bitmap getThumbnailFromFilePath(String filePath, int size) {
 		return ThumbnailUtils.extractThumbnail(
 				BitmapFactory.decodeFile(filePath), size, size);
@@ -240,21 +245,17 @@ public class VineyardGallery extends HorizontalScrollView {
 
 	private void setSelected(ImageView v, boolean select) {
 		if (select) {
-			if (selected.isEmpty()) {
-				this.addDeletePhoto.setImageDrawable(delete);
-				addDeletePhoto.setOnClickListener(deleteSelectedImages);
-			}
+			if (selected.isEmpty())
+				showDeletePhoto();
 
 			selected.add(v);
 			v.setBackgroundColor(selectedColor);
 		} else {
+			if (selected.isEmpty())
+				showAddPhoto();
+
 			selected.remove(v);
 			v.setBackgroundColor(notSelectedColor);
-
-			if (selected.isEmpty()) {
-				addDeletePhoto.setImageDrawable(add);
-				addDeletePhoto.setOnClickListener(dispatchTakePictureIntent);
-			}
 		}
 	}
 
@@ -324,10 +325,13 @@ public class VineyardGallery extends HorizontalScrollView {
 
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (resultCode == Activity.RESULT_OK) {
-			addImage(currentPhotoPath);
+			addImage(currentPhotoPath, true);
 		}
 	}
 
+	/*
+	 * Retrieves and adds an image to the gallery
+	 */
 	private class GalleryImageLoader extends ImageLoader {
 		@SuppressWarnings("deprecation")
 		public GalleryImageLoader(Activity activity) {

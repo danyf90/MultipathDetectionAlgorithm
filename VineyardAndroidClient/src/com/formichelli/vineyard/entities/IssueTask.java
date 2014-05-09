@@ -9,6 +9,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.util.Log;
+
+/**
+ * Class which represents an issue
+ */
 public class IssueTask extends SimpleTask {
 	public final static String ISSUER = "issuer";
 	public final static String PHOTOS = "photos";
@@ -25,7 +30,7 @@ public class IssueTask extends SimpleTask {
 
 		setIssuer(jsonObject.getInt(ISSUER));
 
-		if (jsonObject.has(PHOTOS))
+		if (!jsonObject.isNull(PHOTOS))
 			setPhotos(jsonObject.getJSONArray(PHOTOS));
 		else
 			setPhotos(new ArrayList<String>());
@@ -47,17 +52,17 @@ public class IssueTask extends SimpleTask {
 		if (photos != null)
 			this.photos = photos;
 		else
-			this.photos = new ArrayList<String>();
+			this.photos.clear();
 	}
 
 	public void setPhotos(JSONArray photos) {
-		this.photos = new ArrayList<String>();
+		this.photos.clear();
 
 		for (int i = 0, l = photos.length(); i < l; i++) {
 			try {
 				this.photos.add(photos.getString(i));
 			} catch (JSONException e) {
-				e.printStackTrace();
+				Log.e("setChildren", "Error parsing photo: " + e.getLocalizedMessage());
 			}
 		}
 	}
@@ -70,16 +75,13 @@ public class IssueTask extends SimpleTask {
 		photos.remove(photo);
 	}
 
-	public void removeAllPhotos() {
-		photos.clear();
-	}
-
+	/**
+	 * returns the list of parameters needed for a post request to create a new issue
+	 */
 	@Override
 	public List<NameValuePair> getParams() {
 		List<NameValuePair> params = super.getParams();
-
 		params.add(new BasicNameValuePair(ISSUER, String.valueOf(getIssuer())));
-
 		return params;
 	}
 }

@@ -30,6 +30,10 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+/**
+ * Fragment which shows the info of the selected place and allows navigation
+ * between places
+ */
 public class PlaceViewerFragment extends Fragment {
 	VineyardMainActivity activity;
 	TextView ancestors, description, issuesCount, tasksCount,
@@ -39,7 +43,7 @@ public class PlaceViewerFragment extends Fragment {
 	PlaceAdapter placeAdapter;
 	ListView childrenList;
 	MenuItem upItem;
-	Drawable redBorder, whiteBorder;
+	Drawable redBorder, wineBorder;
 	ProgressBar progress;
 	boolean first;
 	AsyncTask<String, Void, Bitmap> imageLoader;
@@ -49,7 +53,6 @@ public class PlaceViewerFragment extends Fragment {
 			Bundle savedInstanceState) {
 		setHasOptionsMenu(true);
 
-		// Inflate the layout for this fragment
 		return inflater.inflate(R.layout.fragment_place_view, container, false);
 	}
 
@@ -99,26 +102,30 @@ public class PlaceViewerFragment extends Fragment {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
+				// cancel loading of previous image
+				if (imageLoader != null)
+					imageLoader.cancel(true);
+
 				loadPlace((Place) view.getTag());
 			}
 		});
 
 		redBorder = getResources()
 				.getDrawable(R.drawable.white_with_red_border);
-		whiteBorder = getResources().getDrawable(
+		wineBorder = getResources().getDrawable(
 				R.drawable.white_with_wine_border);
 
 		issues.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				activity.switchFragment(activity.issuesFragment);
+				activity.switchFragment(activity.getIssuesFragment());
 			}
 		});
 
 		tasks.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				activity.switchFragment(activity.tasksFragment);
+				activity.switchFragment(activity.getTasksFragment());
 			}
 		});
 	}
@@ -137,8 +144,8 @@ public class PlaceViewerFragment extends Fragment {
 		super.onCreateOptionsMenu(menu, inflater);
 	}
 
-	// This function must be called after both onActivityCreated and
-	// onCreateOptionMenu but only once
+	// This function must be called only once after both onActivityCreated and
+	// onCreateOptionMenu
 	private void init() {
 		// loadPlace needs that the header is already placed in the layout
 		header.post(new Runnable() {
@@ -166,68 +173,67 @@ public class PlaceViewerFragment extends Fragment {
 		return true;
 	}
 
-	// setBackgroundDrawable needed for compatibility with API 8
 	@SuppressWarnings("deprecation")
-	public void loadPlace(Place p) {
-		int c;
+	public void loadPlace(Place place) {
+		if (place == null)
+			throw new IllegalArgumentException("place cannot be null");
 
-		if (p == null)
-			return;
+		activity.setCurrentPlace(place);
 
-		activity.setCurrentPlace(p);
-
-		if (p.getParent() == null)
+		if (place.getParent() == null)
 			upItem.setVisible(false);
 		else
 			upItem.setVisible(true);
 
-		// set ancestors
+		// set ancestors string
 		String ancestorsString = "";
-		for (Place p1 = p; p1 != null; p1 = p1.getParent())
-			ancestorsString = p1.getName() + " > " + ancestorsString;
+		for (Place p = place; p != null; p = p.getParent())
+			ancestorsString = p.getName() + " > " + ancestorsString;
 		ancestors.setText(ancestorsString.substring(0,
 				ancestorsString.length() - 3));
 
-		// set photo
-		if (imageLoader != null)
-			imageLoader.cancel(true);
+		// load photo
 		header.setBackgroundColor(getResources().getColor(R.color.wine_light));
-		if (p.getPhoto() != null) {
-			imageLoader = new ImageLoader(activity, header, progress);
-			imageLoader.execute(activity.getServer().getUrl()
+		if (place.getPhoto() != null) {
+			final String imageUrl = activity.getServer().getUrl()
 					+ String.format(Locale.US, VineyardServer.PHOTO_API,
-							p.getPhoto(), header.getMeasuredWidth(),
-							header.getMeasuredHeight()));
+							place.getPhoto(), header.getMeasuredWidth(),
+							header.getMeasuredHeight());
+			imageLoader = new ImageLoader(activity, header, progress, imageUrl);
+			imageLoader.execute();
 		}
 
+		int c;
+
 		// set issues count
-		c = p.getIssuesCount();
+		c = place.getIssuesCount();
 		issuesCount.setText(String.valueOf(c));
-		childrenIssuesCount.setText("(" + (p.getChildrenIssuesCount() - c)
+		childrenIssuesCount.setText("(" + (place.getChildrenIssuesCount() - c)
 				+ ")");
 		if (c != 0)
 			issues.setBackgroundDrawable(redBorder);
 		else
-			issues.setBackgroundDrawable(whiteBorder);
+			issues.setBackgroundDrawable(wineBorder);
 
 		// set tasks count
-		c = p.getTasksCount();
+		c = place.getTasksCount();
 		tasksCount.setText(String.valueOf(c));
-		childrenTasksCount.setText("(" + (p.getChildrenTasksCount() - c) + ")");
+		childrenTasksCount.setText("(" + (place.getChildrenTasksCount() - c)
+				+ ")");
 		if (c != 0)
 			tasks.setBackgroundDrawable(redBorder);
 		else
-			tasks.setBackgroundDrawable(whiteBorder);
+			tasks.setBackgroundDrawable(wineBorder);
 
 		// set description
-		description.setText(p.getDescription());
+		description.setText(place.getDescription());
 
 		// set attributes
 		attributesLabels.removeAllViews();
 		attributesValues.removeAllViews();
-		HashMap<String, String> attributes = p.getAttributes();
+		HashMap<String, String> attributes = place.getAttributes();
 		if (attributes.size() != 0)
-			for (String key : p.getAttributes().keySet()) {
+			for (String key : place.getAttributes().keySet()) {
 				TextView t = new TextView(activity);
 				t.setTypeface(null, Typeface.BOLD_ITALIC);
 				t.setText(key + ":");
@@ -238,8 +244,8 @@ public class PlaceViewerFragment extends Fragment {
 				attributesValues.addView(t);
 			}
 
-		List<Place> children = p.getChildren();
-
+		// setChildren
+		List<Place> children = place.getChildren();
 		if (children.size() != 0) {
 			placeAdapter.replaceItems(children);
 			Util.fixListHeight(childrenList);
@@ -250,7 +256,7 @@ public class PlaceViewerFragment extends Fragment {
 	}
 
 	private void showChildren(boolean show) {
-		final int visibility = show ? View.VISIBLE : View.INVISIBLE;
+		final int visibility = show ? View.VISIBLE : View.GONE;
 
 		childrenLabel.setVisibility(visibility);
 		childrenList.setVisibility(visibility);

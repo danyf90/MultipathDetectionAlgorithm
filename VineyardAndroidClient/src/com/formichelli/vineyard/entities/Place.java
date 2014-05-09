@@ -30,28 +30,12 @@ public class Place {
 	private List<IssueTask> issues;
 	private List<SimpleTask> tasks;
 	private HashMap<String, String> attributes;
-	private int issuesCount;
-	private int tasksCount;
 
 	public Place() {
-		attributes = new HashMap<String, String>();
 		children = new ArrayList<Place>();
-	}
-
-	public Place(int id, String name, String description, String photo,
-			Location location, Place parent, List<Place> children,
-			HashMap<String, String> attributes, List<IssueTask> issues,
-			List<SimpleTask> tasks) {
-		setId(id);
-		setName(name);
-		setDescription(description);
-		setPhoto(photo);
-		setLocation(location);
-		setParent(parent);
-		setChildren(children);
-		setAttributes(attributes);
-		setIssues(issues);
-		setTasks(tasks);
+		issues = new ArrayList<IssueTask>();
+		tasks = new ArrayList<SimpleTask>();
+		attributes = new HashMap<String, String>();
 	}
 
 	public Place(JSONObject rootPlaceObject) throws JSONException {
@@ -62,21 +46,22 @@ public class Place {
 
 		setDescription(rootPlaceObject.getString(DESCRIPTION));
 
-		if (rootPlaceObject.has(PHOTO))
+		if (!rootPlaceObject.isNull(PHOTO))
 			setPhoto(rootPlaceObject.getString(PHOTO));
 		else
 			attributes = new HashMap<String, String>();
 
-		if (rootPlaceObject.has(ATTRIBUTES))
-			setAttributes(rootPlaceObject.getJSONObject(ATTRIBUTES));
-		else
-			attributes = new HashMap<String, String>();
-
-		if (rootPlaceObject.has(CHILDREN))
+		if (!rootPlaceObject.isNull(CHILDREN))
 			setChildren(rootPlaceObject.getJSONArray(CHILDREN));
 		else
 			children = new ArrayList<Place>();
 
+		if (!rootPlaceObject.isNull(ATTRIBUTES))
+			setAttributes(rootPlaceObject.getJSONObject(ATTRIBUTES));
+		else
+			attributes = new HashMap<String, String>();
+
+		// issues and tasks are not present in places JSON
 		setIssues(new ArrayList<IssueTask>());
 		setTasks(new ArrayList<SimpleTask>());
 	}
@@ -134,17 +119,15 @@ public class Place {
 	}
 
 	public void setChildren(List<Place> children) {
-		this.children = children;
+		if (children == null)
+			this.children.clear();
+		else
+			this.children = children;
 	}
 
 	public void setChildren(JSONArray childrenArray) {
+		children.clear();
 
-		if (childrenArray == null) {
-			children = null;
-			return;
-		}
-
-		children = new ArrayList<Place>();
 		for (int i = 0, l = childrenArray.length(); i < l; i++) {
 			Place p;
 			try {
@@ -152,15 +135,14 @@ public class Place {
 				p.setParent(this);
 				children.add(p);
 			} catch (JSONException e) {
-				Log.e("setChildren", "Error parsing children " + i);
+				Log.e("setChildren",
+						"Error parsing children: " + e.getLocalizedMessage());
 			}
 		}
 	}
 
 	public void addChild(Place child) {
-		if (children == null)
-			this.children = new ArrayList<Place>();
-		else
+		if (child != null)
 			children.add(child);
 	}
 
@@ -174,41 +156,30 @@ public class Place {
 
 	public void setIssues(List<IssueTask> issues) {
 		if (issues == null)
-			this.issues = new ArrayList<IssueTask>();
+			this.issues.clear();
 		else
 			this.issues = issues;
-
-		this.setIssuesCount(this.issues.size());
 	}
 
-	public void setIssues(String issuesJSON) throws JSONException {
-		JSONArray issuesArray = new JSONArray(issuesJSON);
-
-		List<IssueTask> issues = new ArrayList<IssueTask>();
+	public void setIssues(JSONArray issuesArray) throws JSONException {
+		this.issues.clear();
 
 		for (int i = 0, l = issuesArray.length(); i < l; i++) {
 			try {
-				issues.add(new IssueTask(issuesArray.getJSONObject(i)));
+				addIssue(new IssueTask(issuesArray.getJSONObject(i)));
 			} catch (JSONException e) {
 				android.util.Log.e("Place.setIsues", e.getLocalizedMessage());
 			}
 		}
-
-		setIssues(issues);
 	}
 
 	public void addIssue(IssueTask issue) {
-		if (issues == null)
-			issues = new ArrayList<IssueTask>();
-		else
+		if (issue != null)
 			issues.add(issue);
-
-		issuesCount++;
 	}
 
 	public void removeIssue(IssueTask issue) {
-		if (issues.remove(issue))
-			issuesCount--;
+		issues.remove(issue);
 	}
 
 	public List<SimpleTask> getTasks() {
@@ -217,40 +188,29 @@ public class Place {
 
 	public void setTasks(List<SimpleTask> tasks) {
 		if (tasks == null)
-			this.tasks = new ArrayList<SimpleTask>();
+			this.tasks.clear();
 		else
 			this.tasks = tasks;
-
-		setTasksCount(this.tasks.size());
 	}
 
-	public void setTasks(String tasksJSON) throws JSONException {
-		JSONArray tasksArray = new JSONArray(tasksJSON);
-
-		List<SimpleTask> tasks = new ArrayList<SimpleTask>();
+	public void setTasks(JSONArray tasksArray) throws JSONException {
+		tasks.clear();
 
 		for (int i = 0, l = tasksArray.length(); i < l; i++) {
 			try {
-				tasks.add(new SimpleTask(tasksArray.getJSONObject(i)));
+				addTask(new SimpleTask(tasksArray.getJSONObject(i)));
 			} catch (JSONException e) {
 			}
 		}
-
-		this.setTasks(tasks);
 	}
 
 	public void addTask(SimpleTask task) {
-		if (tasks == null)
-			tasks = new ArrayList<SimpleTask>();
-		else
+		if (task != null)
 			tasks.add(task);
-
-		tasksCount++;
 	}
 
 	public void removeTask(SimpleTask task) {
-		if (tasks.remove(task))
-			tasksCount--;
+		tasks.remove(task);
 	}
 
 	public HashMap<String, String> getAttributes() {
@@ -258,11 +218,14 @@ public class Place {
 	}
 
 	public void setAttributes(HashMap<String, String> attributes) {
-		this.attributes = attributes;
+		if (attributes != null)
+			this.attributes.clear();
+		else
+			this.attributes = attributes;
 	}
 
 	public void setAttributes(JSONObject attributesObject) {
-		attributes = new HashMap<String, String>();
+		this.attributes.clear();
 
 		if (attributesObject == null)
 			return;
@@ -272,7 +235,7 @@ public class Place {
 			String key = (String) i.next();
 
 			try {
-				attributes.put(key, attributesObject.getString(key));
+				addAttribute(key, attributesObject.getString(key));
 			} catch (JSONException e) {
 				Log.e("Place.setAttributes", "This should never happen");
 			}
@@ -280,33 +243,23 @@ public class Place {
 	}
 
 	public void addAttribute(String key, String value) {
-		if (attributes == null)
-			attributes = new HashMap<String, String>();
-
 		attributes.put(key, value);
 	}
+
 	public void removeAttribute(String key) {
 		attributes.remove(key);
 	}
 
 	public int getIssuesCount() {
-		return issuesCount;
-	}
-
-	public void setIssuesCount(int issuesCount) {
-		this.issuesCount = issuesCount;
+		return issues.size();
 	}
 
 	public int getTasksCount() {
-		return tasksCount;
-	}
-
-	public void setTasksCount(int tasksCount) {
-		this.tasksCount = tasksCount;
+		return tasks.size();
 	}
 
 	public int getChildrenIssuesCount() {
-		int issuesCount = this.issuesCount;
+		int issuesCount = issues.size();
 
 		for (Place p : children)
 			issuesCount += p.getChildrenIssuesCount();
@@ -315,7 +268,7 @@ public class Place {
 	}
 
 	public int getChildrenTasksCount() {
-		int tasksCount = this.tasksCount;
+		int tasksCount = tasks.size();
 
 		for (Place p : children)
 			tasksCount += p.getChildrenTasksCount();

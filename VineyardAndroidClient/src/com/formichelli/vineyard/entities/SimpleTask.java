@@ -26,8 +26,8 @@ public class SimpleTask implements Task {
 	public final static String PLACE = "place";
 	public final static String TITLE = "title";
 	public final static String DESCRIPTION = "description";
-	// public final static String LATITUDE = "latitude";
-	// public final static String LONGITUDE = "longitude";
+	public final static String LATITUDE = "latitude";
+	public final static String LONGITUDE = "longitude";
 	public final static String ASSIGNED_WORKER = "assigned_worker";
 	public final static String ASSIGNED_GROUP = "assigned_group";
 
@@ -49,7 +49,6 @@ public class SimpleTask implements Task {
 	private WorkGroup assignedGroup;
 
 	public SimpleTask() {
-		priority = Priority.NOT_SET;
 	}
 
 	@SuppressLint("SimpleDateFormat")
@@ -73,12 +72,15 @@ public class SimpleTask implements Task {
 				setDueTime(new SimpleDateFormat(dateFormat).parse(jsonObject
 						.getString(DUE_TIME)));
 		} catch (ParseException e1) {
-			// TODO what to do?
+			throw new JSONException("Required date format: " + dateFormat);
 		}
 
 		setStatus(jsonObject.getString(STATUS));
 
-		setPriority(jsonObject.getString(PRIORITY));
+		if (jsonObject.isNull(PRIORITY))
+			setPriority(null);
+		else
+			setPriority(Priority.fromString(jsonObject.getString(PRIORITY)));
 
 		Place p = new Place();
 		p.setId(jsonObject.getInt(PLACE));
@@ -91,10 +93,10 @@ public class SimpleTask implements Task {
 		else
 			setDescription(null);
 
-		// if (!jsonObject.isNull(LATITUDE))
-		// setLatitude(jsonObject.getDouble(LATITUDE));
-		// if (!jsonObject.isNull(LONGITUDE))
-		// setLongitude(jsonObject.getDouble(LONGITUDE));
+		if (!jsonObject.isNull(LATITUDE))
+			setLatitude(jsonObject.getDouble(LATITUDE));
+		if (!jsonObject.isNull(LONGITUDE))
+			setLongitude(jsonObject.getDouble(LONGITUDE));
 
 		if (!jsonObject.isNull(ASSIGNED_WORKER)) {
 			Worker w = new Worker();
@@ -180,17 +182,7 @@ public class SimpleTask implements Task {
 	}
 
 	@Override
-	public void setPriority(String priority) {
-		priority = priority.toUpperCase(Locale.ENGLISH).replace('-', '_');
-
-		this.priority = Priority.valueOf(priority);
-	}
-
-	@Override
 	public void setPriority(Priority priority) {
-		if (priority == null)
-			this.priority = Priority.NOT_SET;
-
 		this.priority = priority;
 	}
 
@@ -260,6 +252,9 @@ public class SimpleTask implements Task {
 		this.assignedGroup = assignedGroup;
 	}
 
+	/**
+	 * returns the list of parameters needed for a post request to create a new task
+	 */
 	public List<NameValuePair> getParams() {
 
 		List<NameValuePair> params = new ArrayList<NameValuePair>();
@@ -269,10 +264,10 @@ public class SimpleTask implements Task {
 				.getId())));
 		params.add(new BasicNameValuePair(TITLE, title));
 		params.add(new BasicNameValuePair(DESCRIPTION, description));
-		// params.add(new BasicNameValuePair(LATITUDE, String
-		// .valueOf(getLatitude())));
-		// params.add(new BasicNameValuePair(LONGITUDE, String
-		// .valueOf(getLongitude())));
+		params.add(new BasicNameValuePair(LATITUDE, String
+				.valueOf(getLatitude())));
+		params.add(new BasicNameValuePair(LONGITUDE, String
+				.valueOf(getLongitude())));
 
 		return params;
 	}

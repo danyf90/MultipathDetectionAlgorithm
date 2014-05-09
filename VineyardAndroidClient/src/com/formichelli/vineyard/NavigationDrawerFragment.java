@@ -29,14 +29,7 @@ import android.widget.TextView;
  * implemented here.
  */
 public class NavigationDrawerFragment extends Fragment {
-	/**
-	 * A pointer to the current callbacks instance (the Activity).
-	 */
 	private NavigationDrawerCallbacks mCallbacks;
-
-	/**
-	 * Helper component that ties the action bar to the navigation drawer.
-	 */
 	private ActionBarDrawerToggle mDrawerToggle;
 
 	private DrawerLayout mDrawerLayout;
@@ -93,17 +86,18 @@ public class NavigationDrawerFragment extends Fragment {
 
 		return mDrawerListView;
 	}
-	
+
 	/* Called whenever we call invalidateOptionsMenu() */
-    @Override
-    public void onPrepareOptionsMenu(Menu menu) {
-        // If the nav drawer is open, hide action items related to the content view
-    	if (isDrawerOpen())
-    		menu.clear();
-        
-    	super.onPrepareOptionsMenu(menu);
-    }
-	
+	@Override
+	public void onPrepareOptionsMenu(Menu menu) {
+		// If the nav drawer is open, hide action items related to the content
+		// view
+		if (isDrawerOpen())
+			menu.clear();
+
+		super.onPrepareOptionsMenu(menu);
+	}
+
 	public boolean isDrawerOpen() {
 		return mDrawerLayout != null
 				&& mDrawerLayout.isDrawerOpen(mFragmentContainerView);
@@ -152,9 +146,9 @@ public class NavigationDrawerFragment extends Fragment {
 				if (!isAdded()) {
 					return;
 				}
-				
+
 				// calls onPrepareOptionsMenu()
-				getActivity().supportInvalidateOptionsMenu(); 
+				getActivity().supportInvalidateOptionsMenu();
 			}
 
 			@Override

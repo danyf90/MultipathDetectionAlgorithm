@@ -14,7 +14,6 @@ import com.formichelli.vineyard.utilities.VineyardServer;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -27,6 +26,10 @@ import android.widget.ExpandableListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+/**
+ * Fragment which contains the issues of a given place, it allows to add, edit or
+ * mark as solved an issue
+ */
 public class IssuesFragment extends Fragment {
 	VineyardMainActivity activity;
 	VineyardServer vineyardServer;
@@ -42,7 +45,6 @@ public class IssuesFragment extends Fragment {
 			Bundle savedInstanceState) {
 		setHasOptionsMenu(true);
 
-		// Inflate the layout for this fragment
 		return inflater.inflate(R.layout.fragment_issues, container, false);
 	}
 
@@ -62,17 +64,14 @@ public class IssuesFragment extends Fragment {
 	}
 
 	@Override
-	public void onDetach() {
-		super.onDetach();
-	}
-
-	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		inflater.inflate(R.menu.issues, menu);
 
 		upItem = menu.findItem(R.id.action_issues_up);
 
 		if (first) {
+			// init() must be called just once after that both onActivityCreated
+			// and onCreateOptionMenu are called
 			init();
 			first = false;
 		}
@@ -86,6 +85,7 @@ public class IssuesFragment extends Fragment {
 		else
 			upItem.setVisible(false);
 
+		// set up the adapter
 		List<IssueTask> issues = activity.getCurrentPlace().getIssues();
 		issueAdapter = new IssueExpandableAdapter(activity,
 				R.layout.issues_list_item, R.layout.issue_view, issues,
@@ -93,8 +93,9 @@ public class IssuesFragment extends Fragment {
 				doneOnClickListener);
 		issuesList.setAdapter(issueAdapter);
 
+		// show a message if there are no children
 		if (issues.size() != 0)
-			noIssuesMessage.setVisibility(View.INVISIBLE);
+			noIssuesMessage.setVisibility(View.GONE);
 		else
 			noIssuesMessage.setVisibility(View.VISIBLE);
 	}
@@ -103,6 +104,7 @@ public class IssuesFragment extends Fragment {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.action_issues_up:
+			// navigate the hierarchy up
 			activity.setCurrentPlace(activity.getCurrentPlace().getParent());
 			init();
 			return true;
@@ -121,11 +123,7 @@ public class IssuesFragment extends Fragment {
 	OnClickListener editOnClickListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
-			ReportIssueFragment r = new ReportIssueFragment();
-			IssueTask issue = (IssueTask) v.getTag();
-			issue.setPlace(activity.getCurrentPlace());
-			r.setIssue(issue);
-			activity.switchFragment(r);
+			activity.switchFragment(new ReportIssueFragment((IssueTask) v.getTag()));
 		}
 	};
 
@@ -137,6 +135,12 @@ public class IssuesFragment extends Fragment {
 		}
 	};
 
+	/*
+	 * Sends a PUT request to the server to mark an issue as solved. During the
+	 * loading the fragment loadingFragment will be displayed. At the end of the
+	 * execution the issue will be removed from the list. If something goes
+	 * wrong the issue will not be removed ad a toast will be displayed
+	 */
 	private class AsyncMarkIssueAsDone extends AsyncHttpRequest {
 		IssueTask issue;
 
@@ -159,17 +163,14 @@ public class IssuesFragment extends Fragment {
 
 		@Override
 		protected void onPostExecute(Pair<Integer, String> response) {
-			if (response != null && response.first == HttpStatus.SC_OK) {
+			if (response != null && response.first == HttpStatus.SC_OK)
 				issue.getPlace().removeIssue(issue);
-				activity.switchFragment(activity.getIssuesFragment());
-			} else {
+			else
 				Toast.makeText(activity,
 						activity.getString(R.string.issue_mark_done_error),
 						Toast.LENGTH_SHORT).show();
-				Log.e(TAG, "SC: " + response.first);
 
-				activity.switchFragment(activity.getIssuesFragment());
-			}
+			activity.switchFragment();
 		}
 	};
 }

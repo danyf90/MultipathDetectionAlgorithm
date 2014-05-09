@@ -1,6 +1,9 @@
 package com.formichelli.vineyard.entities;
 
 import java.util.Date;
+import java.util.Locale;
+
+import org.json.JSONException;
 
 public interface Task {
 
@@ -9,20 +12,41 @@ public interface Task {
 	};
 
 	public enum Priority {
-		NOT_SET, LOW, MEDIUM, HIGH;
-
-		public int toInt() {
-			switch (this) {
-			case NOT_SET:
-				return 0;
+		LOW, MEDIUM, HIGH;
+		
+		public static int getIndex(Priority priority) {
+			int index;
+			
+			switch(priority) {
 			case LOW:
-				return 1;
+				index = 1;
+				break;
 			case MEDIUM:
-				return 2;
+				index = 2;
+				break;
 			case HIGH:
-				return 3;
+				index = 3;
+				break;
+			default:
+				index = 0;
 			}
-			return 0;
+			
+			return index;
+		}
+		
+		public static Priority fromString(String priority) throws JSONException {
+			if (priority == null)
+				return null;
+			if (priority.toUpperCase(Locale.US).compareTo("LOW") == 0)
+				return LOW;
+			if (priority.toUpperCase(Locale.US).compareTo("MEDIUM") == 0)
+				return MEDIUM;
+			if (priority.toUpperCase(Locale.US).compareTo("HIGH") == 0)
+				return HIGH;
+			
+			//throw new JSONException("Invalid priority: " + priority); // TODO uncomment when server is updated
+			
+			return null;
 		}
 	};
 
@@ -59,8 +83,6 @@ public interface Task {
 	public Priority getPriority();
 
 	public void setPriority(Priority priority);
-
-	public void setPriority(String priority);
 
 	public Place getPlace();
 

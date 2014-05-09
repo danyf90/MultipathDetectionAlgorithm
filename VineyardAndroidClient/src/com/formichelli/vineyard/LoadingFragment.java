@@ -8,6 +8,9 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 
+/**
+ * Fragment which shows either a progress bar or an error message
+ */
 public class LoadingFragment extends Fragment {
 	VineyardMainActivity activity;
 	ViewGroup mainLayout, progressView, errorView;
@@ -18,11 +21,7 @@ public class LoadingFragment extends Fragment {
 			Bundle savedInstanceState) {
 		setHasOptionsMenu(true);
 
-		// Inflate the layout for this fragment
-		mainLayout = (ViewGroup) inflater.inflate(R.layout.fragment_loading,
-				container, false);
-
-		return mainLayout;
+		return inflater.inflate(R.layout.fragment_loading, container, false);
 	}
 
 	@Override
@@ -33,21 +32,28 @@ public class LoadingFragment extends Fragment {
 
 		progressView = (ViewGroup) activity.findViewById(R.id.loading_progress);
 		errorView = (ViewGroup) activity.findViewById(R.id.loading_error);
-		
-		retry = (ImageButton) activity.findViewById(R.id.loading_error_retry);
+
+		retry = (ImageButton) errorView.findViewById(R.id.loading_error_retry);
 		retry.setOnClickListener(retryOnClickListener);
-		
+
 		setLoading(true);
 	}
 
+	/**
+	 * Disables the navigation drawer and shows the progress bar or enables the
+	 * navigation drawer and shows an error message otherwise
+	 * 
+	 * @param loading wether to show the progress bar or the error
+	 */
 	public void setLoading(boolean loading) {
 		activity.setNavigationDrawerLocked(loading);
-		activity.setTitle(activity.getString(loading ? R.string.loading : R.string.loading_error));
+		activity.setTitle(activity.getString(loading ? R.string.loading
+				: R.string.loading_error));
 		progressView.setVisibility(loading ? View.VISIBLE : View.GONE);
 		errorView.setVisibility(loading ? View.GONE : View.VISIBLE);
 	}
-	
-	OnClickListener retryOnClickListener = new OnClickListener() {
+
+	private OnClickListener retryOnClickListener = new OnClickListener() {
 
 		@Override
 		public void onClick(View v) {
@@ -55,11 +61,12 @@ public class LoadingFragment extends Fragment {
 			activity.sendRootPlaceRequest();
 		}
 	};
-	
+
 	@Override
 	public void onDetach() {
 		super.onDetach();
-		
+
+		// enable navigation drawer
 		activity.setNavigationDrawerLocked(false);
 	}
 }

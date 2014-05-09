@@ -5,8 +5,10 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.apache.http.HttpStatus;
+import org.apache.http.NameValuePair;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -26,7 +28,6 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -37,6 +38,10 @@ import com.formichelli.vineyard.utilities.AsyncHttpRequest;
 import com.formichelli.vineyard.utilities.VineyardGallery;
 import com.formichelli.vineyard.utilities.VineyardServer;
 
+/**
+ * Fragment which allows to fill and sends an issue report
+ */
+@SuppressLint("ValidFragment")
 public class ReportIssueFragment extends Fragment {
 	public static final int REQUEST_TAKE_PHOTO = 1;
 	public static final int REQUEST_SELECT_PHOTO = 2;
@@ -49,14 +54,22 @@ public class ReportIssueFragment extends Fragment {
 	VineyardGallery gallery;
 	Button placeButton;
 	Spinner priorities;
-	ImageView addPhoto;
 	EditText title, description;
 	Menu menu;
-	int imagePadding;
-	boolean first;
+	boolean first, editMode;
 
-	public void setIssue(IssueTask issue) {
+	public ReportIssueFragment() {
+		editMode = false;
+	}
+
+	public ReportIssueFragment(IssueTask issue) {
+		super();
+
+		if (issue == null)
+			throw new IllegalArgumentException("issue cannot be null");
+
 		this.issue = issue;
+		editMode = true;
 	}
 
 	@Override
@@ -64,7 +77,6 @@ public class ReportIssueFragment extends Fragment {
 			Bundle savedInstanceState) {
 		setHasOptionsMenu(true);
 
-		// Inflate the layout for this fragment
 		return inflater.inflate(R.layout.fragment_report_issue, container,
 				false);
 	}
@@ -76,46 +88,50 @@ public class ReportIssueFragment extends Fragment {
 		first = true;
 
 		activity = (VineyardMainActivity) getActivity();
+		activity.setTitle(getString(R.string.title_report_issue));
 		vineyardServer = activity.getServer();
 
-		// addPhoto = (ImageView) activity.findViewById(R.id.action_add_photo);
-		imagePadding = getResources().getDimensionPixelSize(
-				R.dimen.gallery_padding);
-		priorities = (Spinner) activity
-				.findViewById(R.id.report_issue_priority);
-		placeButton = (Button) activity.findViewById(R.id.report_issue_place);
 		title = (EditText) activity.findViewById(R.id.report_issue_title);
+
 		description = (EditText) activity
 				.findViewById(R.id.report_issue_description);
 
-		activity.setTitle(getString(R.string.title_report_issue));
-
-		// addPhoto.setOnClickListener(dispatchTakePictureIntent);
-
-		setSpinnerAdapter(priorities, R.array.issue_priorities);
-
+		placeButton = (Button) activity.findViewById(R.id.report_issue_place);
 		placeButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				Intent placePicker = new Intent(activity,
 						PlacePickerActivity.class);
 
-				// Put the place hierarchy to the intent
+				// put the JSON of the place hierarchy in the intent extras
 				placePicker.putExtra(PlacePickerActivity.HIERARCHY, activity
 						.getCache().getPlaces());
 
-				// Put the id of the selected place and of all its ancestors
+				// put the id of the selected place and of all its ancestors in
+				// the intent extras
 				ArrayList<Integer> ids = new ArrayList<Integer>();
 				for (Place currentPlace = activity.getCurrentPlace(); currentPlace != null; currentPlace = currentPlace
 						.getParent())
 					ids.add(currentPlace.getId());
-
 				placePicker.putExtra(PlacePickerActivity.ANCESTORS, ids);
 
 				startActivityForResult(placePicker, REQUEST_PLACE);
 			}
 		});
 		placeButton.setText(activity.getCurrentPlace().getName());
+
+		priorities = (Spinner) activity
+				.findViewById(R.id.report_issue_priority);
+		setSpinnerAdapter(priorities, R.array.issue_priorities);
+	}
+
+	private void setSpinnerAdapter(Spinner s, int array) {
+		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
+				activity, array, android.R.layout.simple_spinner_item);
+
+		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+		s.setAdapter(adapter);
 	}
 
 	@Override
@@ -132,25 +148,30 @@ public class ReportIssueFragment extends Fragment {
 		super.onCreateOptionsMenu(menu, inflater);
 	}
 
-	// This function must be called after both onActivityCreated and
-	// onCreateOptionMenu but only once
+	// This function must be called only once after both onActivityCreated and
+	// onCreateOptionMenu
 	private void init() {
 		gallery = (VineyardGallery) activity
 				.findViewById(R.id.report_issue_gallery);
 		gallery.setFragment(this);
 
 		if (issue == null) {
+			// create a new issue
 			issue = new IssueTask();
 			issue.setIssuer(activity.getUserId());
 			issue.setPlace(activity.getCurrentPlace());
 		} else {
+			// edit an existing issue
 			title.setText(issue.getTitle());
-			description.setText(issue.getDescription());
-			placeButton.setText(String.valueOf(issue.getPlace().getName()));
-			if (issue.getPriority() != null)
-				priorities.setSelection(issue.getPriority().toInt());
 
-			// for (String photo: i.getPhotos()) { // TODO
+			description.setText(issue.getDescription());
+
+			placeButton.setText(String.valueOf(issue.getPlace().getName()));
+
+			priorities.setSelection(Priority.getIndex(issue.getPriority()));
+
+			// TODO
+			// for (String photo: i.getPhotos()) {
 			// ImageView i = new ImageView(activity);
 			// gallery.a
 			// imageLoader = new ImageLoader(activity, header, progress);
@@ -159,25 +180,15 @@ public class ReportIssueFragment extends Fragment {
 		}
 	}
 
-	private void setSpinnerAdapter(Spinner s, int array) {
-		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
-				activity, array, android.R.layout.simple_spinner_item);
-
-		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-		s.setAdapter(adapter);
-	}
-
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 
 		switch (item.getItemId()) {
 		case R.id.action_report_issue_cancel:
-			activity.switchFragment(activity.issuesFragment);
+			activity.switchFragment();
 			break;
 		case R.id.action_report_issue_send:
 			if (parseFields()) {
-
 				new AsyncIssueSend(vineyardServer.getUrl(), issue).execute();
 				break;
 			}
@@ -185,24 +196,22 @@ public class ReportIssueFragment extends Fragment {
 			return false;
 		}
 
-		setIssue(null);
 		return true;
 	}
 
-	// Checks if the fields are valid and populates issueTask
+	// checks if the fields are valid and populates issueTask
 	private boolean parseFields() {
 		String s;
 
+		// title can't be empty
 		s = title.getText().toString();
 		if (s.compareTo("") == 0) {
 			title.setError(getString(R.string.issue_title_error));
 			return false;
-		}
-		issue.setTitle(s);
+		} else
+			issue.setTitle(s);
 
-		s = description.getText().toString();
-		if (s.compareTo("") != 0)
-			issue.setDescription(s);
+		issue.setDescription(s);
 
 		switch (priorities.getSelectedItemPosition()) {
 		case 1:
@@ -215,7 +224,7 @@ public class ReportIssueFragment extends Fragment {
 			issue.setPriority(Priority.HIGH);
 			break;
 		default:
-			issue.setPriority(Priority.NOT_SET);
+			break;
 		}
 
 		return true;
@@ -268,7 +277,8 @@ public class ReportIssueFragment extends Fragment {
 			gallery.onActivityResult(requestCode, resultCode, data);
 			break;
 		case REQUEST_PLACE:
-			if (resultCode == Activity.RESULT_OK) {
+			switch (resultCode) {
+			case Activity.RESULT_OK:
 				Place selectedPlace = activity.getRootPlace();
 
 				// Navigate from root to selected place (root is already
@@ -283,41 +293,69 @@ public class ReportIssueFragment extends Fragment {
 						}
 				}
 
-				placeButton.setText(selectedPlace.getName());
 				issue.setPlace(selectedPlace);
+				placeButton.setText(selectedPlace.getName());
+			case Activity.RESULT_CANCELED:
+				// canceled by the user
+			case Activity.RESULT_FIRST_USER:
+				// an error occurred while parsing places JSON
+				break;
 			}
 			break;
 		}
 	}
 
+	/*
+	 * Sends the issue (either new or edited) to the server using either a POST
+	 * (creation) or a PUT (edit) HTTP message. During the loading the fragment
+	 * loadingFragment will be displayed. At the end of the execution the
+	 * created issue will be added to its place. If something goes wrong a toast
+	 * will be shown and the report editor is shown again.
+	 */
 	private class AsyncIssueSend extends AsyncHttpRequest {
 		IssueTask issue;
-		
+
 		public AsyncIssueSend(String serverUrl, IssueTask issue) {
-			super(serverUrl + VineyardServer.ADD_ISSUE_API, AsyncHttpRequest.Type.POST, issue.getParams());
+			if (!editMode) {
+				// POST request to add an issue
+				setServerUrl(serverUrl + VineyardServer.ADD_ISSUE_API);
+				setType(Type.POST);
+				setParams(issue.getParams());
+			} else {
+				// PUT request to edit an issue
+				setServerUrl(serverUrl + VineyardServer.EDIT_ISSUE_API
+						+ issue.getId());
+				setType(Type.PUT);
+				List<NameValuePair> params = issue.getParams();
+				for (NameValuePair param : params)
+					if (param.getName() == IssueTask.ID) {
+						params.remove(param);
+						break;
+					}
+				setParams(params);
+			}
+
 		}
 
 		@Override
 		protected void onPreExecute() {
 			activity.switchFragment(activity.getLoadingFragment());
-		}
-;
+		};
+
 		@Override
 		protected void onPostExecute(Pair<Integer, String> response) {
-			if (response != null
-					&& response.first == HttpStatus.SC_CREATED) {
+			if (response != null && response.first == HttpStatus.SC_CREATED) {
 				// TODO delete photos from sdcard
-				activity.switchFragment(activity.getIssuesFragment());
-				
 				issue.getPlace().addIssue(issue);
-				
 			} else {
 				Toast.makeText(activity,
 						activity.getString(R.string.issue_report_error),
 						Toast.LENGTH_SHORT).show();
-				activity.switchFragment(activity.getIssuesFragment());
+				return;
 			}
+
+			activity.switchFragment();
 		}
-		
+
 	};
 };

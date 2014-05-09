@@ -27,8 +27,10 @@ public class PlaceAdapter extends ArrayAdapter<Place> {
 	 * @param context
 	 *            Activity context
 	 * @param resource
-	 *            item layout, it must contain a TextView with id
-	 *            drawer_list_item_label that will contain the Place name
+	 *            item layout. It must contain a TextView with id
+	 *            place_list_item_label that will contain the Place name, a TextView with id
+	 *            place_list_item_issues that will contain the count of the issues of the place, a TextView with id
+	 *            place_list_item_tasks that will contain the count of the tasks of the place
 	 * @param objects
 	 *            places to be added to the ListView
 	 */
@@ -83,7 +85,7 @@ public class PlaceAdapter extends ArrayAdapter<Place> {
 		if (objects != null)
 			this.objects = objects;
 		else
-			this.objects = new ArrayList<Place>();
+			this.objects.clear();
 		
 		notifyDataSetChanged();
 	}

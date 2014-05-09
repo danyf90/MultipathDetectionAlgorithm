@@ -11,6 +11,9 @@ public class WorkGroup {
 	private String description;
 	private List<Worker> workers;
 
+	public WorkGroup() {
+		workers = new ArrayList<Worker>();
+	}
 	public int getId() {
 		return id;
 	}
@@ -41,19 +44,18 @@ public class WorkGroup {
 
 	public void setWorkers(List<Worker> workers) {
 		if (workers == null)
-			this.workers = new ArrayList<Worker>();
+			this.workers.clear();
 		else
 			this.workers = workers;
 	}
 
 	public void addWorker(Worker worker) {
-		if (worker == null)
+		if (worker != null)
 			workers.add(worker);
 	}
 
 	public void removeWorker(Worker worker) {
-		if (worker == null)
-			workers.remove(worker);
+		workers.remove(worker);
 	}
 
 }
