@@ -304,6 +304,10 @@ public class VineyardMainActivity extends ActionBarActivity implements
 				cache.putPlaces(rootPlaceJSON);
 
 			} else {
+				
+				if (response!= null)
+					Log.e(TAG, "Error " + response.first);
+				
 				// get places hierarchy from shared preferences
 				rootPlaceJSON = cache.getPlaces();
 
@@ -381,7 +385,6 @@ public class VineyardMainActivity extends ActionBarActivity implements
 			if (response != null && response.first == HttpStatus.SC_OK) {
 				// get issues and tasks from server response
 				issuesAndTasksJSON = response.second;
-
 				cache.putIssuesAndTasks(issuesAndTasksJSON);
 
 			} else {

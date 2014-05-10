@@ -176,7 +176,7 @@ public class ReportIssueFragment extends Fragment {
 	}
 
 	// This function must be called only once after both onActivityCreated and
-	// onCreateOptionMenu
+	// onCreateOptionMenu and 
 	private void init() {
 		gallery = (VineyardGallery) activity
 				.findViewById(R.id.report_issue_gallery);
@@ -198,12 +198,8 @@ public class ReportIssueFragment extends Fragment {
 			priorities.setSelection(Priority.getIndex(issue.getPriority()));
 
 			// TODO
-			// for (String photo: i.getPhotos()) {
-			// ImageView i = new ImageView(activity);
-			// gallery.a
-			// imageLoader = new ImageLoader(activity, header, progress);
-			// imageLoader.execute(p.getPhoto());
-			// }
+			for (String photo: issue.getPhotos())
+				gallery.addImage(vineyardServer.getUrl() + VineyardServer.PHOTO_API + photo, false);
 		}
 	}
 

@@ -10,6 +10,8 @@ import org.apache.http.StatusLine;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 
+import com.formichelli.vineyard.R;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -102,9 +104,11 @@ public class ImageLoader extends AsyncTask<String, Void, Bitmap> {
 		if (progress != null)
 			progress.setVisibility(View.GONE);
 
-		if (photo == null)
+		if (photo == null) {
+			container.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.action_issue_dark));
 			return;
-
+		}
+		
 		saveBitmap(photo, localName);
 		container.setBackgroundDrawable(new BitmapDrawable(photo));
 	}

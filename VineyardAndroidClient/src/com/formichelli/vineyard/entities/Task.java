@@ -13,27 +13,23 @@ public interface Task {
 
 	public enum Priority {
 		LOW, MEDIUM, HIGH;
-		
+
 		public static int getIndex(Priority priority) {
-			int index;
-			
-			switch(priority) {
+			if (priority == null)
+				return 0;
+
+			switch (priority) {
 			case LOW:
-				index = 1;
-				break;
+				return 1;
 			case MEDIUM:
-				index = 2;
-				break;
+				return 2;
 			case HIGH:
-				index = 3;
-				break;
+				return 3;
 			default:
-				index = 0;
+				return -1;
 			}
-			
-			return index;
 		}
-		
+
 		public static Priority fromString(String priority) throws JSONException {
 			if (priority == null)
 				return null;
@@ -43,9 +39,10 @@ public interface Task {
 				return MEDIUM;
 			if (priority.toUpperCase(Locale.US).compareTo("HIGH") == 0)
 				return HIGH;
-			
-			//throw new JSONException("Invalid priority: " + priority); // TODO uncomment when server is updated
-			
+
+			// throw new JSONException("Invalid priority: " + priority); // TODO
+			// uncomment when server is updated
+
 			return null;
 		}
 	};
