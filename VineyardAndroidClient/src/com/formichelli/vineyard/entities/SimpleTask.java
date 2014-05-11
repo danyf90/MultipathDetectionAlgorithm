@@ -14,7 +14,7 @@ import org.json.JSONObject;
 
 import android.annotation.SuppressLint;
 
-public class SimpleTask implements Task {
+public class SimpleTask implements Task, Comparable<SimpleTask> {
 	public final static String ID = "id";
 	public final static String MODIFIER = "modifier";
 	public final static String ASSIGNEE = "assignee";
@@ -272,6 +272,11 @@ public class SimpleTask implements Task {
 				.valueOf(getLongitude())));
 
 		return params;
+	}
+
+	@Override
+	public int compareTo(SimpleTask another) {
+		return Priority.getIndex(another.priority) - Priority.getIndex(priority);
 	}
 
 }

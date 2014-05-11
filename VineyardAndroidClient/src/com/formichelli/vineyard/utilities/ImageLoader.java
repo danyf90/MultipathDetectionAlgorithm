@@ -71,9 +71,10 @@ public class ImageLoader extends AsyncTask<String, Void, Bitmap> {
 
 		Bitmap imageBitmap;
 
-		if ((new File(localName)).exists())
+		if ((new File(localName)).exists()) {
 			// the image is already present locally
 			imageBitmap = BitmapFactory.decodeFile(localName);
+			android.util.Log.e("ASD", "loaded from file");}
 		else {
 			// the image must be retrieved from the server
 			try {

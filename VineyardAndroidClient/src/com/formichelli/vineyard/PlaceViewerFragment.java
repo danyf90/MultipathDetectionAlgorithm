@@ -196,7 +196,9 @@ public class PlaceViewerFragment extends Fragment {
 
 		// load photo
 		header.setBackgroundColor(getResources().getColor(R.color.wine_light));
+		
 		if (place.getPhoto() != null) {
+			android.util.Log.e("ASD", place.getPhoto());
 			final String imageUrl = activity.getServer().getUrl()
 					+ String.format(Locale.US, VineyardServer.PHOTO_API,
 							place.getPhoto(), header.getMeasuredWidth(),
