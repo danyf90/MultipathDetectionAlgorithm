@@ -53,6 +53,8 @@ public class VineyardMainActivity extends ActionBarActivity implements
 	SharedPreferences sp;
 	Cache cache;
 	SparseArray<Place> places;
+	SparseArray<IssueTask> issues;
+	SparseArray<SimpleTask> tasks;
 	AsyncHttpRequest rootPlaceRequest, issuesAndTasksRequest;
 	int userId;
 
@@ -104,10 +106,12 @@ public class VineyardMainActivity extends ActionBarActivity implements
 	}
 
 	public void sendRootPlaceRequest() {
-		rootPlaceRequest = new RootPlaceAsyncHttpRequest(vineyardServer.getUrl());
+		rootPlaceRequest = new RootPlaceAsyncHttpRequest(
+				vineyardServer.getUrl());
 		rootPlaceRequest.execute();
-		
-		issuesAndTasksRequest = new IssuesAndTasksAsyncHttpRequest(vineyardServer.getUrl());
+
+		issuesAndTasksRequest = new IssuesAndTasksAsyncHttpRequest(
+				vineyardServer.getUrl());
 		issuesAndTasksRequest.execute();
 	}
 
@@ -208,7 +212,9 @@ public class VineyardMainActivity extends ActionBarActivity implements
 
 	/**
 	 * Sets current place and sets the actionbar title to place name
-	 * @param place place to be setted
+	 * 
+	 * @param place
+	 *            place to be setted
 	 */
 	public void setCurrentPlace(Place place) {
 		if (place == null)
@@ -221,7 +227,8 @@ public class VineyardMainActivity extends ActionBarActivity implements
 	/**
 	 * Changes the showed fragment
 	 * 
-	 * @param nextFragment fragment to be shown
+	 * @param nextFragment
+	 *            fragment to be shown
 	 */
 	public void switchFragment(Fragment nextFragment) {
 		if (nextFragment == currentFragment)
@@ -233,18 +240,19 @@ public class VineyardMainActivity extends ActionBarActivity implements
 		getSupportFragmentManager().beginTransaction()
 				.replace(R.id.container, currentFragment).commit();
 	}
-	
+
 	/**
 	 * Changes the showed fragment to last showed one
 	 */
 	public void switchFragment() {
 		switchFragment(lastFragment);
 	}
-	
+
 	/**
 	 * Sets the actionbar title
 	 * 
-	 * @param title new actionbar title
+	 * @param title
+	 *            new actionbar title
 	 */
 	public void setTitle(String title) {
 		actionBar.setTitle(title);
@@ -257,7 +265,7 @@ public class VineyardMainActivity extends ActionBarActivity implements
 	public PlaceViewerFragment getPlaceViewerFragment() {
 		return placeViewerFragment;
 	}
-	
+
 	public IssuesFragment getIssuesFragment() {
 		return issuesFragment;
 	}
@@ -304,17 +312,17 @@ public class VineyardMainActivity extends ActionBarActivity implements
 		@Override
 		protected void onPostExecute(Pair<Integer, String> response) {
 			String rootPlaceJSON;
-			
+
 			if (response != null && response.first == HttpStatus.SC_OK) {
 				// get places hierarchy from server response
 				rootPlaceJSON = response.second;
 				cache.putPlaces(rootPlaceJSON);
 
 			} else {
-				
-				if (response!= null)
+
+				if (response != null)
 					Log.e(TAG, "Error " + response.first);
-				
+
 				// get places hierarchy from shared preferences
 				rootPlaceJSON = cache.getPlaces();
 
@@ -359,6 +367,46 @@ public class VineyardMainActivity extends ActionBarActivity implements
 			addPlaceToHashMap(child);
 	}
 
+	public SparseArray<IssueTask> getIssues() {
+		return issues;
+	}
+
+	public void setIssues(SparseArray<IssueTask> issues) {
+		if (issues != null)
+			this.issues = issues;
+		else
+			this.issues.clear();
+	}
+
+	public void addIssue(IssueTask issue) {
+		if (issues != null)
+			issues.put(issue.getId(), issue);
+	}
+
+	public void removeIssue(IssueTask issue) {
+		issues.remove(issue.getId());
+	}
+
+	public SparseArray<SimpleTask> getTasks() {
+		return tasks;
+	}
+
+	public void setTasks(SparseArray<SimpleTask> tasks) {
+		if (tasks != null)
+			this.tasks = tasks;
+		else
+			this.tasks.clear();
+	}
+
+	public void addTask(SimpleTask task) {
+		if (task != null)
+			tasks.put(task.getId(), task);
+	}
+
+	public void removeTask(SimpleTask task) {
+		tasks.remove(task.getId());
+	}
+
 	/*
 	 * Sends a GET request to the server to obtain issues and tasks. During the
 	 * loading the fragment loadingFragment will be displayed. At the end of the
@@ -370,7 +418,8 @@ public class VineyardMainActivity extends ActionBarActivity implements
 		private final static String TAG = "IssuesAndTasksAsyncHttpRequest";
 
 		public IssuesAndTasksAsyncHttpRequest(String serverUrl) {
-			super(serverUrl + VineyardServer.OPEN_ISSUES_AND_TASKS_API, Type.GET);
+			super(serverUrl + VineyardServer.OPEN_ISSUES_AND_TASKS_API,
+					Type.GET);
 		}
 
 		@Override
@@ -391,17 +440,17 @@ public class VineyardMainActivity extends ActionBarActivity implements
 				cache.putIssuesAndTasks(issuesAndTasksJSON);
 
 			} else {
-				
+
 				// wait for termination of rootPlace request
 				try {
 					rootPlaceRequest.get();
 				} catch (InterruptedException | ExecutionException e) {
 					return;
 				}
-				
+
 				if (rootPlace == null)
 					return;
-				
+
 				// get issues and tasks from shared preferences
 				issuesAndTasksJSON = cache.getIssuesAndTasks();
 
@@ -428,11 +477,15 @@ public class VineyardMainActivity extends ActionBarActivity implements
 			try {
 				JSONArray issuesAndTasks = new JSONArray(issuesAndTasksJSON);
 
+				issues = new SparseArray<IssueTask>();
+				tasks = new SparseArray<SimpleTask>();
+				
 				for (int i = 0, l = issuesAndTasks.length(); i < l; i++) {
 					JSONObject object = issuesAndTasks.getJSONObject(i);
-					
-					// TODO sometimes places is null, because 
-					// IssuesAndTasksAsyncHttpRequest.onPostExecute() often executes
+
+					// TODO sometimes places is null, because
+					// IssuesAndTasksAsyncHttpRequest.onPostExecute() often
+					// executes
 					// before RootPlaceAsyncHttpRequest.onPostExecute()
 					Place place = places.get(object.getInt(SimpleTask.PLACE));
 
@@ -441,10 +494,12 @@ public class VineyardMainActivity extends ActionBarActivity implements
 							IssueTask issue = new IssueTask(object);
 							issue.setPlace(place);
 							place.addIssue(issue);
+							addIssue(issue);
 						} else {
 							SimpleTask task = new SimpleTask(object);
 							task.setPlace(place);
 							place.addTask(task);
+							addTask(task);
 						}
 					} else
 						Log.e(TAG,

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.formichelli.vineyard.R;
-import com.formichelli.vineyard.entities.IssueTask;
+import com.formichelli.vineyard.entities.Task;
 import com.formichelli.vineyard.entities.Task.Priority;
 
 import android.app.Activity;
@@ -20,9 +20,9 @@ import android.widget.TextView;
  * ExpandableAdapter that shows issues titles and when expanded shows issue
  * details
  */
-public class IssueExpandableAdapter extends BaseExpandableListAdapter {
+public class TaskExpandableAdapter<T extends Task> extends BaseExpandableListAdapter {
 	private final Context context;
-	List<IssueTask> objects;
+	List<T> objects;
 	int groupResource, childResource;
 	OnClickListener reportIssueOnClickListener, editOnClickListener,
 			doneOnClickListener;
@@ -57,8 +57,8 @@ public class IssueExpandableAdapter extends BaseExpandableListAdapter {
 	 *            onClickListener of the done issue button, the related issue
 	 *            will be added as a tag to the associated view
 	 */
-	public IssueExpandableAdapter(Activity context, int groupResource,
-			int childResource, List<IssueTask> objects,
+	public TaskExpandableAdapter(Activity context, int groupResource,
+			int childResource, List<T> objects,
 			OnClickListener reportIssueOnClickListener,
 			OnClickListener editOnClickListener,
 			OnClickListener doneOnClickListener) {
@@ -69,7 +69,7 @@ public class IssueExpandableAdapter extends BaseExpandableListAdapter {
 		if (objects != null)
 			this.objects = objects;
 		else
-			this.objects = new ArrayList<IssueTask>();
+			this.objects = new ArrayList<T>();
 		this.reportIssueOnClickListener = reportIssueOnClickListener;
 		this.editOnClickListener = editOnClickListener;
 		this.doneOnClickListener = doneOnClickListener;
@@ -93,7 +93,7 @@ public class IssueExpandableAdapter extends BaseExpandableListAdapter {
 
 		} else {
 			// Other items are real issues
-			IssueTask object = objects.get(groupPosition - 1);
+			Task object = objects.get(groupPosition - 1);
 
 			t.setText(object.getTitle());
 			t.setTag(object);
@@ -112,7 +112,7 @@ public class IssueExpandableAdapter extends BaseExpandableListAdapter {
 	@Override
 	public View getChildView(int groupPosition, int childPosition,
 			boolean isLastChild, View convertView, ViewGroup parent) {
-		IssueTask object = objects.get(groupPosition - 1);
+		Task object = objects.get(groupPosition - 1);
 		LayoutInflater inflater = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		ViewGroup childView = (ViewGroup) inflater.inflate(childResource,
@@ -214,7 +214,7 @@ public class IssueExpandableAdapter extends BaseExpandableListAdapter {
 	 * @param objects
 	 *            new objects of the ExpandableListView
 	 */
-	public void replaceItems(List<IssueTask> objects) {
+	public void replaceItems(List<T> objects) {
 		if (objects != null)
 			this.objects = objects;
 		else

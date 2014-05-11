@@ -12,7 +12,7 @@ import com.formichelli.vineyard.entities.Place;
 import com.formichelli.vineyard.entities.SimpleTask;
 import com.formichelli.vineyard.entities.Task;
 import com.formichelli.vineyard.utilities.AsyncHttpRequest;
-import com.formichelli.vineyard.utilities.IssueExpandableAdapter;
+import com.formichelli.vineyard.utilities.TaskExpandableAdapter;
 import com.formichelli.vineyard.utilities.VineyardServer;
 
 import android.os.Bundle;
@@ -36,7 +36,7 @@ public class IssuesFragment extends Fragment {
 	VineyardMainActivity activity;
 	VineyardServer vineyardServer;
 	ExpandableListView issuesList;
-	IssueExpandableAdapter issueAdapter;
+	TaskExpandableAdapter issueAdapter;
 	TextView noIssuesMessage;
 	boolean first;
 	AsyncHttpRequest asyncTask;
@@ -90,7 +90,7 @@ public class IssuesFragment extends Fragment {
 		
 		Collections.sort(issues);
 		
-		issueAdapter = new IssueExpandableAdapter(activity,
+		issueAdapter = new TaskExpandableAdapter(activity,
 				R.layout.issues_list_item, R.layout.issue_view, issues,
 				reportIssueOnClickListener, editOnClickListener,
 				doneOnClickListener);
