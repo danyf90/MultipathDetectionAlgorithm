@@ -36,7 +36,20 @@ header {
     justify-content: space-between;
 }
 
-header h1 { line-height: 45px; padding-left: 50px; font-family: 'Roboto', sans-serif; }
+header h1 {
+    margin-left: 10px;
+}
+
+header h1 a {
+    line-height: 45px;
+    padding-left: 50px;
+    font-family: 'Roboto', sans-serif;
+    background-image: url(images/logo.png);
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center left;
+}
+
 header li { padding-left: 15px; padding-right: 15px; }
 header li:hover { background-color: #500e3b; }
 header ul { display:inline-flex; padding-right: 10px; }
