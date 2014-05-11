@@ -430,6 +430,10 @@ public class VineyardMainActivity extends ActionBarActivity implements
 
 				for (int i = 0, l = issuesAndTasks.length(); i < l; i++) {
 					JSONObject object = issuesAndTasks.getJSONObject(i);
+					
+					// TODO sometimes places is null, because 
+					// IssuesAndTasksAsyncHttpRequest.onPostExecute() often executes
+					// before RootPlaceAsyncHttpRequest.onPostExecute()
 					Place place = places.get(object.getInt(SimpleTask.PLACE));
 
 					if (place != null) {

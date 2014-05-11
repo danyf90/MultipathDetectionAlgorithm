@@ -14,6 +14,14 @@
     <com.tyczj.extendedcalendarview.ExtendedCalendarView
         android:id="@+id/calendar"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <ExpandableListView
+        android:id="@+id/daily_agenda"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" >
+    </ExpandableListView>
 
 </LinearLayout>
