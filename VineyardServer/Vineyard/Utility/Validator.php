@@ -1,6 +1,8 @@
 <?php
 namespace Vineyard\Utility;
 
+use \Exception;
+
 class Validator {
 
     const INVALID_FORMAT = "Invalid format";
@@ -8,11 +10,13 @@ class Validator {
     const NON_EXISTANT = "Resource does not exists";
     const INVALID_FIELD = "Field cannot be specified";
 
+    const ABSTRACTORM_FULL_CLASS_NAME = "\\Vineyard\\Utility\\AbstractORM";
+
     protected $_wrongFields = array();
     protected $object;
 
     public function __construct(AbstractORM $o) {
-        $object = $o;
+        $this->object = $o;
     }
 
     public function addWrongField($field, $message) {
@@ -26,7 +30,7 @@ class Validator {
     public function getWrongFields() { return $this->_wrongFields; }
 
     public function nonNull($fieldName) {
-        if (strlen($this->object[$fieldName]) == 0) {
+        if (strlen($this->object->{$fieldName}) == 0) {
             $this->addWrongField($fieldName, self::MANDATORY);
             return false;
         }
@@ -42,10 +46,10 @@ class Validator {
         if (!$this->nonNull($fieldName))
             return false;
 
-        if (!$resourceName instanceof AbstractORM)
-            throw Exception($resourceName . " class must extend AbstractORM");
+        if (!is_subclass_of($resourceName, self::ABSTRACTORM_FULL_CLASS_NAME))
+            throw new Exception($resourceName . " class must extend AbstractORM");
 
-        if (!$resourceName::exists($this->object[$fieldName])) {
+        if (!$resourceName::exists($this->object->{$fieldName})) {
             $this->addWrongField($fieldName, self::NON_EXISTANT);
             return false;
         }
@@ -57,10 +61,10 @@ class Validator {
         if (!$this->nonNull($fieldName))
             return true;
 
-        if (!$resourceName instanceof AbstractORM)
-            throw Exception($resourceName . " class must extend AbstractORM");
+        if (!is_subclass_of($resourceName, self::ABSTRACTORM_FULL_CLASS_NAME))
+            throw new Exception($resourceName . " class must extend AbstractORM");
 
-        if (!$resourceName::exists($this->object[$fieldName])) {
+        if (!$resourceName::exists($this->object->{$fieldName})) {
             $this->addWrongField($fieldName, self::NON_EXISTANT);
             return false;
         }
@@ -72,15 +76,15 @@ class Validator {
      * TIMESTAMP VALIDATION
      */
 
-    private $timestampRegex = "/([0-9]{4})-([0-9]{2})-([0-9]{2}) ([0-9]{2}):([0-9]{2}):([0-9]{2})/";
+    const TIMESTAMP_REGEX = "/([0-9]{4})-([0-9]{2})-([0-9]{2}) ([0-9]{2}):([0-9]{2}):([0-9]{2})/";
 
     public function timestamp($fieldName) {
         if (!$this->nonNull($fieldName))
             return false;
 
-        $value = $this->object[$fieldName];
+        $value = $this->object->{$fieldName};
 
-        if (preg_match($timestampRegex, $value) && (strtotime($value) !== FALSE))
+        if (preg_match(self::TIMESTAMP_REGEX, $value) && (strtotime($value) !== FALSE))
             return true;
 
         $this->addWrongField($fieldName, self::INVALID_FORMAT);
@@ -91,9 +95,9 @@ class Validator {
         if (!$this->nonNull($fieldName))
             return true;
 
-         $value = $this->object[$fieldName];
+         $value = $this->object->{$fieldName};
 
-        if (preg_match($timestampRegex, $value) && (strtotime($value) !== FALSE))
+        if (preg_match(self::TIMESTAMP_REGEX, $value) && (strtotime($value) !== FALSE))
             return true;
 
         $this->addWrongField($fieldName, self::INVALID_FORMAT);
@@ -107,7 +111,7 @@ class Validator {
         if (!$this->nonNull($fieldName))
             return false;
 
-        if (!is_numeric($this->object[$fieldName])) {
+        if (!is_numeric($this->object->{$fieldName})) {
             $this->addWrongField($fieldName, self::INVALID_FORMAT);
             return fase;
         }
@@ -120,7 +124,7 @@ class Validator {
         if (!$this->nonNull($fieldName))
             return true;
 
-        if (!is_numeric($this->object[$fieldName])) {
+        if (!is_numeric($this->object->{$fieldName})) {
             $this->addWrongField($fieldName, self::INVALID_FORMAT);
             return false;
         }
@@ -136,7 +140,7 @@ class Validator {
         if (!$this->nonNull($fieldName))
             return false;
 
-        if (!in_array($this->object[$fieldName], $enumValues)) {
+        if (!in_array($this->object->{$fieldName}, $enumValues)) {
             $this->addWrongField($fieldName, self::INVALID_FORMAT);
             return false;
         }
@@ -148,7 +152,7 @@ class Validator {
         if (!$this->nonNull($fieldName))
             return true;
 
-        if (!in_array($this->object[$fieldName], $enumValues)) {
+        if (!in_array($this->object->{$fieldName}, $enumValues)) {
             $this->addWrongField($fieldName, self::INVALID_FORMAT);
             return false;
         }
@@ -161,7 +165,7 @@ class Validator {
      */
 
     public function notSet($fieldName) {
-        if (isset($this->object[$fieldName])) {
+        if (isset($this->object->{$fieldName})) {
             $this->addWrongField($fieldName, self::INVALID_FIELD);
             return false;
         }

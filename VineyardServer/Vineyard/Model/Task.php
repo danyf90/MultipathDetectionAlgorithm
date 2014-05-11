@@ -22,27 +22,29 @@ class Task extends TemporalORM implements IResource {
     public function check() {
         $v = new Validator($this);
 
+        $modelNamespace = "\\Vineyard\\Model\\";
+
         // title
         $v->nonNull('title');
         // place
         $v->nonNull('place');
-        $v->id('place', "Place");
+        $v->id('place', $modelNamespace . "Place");
         // assign_time
         $v->nullTimestamp('assign_time');
         // due_time
         $v->nullTimestamp('due_time');
         // issuer
-        $v->nullId('issuer', "Worker");
+        $v->nullId('issuer', $modelNamespace . "Worker");
         // latitute
         $v->nullNumeric('latitude');
         // longitude
         $v->nullNumeric('longitude');
         // assigned_worker
-        $v->nullId('assigned_worker', "Worker");
+        $v->nullId('assigned_worker', $modelNamespace . "Worker");
         // assigned_group
-        $v->nullId('assigned_group', "Group");
+        $v->nullId('assigned_group', $modelNamespace . "Group");
         // assigner
-        $v->nullId('assigner', "Worker");
+        $v->nullId('assigner', $modelNamespace . "Worker");
         // create_time
         $v->timestamp('create_time');
         // status

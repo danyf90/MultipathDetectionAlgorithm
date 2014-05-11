@@ -20,7 +20,7 @@ class Place extends AbstractORM implements IResource {
         $v = new Validator($this);
 
         $v->nonNull('name');
-        $v->nullId('parent', 'Place');
+        $v->nullId('parent', get_class($this));
         $v->notSet('photo');
         $v->nullNumeric('latitude');
         $v->nullNumeric('longitude');
