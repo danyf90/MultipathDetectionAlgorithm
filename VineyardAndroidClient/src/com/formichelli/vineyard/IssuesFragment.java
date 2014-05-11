@@ -1,11 +1,13 @@
 package com.formichelli.vineyard;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.http.HttpStatus;
 import org.apache.http.message.BasicNameValuePair;
 
 import com.formichelli.vineyard.entities.IssueTask;
+import com.formichelli.vineyard.entities.Place;
 import com.formichelli.vineyard.entities.SimpleTask;
 import com.formichelli.vineyard.entities.Task;
 import com.formichelli.vineyard.utilities.AsyncHttpRequest;
@@ -18,7 +20,6 @@ import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
@@ -27,18 +28,18 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 /**
- * Fragment which contains the issues of a given place, it allows to add, edit or
- * mark as solved an issue
+ * Fragment which contains the issues of a given place, it allows to add, edit
+ * or mark as solved an issue
  */
 public class IssuesFragment extends Fragment {
 	VineyardMainActivity activity;
 	VineyardServer vineyardServer;
 	ExpandableListView issuesList;
 	IssueExpandableAdapter issueAdapter;
-	MenuItem upItem;
 	TextView noIssuesMessage;
 	boolean first;
 	AsyncHttpRequest asyncTask;
+	Place selectedPlace;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -67,8 +68,6 @@ public class IssuesFragment extends Fragment {
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		inflater.inflate(R.menu.issues, menu);
 
-		upItem = menu.findItem(R.id.action_issues_up);
-
 		if (first) {
 			// init() must be called just once after that both onActivityCreated
 			// and onCreateOptionMenu are called
@@ -80,13 +79,14 @@ public class IssuesFragment extends Fragment {
 	}
 
 	private void init() {
-		if (activity.getCurrentPlace().getParent() != null)
-			upItem.setVisible(true);
-		else
-			upItem.setVisible(false);
-
-		// set up the adapter
-		List<IssueTask> issues = activity.getCurrentPlace().getIssues();
+		List<IssueTask> issues;
+		
+		if (selectedPlace == null) {
+			Place p = activity.getRootPlace();
+			issues = getAllIssues(p);
+		} else
+			issues = selectedPlace.getIssues();
+		
 		issueAdapter = new IssueExpandableAdapter(activity,
 				R.layout.issues_list_item, R.layout.issue_view, issues,
 				reportIssueOnClickListener, editOnClickListener,
@@ -100,17 +100,16 @@ public class IssuesFragment extends Fragment {
 			noIssuesMessage.setVisibility(View.VISIBLE);
 	}
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		case R.id.action_issues_up:
-			// navigate the hierarchy up
-			activity.setCurrentPlace(activity.getCurrentPlace().getParent());
-			init();
-			return true;
-		default:
-			return false;
-		}
+	private List<IssueTask> getAllIssues(Place place) {
+
+		List<IssueTask> issues = new ArrayList<IssueTask>();
+		
+		issues.addAll(place.getIssues());
+		
+		for (Place p: place.getChildren())
+			issues.addAll(getAllIssues(p));
+
+		return issues;
 	}
 
 	OnClickListener reportIssueOnClickListener = new OnClickListener() {
@@ -123,7 +122,8 @@ public class IssuesFragment extends Fragment {
 	OnClickListener editOnClickListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
-			activity.switchFragment(new ReportIssueFragment((IssueTask) v.getTag()));
+			activity.switchFragment(new ReportIssueFragment((IssueTask) v
+					.getTag()));
 		}
 	};
 
@@ -134,6 +134,14 @@ public class IssuesFragment extends Fragment {
 					(IssueTask) v.getTag()).execute();
 		}
 	};
+
+	public Place getSelectedPlace() {
+		return selectedPlace;
+	}
+
+	public void setSelectedPlace(Place selectedPlace) {
+		this.selectedPlace = selectedPlace;
+	}
 
 	/*
 	 * Sends a PUT request to the server to mark an issue as solved. During the

@@ -1,5 +1,7 @@
 package com.formichelli.vineyard;
 
+import java.util.concurrent.ExecutionException;
+
 import org.apache.http.HttpStatus;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -51,6 +53,7 @@ public class VineyardMainActivity extends ActionBarActivity implements
 	SharedPreferences sp;
 	Cache cache;
 	SparseArray<Place> places;
+	AsyncHttpRequest rootPlaceRequest, issuesAndTasksRequest;
 	int userId;
 
 	/**
@@ -101,7 +104,11 @@ public class VineyardMainActivity extends ActionBarActivity implements
 	}
 
 	public void sendRootPlaceRequest() {
-		new RootPlaceAsyncHttpRequest(vineyardServer.getUrl()).execute();
+		rootPlaceRequest = new RootPlaceAsyncHttpRequest(vineyardServer.getUrl());
+		rootPlaceRequest.execute();
+		
+		issuesAndTasksRequest = new IssuesAndTasksAsyncHttpRequest(vineyardServer.getUrl());
+		issuesAndTasksRequest.execute();
 	}
 
 	@Override
@@ -111,6 +118,8 @@ public class VineyardMainActivity extends ActionBarActivity implements
 			switchFragment(placeViewerFragment);
 			break;
 		case 1:
+			lastFragment = null; // force fragment switch
+			issuesFragment.setSelectedPlace(null);
 			switchFragment(issuesFragment);
 			break;
 		case 2:
@@ -278,11 +287,9 @@ public class VineyardMainActivity extends ActionBarActivity implements
 	 */
 	private class RootPlaceAsyncHttpRequest extends AsyncHttpRequest {
 		private final static String TAG = "RootPlaceAsyncHttpRequest";
-		String server;
 
 		public RootPlaceAsyncHttpRequest(String serverUrl) {
 			super(serverUrl + VineyardServer.PLACES_HIERARCHY_API, Type.GET);
-			server = serverUrl;
 		}
 
 		@Override
@@ -297,7 +304,7 @@ public class VineyardMainActivity extends ActionBarActivity implements
 		@Override
 		protected void onPostExecute(Pair<Integer, String> response) {
 			String rootPlaceJSON;
-
+			
 			if (response != null && response.first == HttpStatus.SC_OK) {
 				// get places hierarchy from server response
 				rootPlaceJSON = response.second;
@@ -336,10 +343,6 @@ public class VineyardMainActivity extends ActionBarActivity implements
 				places = new SparseArray<Place>();
 				addPlaceToHashMap(rootPlace);
 
-				// request issues and tasks
-				new IssuesAndTasksAsyncHttpRequest(server,
-						AsyncHttpRequest.Type.GET).execute();
-
 			} catch (JSONException e) {
 				// show an error fragment if something is gone wrong
 				Log.e(TAG, e.getLocalizedMessage());
@@ -366,8 +369,8 @@ public class VineyardMainActivity extends ActionBarActivity implements
 	private class IssuesAndTasksAsyncHttpRequest extends AsyncHttpRequest {
 		private final static String TAG = "IssuesAndTasksAsyncHttpRequest";
 
-		public IssuesAndTasksAsyncHttpRequest(String serverUrl, Type type) {
-			super(serverUrl + VineyardServer.OPEN_ISSUES_AND_TASKS_API, type);
+		public IssuesAndTasksAsyncHttpRequest(String serverUrl) {
+			super(serverUrl + VineyardServer.OPEN_ISSUES_AND_TASKS_API, Type.GET);
 		}
 
 		@Override
@@ -388,6 +391,17 @@ public class VineyardMainActivity extends ActionBarActivity implements
 				cache.putIssuesAndTasks(issuesAndTasksJSON);
 
 			} else {
+				
+				// wait for termination of rootPlace request
+				try {
+					rootPlaceRequest.get();
+				} catch (InterruptedException | ExecutionException e) {
+					return;
+				}
+				
+				if (rootPlace == null)
+					return;
+				
 				// get issues and tasks from shared preferences
 				issuesAndTasksJSON = cache.getIssuesAndTasks();
 
@@ -419,7 +433,6 @@ public class VineyardMainActivity extends ActionBarActivity implements
 					Place place = places.get(object.getInt(SimpleTask.PLACE));
 
 					if (place != null) {
-						// TODO change in has()
 						if (!object.isNull(IssueTask.ISSUER)) {
 							IssueTask issue = new IssueTask(object);
 							issue.setPlace(place);

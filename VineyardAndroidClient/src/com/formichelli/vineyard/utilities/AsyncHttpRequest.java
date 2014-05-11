@@ -42,6 +42,12 @@ public class AsyncHttpRequest extends
 		this.params = new ArrayList<NameValuePair>();
 	}
 
+	public AsyncHttpRequest(String serverUrl) {
+		this.serverUrl = serverUrl;
+		this.type = null;
+		this.params = new ArrayList<NameValuePair>();
+	}
+
 	public AsyncHttpRequest(Type type) {
 		this.serverUrl = null;
 		this.type = type;

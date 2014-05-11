@@ -118,6 +118,7 @@ public class PlaceViewerFragment extends Fragment {
 		issues.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				activity.getIssuesFragment().setSelectedPlace(activity.getCurrentPlace());
 				activity.switchFragment(activity.getIssuesFragment());
 			}
 		});
@@ -125,6 +126,7 @@ public class PlaceViewerFragment extends Fragment {
 		tasks.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				activity.getTasksFragment().setSelectedPlace(activity.getCurrentPlace());
 				activity.switchFragment(activity.getTasksFragment());
 			}
 		});

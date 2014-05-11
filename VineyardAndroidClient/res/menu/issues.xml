@@ -3,10 +3,4 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.formichelli.vineyard.VineyardMainActivity$IssuesFragment" >
 
-    <item
-        android:id="@+id/action_issues_up"
-        android:title="@string/action_up"
-        android:icon="@drawable/action_up"
-        app:showAsAction="ifRoom"/>
-    
 </menu>
