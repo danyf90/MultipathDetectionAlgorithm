@@ -2,6 +2,7 @@
 namespace Vineyard\Utility;
 
 use \Exception;
+use \Vineyard\Utility\AbstractORM;
 
 class Validator {
 
@@ -15,8 +16,13 @@ class Validator {
     protected $_wrongFields = array();
     protected $object;
 
-    public function __construct(AbstractORM $o) {
+    public function __construct(AbstractORM $o, $checkNotSetFields = false) {
         $this->object = $o;
+        $this->checkNotSetFields = $checkNotSetFields;
+    }
+
+    public function setCheckNotSetFields($bool) {
+        $this->checkNotSetFields = (bool) $bool;
     }
 
     public function addWrongField($field, $message) {
@@ -39,28 +45,36 @@ class Validator {
     }
 
     /**
+     * Reroute nullSomething() methods to somethign() if needed.
+     */
+
+    public function __call($method, $args) {
+        $fieldName = $args[0];
+        // if I must not check not set fields and the given field is not present, it's ok
+        if (!$this->checkNotSetFields && !isset($this->object->{$fieldName}))
+            return true;
+
+        // if fieldname can be null and actually is null, return true
+        if (substr($method, 0, 4) === "null") {
+            if (!$this->nonNull($fieldName))
+                return true;
+
+            $validatorMethod = strtolower(substr($method, 4));
+            return call_user_func_array(array($this, $validatorMethod), $args);
+        }
+
+        // if fieldname cannot be null and actually is null, return false
+        if (!$this->nonNull($fieldName))
+            return false;
+
+        return call_user_func_array(array($this, $method), $args);
+    }
+
+    /**
      * ID VALIDATION
      */
 
-    public function id($fieldName, $resourceName) {
-        if (!$this->nonNull($fieldName))
-            return false;
-
-        if (!is_subclass_of($resourceName, self::ABSTRACTORM_FULL_CLASS_NAME))
-            throw new Exception($resourceName . " class must extend AbstractORM");
-
-        if (!$resourceName::exists($this->object->{$fieldName})) {
-            $this->addWrongField($fieldName, self::NON_EXISTANT);
-            return false;
-        }
-
-        return true;
-    }
-
-    public function nullId($fieldName, $resourceName) {
-        if (!$this->nonNull($fieldName))
-            return true;
-
+    protected function id($fieldName, $resourceName) {
         if (!is_subclass_of($resourceName, self::ABSTRACTORM_FULL_CLASS_NAME))
             throw new Exception($resourceName . " class must extend AbstractORM");
 
@@ -78,24 +92,9 @@ class Validator {
 
     const TIMESTAMP_REGEX = "/([0-9]{4})-([0-9]{2})-([0-9]{2}) ([0-9]{2}):([0-9]{2}):([0-9]{2})/";
 
-    public function timestamp($fieldName) {
-        if (!$this->nonNull($fieldName))
-            return false;
+    protected function timestamp($fieldName) {
 
         $value = $this->object->{$fieldName};
-
-        if (preg_match(self::TIMESTAMP_REGEX, $value) && (strtotime($value) !== FALSE))
-            return true;
-
-        $this->addWrongField($fieldName, self::INVALID_FORMAT);
-        return false;
-    }
-
-    public function nullTimestamp($fieldName) {
-        if (!$this->nonNull($fieldName))
-            return true;
-
-         $value = $this->object->{$fieldName};
 
         if (preg_match(self::TIMESTAMP_REGEX, $value) && (strtotime($value) !== FALSE))
             return true;
@@ -107,10 +106,7 @@ class Validator {
     /**
      * NUMERIC VALIDATION
      */
-    public function numeric($fieldName) {
-        if (!$this->nonNull($fieldName))
-            return false;
-
+    protected function numeric($fieldName) {
         if (!is_numeric($this->object->{$fieldName})) {
             $this->addWrongField($fieldName, self::INVALID_FORMAT);
             return fase;
@@ -120,38 +116,11 @@ class Validator {
 
     }
 
-    public function nullNumeric($fieldName) {
-        if (!$this->nonNull($fieldName))
-            return true;
-
-        if (!is_numeric($this->object->{$fieldName})) {
-            $this->addWrongField($fieldName, self::INVALID_FORMAT);
-            return false;
-        }
-
-        return true;
-    }
-
     /**
      * ENUM VALIDATION
      */
 
-    public function enum($fieldName, $enumValues) {
-        if (!$this->nonNull($fieldName))
-            return false;
-
-        if (!in_array($this->object->{$fieldName}, $enumValues)) {
-            $this->addWrongField($fieldName, self::INVALID_FORMAT);
-            return false;
-        }
-
-        return true;
-    }
-
-    public function nullEnum($fieldName, $enumValues) {
-        if (!$this->nonNull($fieldName))
-            return true;
-
+    protected function enum($fieldName, $enumValues) {
         if (!in_array($this->object->{$fieldName}, $enumValues)) {
             $this->addWrongField($fieldName, self::INVALID_FORMAT);
             return false;

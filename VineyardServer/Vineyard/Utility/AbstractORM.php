@@ -4,8 +4,8 @@ namespace Vineyard\Utility;
 
 use \PDO;
 use \PDOException;
-use Vineyard\Utility\DB;
-use Vineyard\Utility\ORMException;
+use \Vineyard\Utility\DB;
+use \Vineyard\Utility\ORMException;
 use \JsonSerializable;
 
 abstract class AbstractORM implements JsonSerializable {
@@ -74,28 +74,13 @@ abstract class AbstractORM implements JsonSerializable {
 
         $wrong_fields = $this->check();
 
-        // update
-        if (isset($this->_data['id'])) {
-
-            $tF =& $this->touchedFields;
-
-            // remove from $wrong_fields all the fields that are not present in $this->touchedFields
-            $touchedWrongFields = array_filter($wrong_fields, function($key) use(&$tF) {
-                return in_array($key, $this->touchedFields);
-            });
-
-            if (!empty($touchedWrongFields))
-                throw new ORMException($touchedWrongFields);
-
-            $this->_update();
-            return;
-        }
-
-        // insert
         if (!empty($wrong_fields))
             throw new ORMException($wrong_fields);
 
-        $this->_insert();
+        if (isset($this->_data['id']))
+            $this->_update();
+        else $this->_insert();
+
         return;
 
     }
@@ -281,7 +266,7 @@ abstract class AbstractORM implements JsonSerializable {
             return array( 'id' => $s->id );
         } catch (ORMException $e) {
             http_response_code(400); // Bad Request
-            return $e->getMessage() . ": " . implode(",", $e->getWrongFields());
+            return $e->getWrongFields();
         }
     }
 
@@ -304,8 +289,7 @@ abstract class AbstractORM implements JsonSerializable {
             return ''; // Empty response body
         } catch (ORMException $e) {
             http_response_code(400); // Bad Request
-            // return $e->getMessage() . ": " . implode(",", $e->getWrongFields());
-            return json_encode($e->getWrongFields());
+            return $e->getWrongFields();
         }
     }
 
@@ -323,7 +307,7 @@ abstract class AbstractORM implements JsonSerializable {
             return ''; // Empty response body
         } catch (PDOException $e) {
             http_response_code(400); // Bad Request
-            return $e->getMessage() . ": " . implode(",", $e->getWrongFields());
+            return $e->getWrongFields();
         }
     }
 }
