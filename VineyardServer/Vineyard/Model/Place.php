@@ -32,13 +32,13 @@ class Place extends AbstractORM implements IResource {
 
     // Override AbstractORM::getById() to include place attributes in object instance
     static public function getById($id) {
-		if (!is_numeric($id)) {
-			http_response_code(400);
-			return;
-		}
+        if (!is_numeric($id)) {
+            http_response_code(400);
+            return;
+        }
 
-		$s = new static();
-		$s->load($id);
+        $s = new static();
+        $s->load($id);
 
         // add attributes to place instance
         $pdo = DB::getConnection();
@@ -63,8 +63,8 @@ class Place extends AbstractORM implements IResource {
             }
         }
 
-		return $s;
-	}
+        return $s;
+    }
 
     public static function handleRequest($method, array $requestParameters) {
 
@@ -423,11 +423,12 @@ class Place extends AbstractORM implements IResource {
              while ($row = $sql->fetch(PDO::FETCH_ASSOC))
                  $children[] = static::getById($row['id']);
 
-             $this->children = $children;
+             if (count($children) > 0) {
+                $this->children = $children;
 
-             foreach ($this->children as $child)
-                 $child->loadOffsprings();
-
+                 foreach ($this->children as $child)
+                     $child->loadOffsprings();
+             }
 
         } catch (PDOException $e) {
             // check which SQL error occured

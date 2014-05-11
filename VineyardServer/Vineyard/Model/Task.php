@@ -7,7 +7,7 @@ use \Vineyard\Utility\DB;
 use \Vineyard\Utility\IResource;
 use \Vineyard\Utility\TemporalORM;
 use \Vineyard\Utility\TCrudRequestHandlers;
-use \Vineyard\Utility\Validate;
+use \Vineyard\Utility\Validator;
 
 use \Vineyard\Model\Photo;
 
@@ -20,7 +20,7 @@ class Task extends TemporalORM implements IResource {
 
     // TODO check method!
     public function check() {
-        $v = new Validate($this);
+        $v = new Validator($this);
 
         // title
         $v->nonNull('title');
@@ -69,13 +69,13 @@ class Task extends TemporalORM implements IResource {
 
     // Override AbstractORM::getById() to include task photos in object instance
     static public function getById($id) {
-		if (!is_numeric($id)) {
-			http_response_code(400);
-			return;
-		}
+        if (!is_numeric($id)) {
+            http_response_code(400);
+            return;
+        }
 
-		$s = new static();
-		$s->load($id);
+        $s = new static();
+        $s->load($id);
 
         // add attributes to place instance
         $pdo = DB::getConnection();
@@ -95,8 +95,8 @@ class Task extends TemporalORM implements IResource {
             }
         }
 
-		return $s;
-	}
+        return $s;
+    }
 
     public static function handleRequest($method, array $requestParameters) {
 

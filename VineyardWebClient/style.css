@@ -22,7 +22,11 @@ a { text-decoration: none; color: #333; }
  * COLORS
  */
 
-header, footer { background-color: #6d1653; color: #eee; }
+header, footer {
+    background-color: #6d1653;
+    color: #eee;
+}
+
 header a, footer a { color: #eee; }
 
 header {
@@ -32,8 +36,9 @@ header {
     justify-content: space-between;
 }
 
-header h1 { line-height: 45px; padding-left: 35px; font-family: 'Roboto', sans-serif; }
-header li { padding-left: 20px; }
+header h1 { line-height: 45px; padding-left: 50px; font-family: 'Roboto', sans-serif; }
+header li { padding-left: 15px; padding-right: 15px; }
+header li:hover { background-color: #500e3b; }
 header ul { display:inline-flex; padding-right: 10px; }
 
 main { display: flex; flex: 1; }
@@ -49,13 +54,13 @@ nav li:hover {
     box-shadow: inset 1px 1px 5px #aaa;
 }
 
-nav a { display: block; }
+nav a { display: block; padding-top: 8px; padding-bottom: 8px;}
 
 nav span {
     background-size: contain;
     background-position: center left;
     background-repeat: no-repeat;
-    padding: 12px 0 10px 45px;
+    padding: 12px 0 10px 45px
 }
 
 .menu-item-place span {

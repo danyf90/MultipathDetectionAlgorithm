@@ -1,17 +1,21 @@
 <?php
-namespace ADM\Exceptions;
+namespace Vineyard\Utility;
 
 class ORMException extends \Exception {
 
-	protected $wrongFields = null;
-	
-	public function setWrongFields(array $wf) {
-		$this->wrongFields = $wf;
-	}
-	
-	public function getWrongFields() {
-		return $this->wrongFields;
-	}
+    protected $wrongFields = null;
+
+    public function __construct(array $wrongFields = null) {
+        $this->wrongFields = $wrongFields;
+    }
+
+    public function setWrongFields(array $wf) {
+        $this->wrongFields = $wf;
+    }
+
+    public function getWrongFields() {
+        return $this->wrongFields;
+    }
 };
 
 ?>
