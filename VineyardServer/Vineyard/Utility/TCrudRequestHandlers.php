@@ -51,11 +51,17 @@ trait TCrudRequestHandlers {
             break;
 
             case 'PUT':
-                return static::update($resourceId);
+                $response = static::update($resourceId);
+                if (!is_string($response))
+                    return json_encode($response);
+                return $response;
             break;
 
             case 'DELETE':
-                return static::delete($resourceId);
+                $response = static::delete($resourceId);
+                if (!is_string($response))
+                    return json_encode($response);
+                return $response;
             break;
 
             default:
