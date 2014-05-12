@@ -23,7 +23,7 @@ a { text-decoration: none; color: #333; }
  */
 
 header, footer {
-    background-color: #6d1653;
+    background-color: #620042;
     color: #eee;
 }
 
@@ -84,10 +84,79 @@ nav span {
 .menu-item-worker span { background-image: url(images/action_up_dark.png); }
 .menu-item-group span { background-image: url(images/action_done_dark.png); }
 
-#content {
+main {
+    background: url('images/background.png') center center no-repeat #e6e6e6;
+}
+
+#content { flex: 1;  display: flex; }
+
+#content a { color: #620042; }
+#content a:hover { text-decoration: underline; }
+
+#content #photo {
     flex: 1;
-    padding: 10px;
-    background: url('images/background.png') center center no-repeat;
+    position: relative;
+    border-left: 2px solid #620042;
+    background-color: #ffd3ed;
+    background-position: center center;
+    background-repeat: no-repeat;
+}
+
+#content #photo a {
+    display: none;
+    box-sizing: border-box;
+    width: 40px;
+    height: 40px;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-color: rgba(255,255,255,0.7);
+    position: absolute;
+    top: 0px;
+}
+
+#content #photo:hover a {
+    display: inline-block;
+}
+
+#content #photo .modify {
+    left: 0px;
+    border-bottom-right-radius: 10px;
+    background-image: url(images/action_edit_dark.png);
+}
+
+#content #photo .delete {
+    right: 0px;
+    border-bottom-left-radius: 10px;
+    background-image:
+    url(images/action_delete_dark.png);
+}
+
+#content table { border-collapse: collapse; border-spacing: 0; flex 2; min-width: 580px; }
+
+#content table tbody tr:hover { background-color: rgba(215,215,215,0.5); }
+
+#content table th, #content table td {
+    padding-top: 7px;
+    padding-bottom: 7px;
+}
+
+#content table th {
+    text-align: right;
+    padding-right: 7px;
+    border-right: 1px solid #aaa;
+    vertical-align: top;
+    width: 120px;
+}
+
+#content table thead td {
+    padding-bottom: 15px;
+    padding-top: 15px;
+}
+
+#content table td {
+    padding-left: 15px;
+    padding-right: 20px;
 }
 
 footer {

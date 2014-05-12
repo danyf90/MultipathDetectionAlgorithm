@@ -1,0 +1,35 @@
+ADMIN_ROOT = http://vineyard-server.org/admin/
+
+### PLACE
+# View all with hierarchical navigation
+/place/
+# Make same form/page with different styles?
+/place/<id>
+/place/<id>/edit
+/place/insert
+
+### TASK
+# List all tasks
+/task/
+# Show task history too
+/task/<id>
+/task/insert
+/task/<id>/edit
+
+### ISSUE
+/issue/
+/issue/<id>
+/issue/insert
+/issue/<id>/edit
+
+### WORKER
+/worker/
+/worker/<id>
+/worker/insert
+/worker/<id>/edit
+
+### GROUP
+/group/
+/group/<id>
+/group/insert
+/group/<id>/edit

@@ -13,6 +13,37 @@ class Group extends AbstractORM implements IResource {
     public function check() { return array(); }
     public static function getTableName() { return "group"; }
     
+    // Override AbstractORM::getById() to include workers in object instance
+    static public function getById($id) {
+        if (!is_numeric($id)) {
+            http_response_code(400);
+            return;
+        }
+
+        $s = new static();
+        $s->load($id);
+
+        // add attributes to place instance
+        $pdo = DB::getConnection();
+
+        try {
+            $sql = $pdo->prepare("SELECT `worker` FROM `group_composition` WHERE `group` = ?");
+            $sql->execute(array($id));
+
+            if ($sql->rowCount() > 0)
+                $s->workers = $sql->fetchAll(PDO::FETCH_COLUMN, 0);
+
+        } catch (PDOException $e) {
+            // check which SQL error occured
+            switch ($e->getCode()) {
+                default:
+                    http_response_code(400); // Bad Request
+            }
+        }
+
+        return $s;
+    }
+    
     public static function handleRequest($method, array $requestParameters) {
 
         switch (count($requestParameters)) {
