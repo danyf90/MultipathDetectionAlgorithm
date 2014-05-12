@@ -1,9 +1,17 @@
 <?php
-namespace Vineyard/Model;
+namespace Vineyard\Model;
+
+use \Vineyard\Utility\DB;
+use \Vineyard\Utility\AbstractORM;
+use \Vineyard\Utility\IResource;
+use \Vineyard\Utility\TCrudRequestHandlers;
+
 
 class Group extends AbstractORM implements IResource {
     
     use TCrudRequestHandlers;
+    public function check() { return array(); }
+    public static function getTableName() { return "group"; }
     
     public static function handleRequest($method, array $requestParameters) {
 
@@ -60,7 +68,7 @@ class Group extends AbstractORM implements IResource {
             
             case "DELETE":
                 return self::deleteWorkerInGroup($gid, $wid);
-            break:
+            break;
             
             default:
                 http_response_code(501); // Not Implemented
@@ -80,7 +88,7 @@ class Group extends AbstractORM implements IResource {
         }
         
         try {
-            $pdo = DB:getConnection();
+            $pdo = DB::getConnection();
             $sql = $pdo->prepare("INSERT INTO `group_composition` VALUES (?, ?)");
             $sql->execute(array($gid, $wid));
             http_response_code(202); // Accepted
@@ -111,7 +119,7 @@ class Group extends AbstractORM implements IResource {
         
         try {
             
-            $pdo = DB:getConnection();
+            $pdo = DB::getConnection();
             $sql = $pdo->prepare("DELETE FROM `group_composition` WHERE `group` = ? AND `worker` = ?");
             $sql->execute(array($gid, $wid));
             

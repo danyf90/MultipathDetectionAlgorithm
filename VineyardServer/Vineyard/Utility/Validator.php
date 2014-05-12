@@ -36,6 +36,10 @@ class Validator {
     public function getWrongFields() { return $this->_wrongFields; }
 
     public function nonNull($fieldName) {
+	 // if I must not check not set fields and the given field is not present, it's ok
+        if (!$this->checkNotSetFields && !isset($this->object->{$fieldName}))
+            return true;
+
         if (strlen($this->object->{$fieldName}) == 0) {
             $this->addWrongField($fieldName, self::MANDATORY);
             return false;
