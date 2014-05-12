@@ -32,6 +32,7 @@ public class TasksFragment extends Fragment {
 	Place selectedPlace;
 
 	ExpandableListView agendaListView;
+	TaskExpandableAdapter<SimpleTask> issueAdapter;
 	ExtendedCalendarView calendarView;
 	SparseArray<IssueTask> tasks = new SparseArray<IssueTask>();
 
@@ -55,7 +56,20 @@ public class TasksFragment extends Fragment {
 		agendaListView = (ExpandableListView) activity
 				.findViewById(R.id.daily_agenda);
 
-		calendarView.setOnDayClickListener(onDayClickListener);
+		if (selectedPlace != null) {
+			calendarView.setVisibility(View.GONE);
+			issueAdapter = new TaskExpandableAdapter<SimpleTask>(activity,
+					R.layout.issues_list_item, R.layout.issue_view,
+					selectedPlace.getTasks(), false, null, null, null);
+		} else {
+			calendarView.setOnDayClickListener(onDayClickListener);
+			issueAdapter = new TaskExpandableAdapter<SimpleTask>(activity,
+					R.layout.issues_list_item, R.layout.issue_view, null, true,
+					null, null, null);
+		}
+		
+		agendaListView.setAdapter(issueAdapter);
+
 	}
 
 	public void populateCalendarProvider() {
@@ -65,7 +79,8 @@ public class TasksFragment extends Fragment {
 
 		SparseArray<SimpleTask> tasks = activity.getTasks();
 		for (int i = 0, l = tasks.size(); i < l; i++) {
-			final ContentValues values = generateContentValuesFromTask(tasks.valueAt(i));
+			final ContentValues values = generateContentValuesFromTask(tasks
+					.valueAt(i));
 
 			activity.getContentResolver().insert(CalendarProvider.CONTENT_URI,
 					values);
@@ -144,16 +159,10 @@ public class TasksFragment extends Fragment {
 			ArrayList<SimpleTask> tasks = new ArrayList<SimpleTask>();
 
 			for (Event e : day.getEvents())
-				tasks.add(tasks.get(Integer.valueOf(e.getTitle()))); // title
-																		// contains
-																		// issue
-																		// ID
+				// title contains issue ID
+				tasks.add(tasks.get(Integer.valueOf(e.getTitle())));
 
-			TaskExpandableAdapter<SimpleTask> issueAdapter = new TaskExpandableAdapter<SimpleTask>(
-					activity, R.layout.issues_list_item, R.layout.issue_view,
-					tasks, null, null, null);
-
-			agendaListView.setAdapter(issueAdapter);
+			issueAdapter.replaceItems(tasks);
 		}
 
 	};

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.formichelli.vineyard.R;
+import com.formichelli.vineyard.entities.IssueTask;
 import com.formichelli.vineyard.entities.Task;
 import com.formichelli.vineyard.entities.Task.Priority;
 
@@ -20,9 +21,11 @@ import android.widget.TextView;
  * ExpandableAdapter that shows issues titles and when expanded shows issue
  * details
  */
-public class TaskExpandableAdapter<T extends Task> extends BaseExpandableListAdapter {
+public class TaskExpandableAdapter<T extends Task> extends
+		BaseExpandableListAdapter {
 	private final Context context;
 	List<T> objects;
+	boolean showPlace;
 	int groupResource, childResource;
 	OnClickListener reportIssueOnClickListener, editOnClickListener,
 			doneOnClickListener;
@@ -34,7 +37,8 @@ public class TaskExpandableAdapter<T extends Task> extends BaseExpandableListAda
 	 * @param groupResource
 	 *            resource representing the issue title. It must contain a
 	 *            TextView with id issue_list_item_label that will contain the
-	 *            issue title
+	 *            issue title and a TextView with id issue_list_item_place that
+	 *            will contain the name of the place related to the issue
 	 * @param childResource
 	 *            resource representing the issue details. It must contain a
 	 *            TextView with id issue_view_description that will contain the
@@ -48,6 +52,8 @@ public class TaskExpandableAdapter<T extends Task> extends BaseExpandableListAda
 	 *            will be associated to the deleteOnClickListener
 	 * @param objects
 	 *            issues to be added to the adapter
+	 * @param showPlace
+	 *            indicates wether the place name should be shown or not
 	 * @param reportIssueOnClickListener
 	 *            onClickListener of the report issue button
 	 * @param editOnClickListener
@@ -58,7 +64,7 @@ public class TaskExpandableAdapter<T extends Task> extends BaseExpandableListAda
 	 *            will be added as a tag to the associated view
 	 */
 	public TaskExpandableAdapter(Activity context, int groupResource,
-			int childResource, List<T> objects,
+			int childResource, List<T> objects, boolean showPlace,
 			OnClickListener reportIssueOnClickListener,
 			OnClickListener editOnClickListener,
 			OnClickListener doneOnClickListener) {
@@ -70,6 +76,8 @@ public class TaskExpandableAdapter<T extends Task> extends BaseExpandableListAda
 			this.objects = objects;
 		else
 			this.objects = new ArrayList<T>();
+		this.showPlace = showPlace;
+
 		this.reportIssueOnClickListener = reportIssueOnClickListener;
 		this.editOnClickListener = editOnClickListener;
 		this.doneOnClickListener = doneOnClickListener;
@@ -104,6 +112,10 @@ public class TaskExpandableAdapter<T extends Task> extends BaseExpandableListAda
 			else
 				t.setCompoundDrawablesWithIntrinsicBounds(
 						R.drawable.action_expand_dark, 0, 0, 0);
+
+			if (showPlace && !isExpanded)
+				((TextView) item.findViewById(R.id.issue_list_item_place))
+						.setText(object.getPlace().getName());
 		}
 
 		return item;
@@ -135,26 +147,26 @@ public class TaskExpandableAdapter<T extends Task> extends BaseExpandableListAda
 					.findViewById(R.id.issue_view_assigned_worker_name))
 					.setText("--");
 
-		// TODO
-		// VineyardGallery gallery = (VineyardGallery)
-		// childView.findViewById(R.id.issue_view_gallery);
-		// List<URL> photos = object.getPhotos();
-		// if (photos.size() == 0)
-		// childView.removeView(gallery);
-		// else
-		// for (URL p : photos)
-		// gallery.addImage(p.getPath());
+		if (object instanceof IssueTask) {
+			// VineyardGallery gallery = (VineyardGallery)
+			// childView.findViewById(R.id.issue_view_gallery);
+			// List<URL> photos = object.getPhotos();
+			// if (photos.size() == 0)
+			// childView.removeView(gallery);
+			// else
+			// for (URL p : photos)
+			// gallery.addImage(p.getPath());
+			childView.findViewById(R.id.issue_view_edit).setTag(object);
+			childView.findViewById(R.id.issue_view_edit).setOnClickListener(
+					editOnClickListener);
+		}
+		else
+			childView.findViewById(R.id.issue_view_edit).setVisibility(View.INVISIBLE);
 
-		childView.findViewById(R.id.issue_view_edit).setOnClickListener(
-				editOnClickListener);
 
+		childView.findViewById(R.id.issue_view_done).setTag(object);
 		childView.findViewById(R.id.issue_view_done).setOnClickListener(
 				doneOnClickListener);
-
-		// add the issue as tag of the buttons to make it available in the
-		// onClickListener
-		childView.findViewById(R.id.issue_view_edit).setTag(object);
-		childView.findViewById(R.id.issue_view_done).setTag(object);
 
 		return childView;
 	}

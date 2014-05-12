@@ -36,7 +36,7 @@ public class IssuesFragment extends Fragment {
 	VineyardMainActivity activity;
 	VineyardServer vineyardServer;
 	ExpandableListView issuesList;
-	TaskExpandableAdapter issueAdapter;
+	TaskExpandableAdapter<IssueTask> issueAdapter;
 	TextView noIssuesMessage;
 	boolean first;
 	AsyncHttpRequest asyncTask;
@@ -81,18 +81,20 @@ public class IssuesFragment extends Fragment {
 
 	private void init() {
 		List<IssueTask> issues;
-		
-		if (selectedPlace == null) {
+
+		final boolean showAllIssues = selectedPlace == null;
+
+		if (showAllIssues) {
 			Place p = activity.getRootPlace();
 			issues = getAllIssues(p);
 		} else
 			issues = selectedPlace.getIssues();
-		
+
 		Collections.sort(issues);
-		
-		issueAdapter = new TaskExpandableAdapter(activity,
+
+		issueAdapter = new TaskExpandableAdapter<IssueTask>(activity,
 				R.layout.issues_list_item, R.layout.issue_view, issues,
-				reportIssueOnClickListener, editOnClickListener,
+				showAllIssues, reportIssueOnClickListener, editOnClickListener,
 				doneOnClickListener);
 		issuesList.setAdapter(issueAdapter);
 
@@ -106,10 +108,10 @@ public class IssuesFragment extends Fragment {
 	private List<IssueTask> getAllIssues(Place place) {
 
 		List<IssueTask> issues = new ArrayList<IssueTask>();
-		
+
 		issues.addAll(place.getIssues());
-		
-		for (Place p: place.getChildren())
+
+		for (Place p : place.getChildren())
 			issues.addAll(getAllIssues(p));
 
 		return issues;
