@@ -9,8 +9,13 @@
     <string name="issue_photos_label">Photos</string>
     <string name="issue_place_label">Place</string>
     <string name="issue_place_button">Select place</string>
-    <string name="issue_priority_label">Priority: </string>
-    <string name="issue_assigned_worker_label">Worker: </string>
+    <string name="issue_priority_label">Priority</string>
+    <string name="issue_status_label">Status</string>
+    <string name="issue_assigned_worker_label">Worker</string>
+    <string name="issue_assigned_group_label">Work Group</string>
+    <string name="issue_due_time_label">Due Time</string>
+    <string name="issue_not_assigned">Not Assigned</string>
+    <string name="issue_assigned">Assigned</string>
     <string name="issues_no_issues">No issues in this place</string>
     <string name="issue_report_error">An error occurred, the issues has not been reported</string>
     <string name="issue_mark_done_error">An error occurred, the issues has not been marked as done</string>

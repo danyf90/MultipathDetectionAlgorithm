@@ -13,7 +13,7 @@ public interface Task {
 
 	public enum Priority {
 		LOW, MEDIUM, HIGH;
-
+		
 		public static int getIndex(Priority priority) {
 			if (priority == null)
 				return 0;

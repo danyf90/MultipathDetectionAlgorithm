@@ -16,51 +16,26 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content" />
 
-    <RelativeLayout
-        android:id="@+id/issue_view_priority"
-        style="@style/PlaceViewButton"
-        android:layout_width="wrap_content"
-        android:layout_gravity="right" >
+    <LinearLayout
+        android:id="@+id/issue_view_attributes"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
 
-        <TextView
-            android:id="@+id/issue_view_priority_label"
+        <LinearLayout
+            android:id="@+id/issue_view_attributes_labels"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_marginRight="5dp"
-            android:text="@string/issue_priority_label"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
+            android:orientation="vertical"
+            android:padding="10dp" />
 
-        <TextView
-            android:id="@+id/issue_view_priority_value"
+        <LinearLayout
+            android:id="@+id/issue_view_attributes_values"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/issue_view_priority_label"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:id="@+id/issue_view_assigned_worker"
-        style="@style/PlaceViewButton"
-        android:layout_width="wrap_content"
-        android:layout_gravity="right" >
-
-        <TextView
-            android:id="@+id/issue_view_assigned_worker_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_marginRight="5dp"
-            android:text="@string/issue_assigned_worker_label"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
-
-        <TextView
-            android:id="@+id/issue_view_assigned_worker_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/issue_view_assigned_worker_label"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
-    </RelativeLayout>
+            android:orientation="vertical"
+            android:padding="10dp" />
+    </LinearLayout>
 
     <com.formichelli.vineyard.utilities.VineyardGallery
         android:id="@+id/issue_view_gallery"

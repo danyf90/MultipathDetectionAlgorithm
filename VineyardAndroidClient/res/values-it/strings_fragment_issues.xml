@@ -9,8 +9,13 @@
     <string name="issue_photos_label">Foto</string>
     <string name="issue_place_label">Luogo</string>
     <string name="issue_place_button">Scegli luogo</string>
-    <string name="issue_priority_label">Priorità: </string>
-    <string name="issue_assigned_worker_label">Operatore: </string>
+    <string name="issue_priority_label">Priorità</string>
+    <string name="issue_status_label">Stato</string>
+    <string name="issue_assigned_worker_label">Operatore</string>
+    <string name="issue_assigned_group_label">Gruppo</string>
+    <string name="issue_due_time_label">Scadenza</string>
+    <string name="issue_not_assigned">Non Assegnato</string>
+    <string name="issue_assigned">Assegnato</string>
     <string name="issues_no_issues">Non ci sono problemi in questo luogo</string>
     <string name="issue_report_error">Si è verificato un errore, il problema non è stato segnalato</string>
     <string name="issue_mark_done_error">Si è verificato un errore, il problema non è stato marcato come risolto</string>

@@ -7,9 +7,11 @@ import com.formichelli.vineyard.R;
 import com.formichelli.vineyard.entities.IssueTask;
 import com.formichelli.vineyard.entities.Task;
 import com.formichelli.vineyard.entities.Task.Priority;
+import com.formichelli.vineyard.entities.Task.Status;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -29,6 +31,12 @@ public class TaskExpandableAdapter<T extends Task> extends
 	int groupResource, childResource;
 	OnClickListener reportIssueOnClickListener, editOnClickListener,
 			doneOnClickListener;
+
+	ViewGroup attributesLabels, attributesValues;
+	String placeLabel, priorityLabel, statusLabel, assignedWorkerLabel, assignedGroupLabel,
+			dueTimeLabel;
+	String assignedValue, notAssignedValue;
+	String[] priorities;
 
 	/**
 	 * 
@@ -81,6 +89,17 @@ public class TaskExpandableAdapter<T extends Task> extends
 		this.reportIssueOnClickListener = reportIssueOnClickListener;
 		this.editOnClickListener = editOnClickListener;
 		this.doneOnClickListener = doneOnClickListener;
+
+		placeLabel = context.getString(R.string.issue_place_label);
+		priorityLabel = context.getString(R.string.issue_priority_label);
+		statusLabel = context.getString(R.string.issue_status_label);
+		priorities = context.getResources().getStringArray(
+				R.array.issue_priorities);
+		assignedWorkerLabel = context
+				.getString(R.string.issue_assigned_worker_label);
+		assignedGroupLabel = context
+				.getString(R.string.issue_assigned_group_label);
+		dueTimeLabel = context.getString(R.string.issue_due_time_label);
 	}
 
 	@Override
@@ -129,40 +148,61 @@ public class TaskExpandableAdapter<T extends Task> extends
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		ViewGroup childView = (ViewGroup) inflater.inflate(childResource,
 				parent, false);
+		attributesLabels = (ViewGroup) childView
+				.findViewById(R.id.issue_view_attributes_labels);
+		attributesValues = (ViewGroup) childView
+				.findViewById(R.id.issue_view_attributes_values);
 
+		// set description
 		((TextView) childView.findViewById(R.id.issue_view_description))
 				.setText(object.getDescription());
 
-		((TextView) childView.findViewById(R.id.issue_view_priority_value))
-				.setText(context.getResources().getStringArray(
-						R.array.issue_priorities)[Priority.getIndex(object
-						.getPriority())]);
+		// set place
+		if (object.getPlace() != null)
+			addAttribute(placeLabel,
+					object.getPlace().getName());
 
-		if (object.getAssignedWorker() != null)
-			((TextView) childView
-					.findViewById(R.id.issue_view_assigned_worker_name))
-					.setText(String.valueOf(object.getAssignedWorker().getId()));
-		else
-			((TextView) childView
-					.findViewById(R.id.issue_view_assigned_worker_name))
-					.setText("--");
+		// set priority
+		if (object.getPriority() != null)
+			addAttribute(priorityLabel,
+					priorities[Priority.getIndex(object.getPriority())]);
+
+		if (object.getStatus() != Status.ASSIGNED)
+			// set status
+			addAttribute(statusLabel, notAssignedValue);
+		else {
+			// set assignedWorker and assignedGroup
+			if (object.getAssignedWorker() != null)
+				addAttribute(assignedWorkerLabel,
+						String.valueOf(object.getAssignedWorker().getId()));
+
+			if (object.getAssignedGroup() != null)
+				addAttribute(assignedGroupLabel,
+						String.valueOf(object.getAssignedGroup().getId()));
+		}
+
+		// set dueTime
+		if (object.getDueTime() != null)
+			addAttribute(dueTimeLabel, object.getDueTime().toLocaleString());
+
+		// TODO show on map?
 
 		if (object instanceof IssueTask) {
-			// VineyardGallery gallery = (VineyardGallery)
-			// childView.findViewById(R.id.issue_view_gallery);
-			// List<URL> photos = object.getPhotos();
-			// if (photos.size() == 0)
-			// childView.removeView(gallery);
-			// else
-			// for (URL p : photos)
-			// gallery.addImage(p.getPath());
+			VineyardGallery gallery = (VineyardGallery) childView
+					.findViewById(R.id.issue_view_gallery);
+			List<String> photos = ((IssueTask) object).getPhotos();
+			if (photos.size() == 0)
+				childView.removeView(gallery);
+			else
+				for (String photo : photos)
+					gallery.addImage(photo, false);
+			
 			childView.findViewById(R.id.issue_view_edit).setTag(object);
 			childView.findViewById(R.id.issue_view_edit).setOnClickListener(
 					editOnClickListener);
-		}
-		else
-			childView.findViewById(R.id.issue_view_edit).setVisibility(View.INVISIBLE);
-
+		} else
+			childView.findViewById(R.id.issue_view_edit).setVisibility(
+					View.INVISIBLE);
 
 		childView.findViewById(R.id.issue_view_done).setTag(object);
 		childView.findViewById(R.id.issue_view_done).setOnClickListener(
@@ -233,5 +273,21 @@ public class TaskExpandableAdapter<T extends Task> extends
 			this.objects.clear();
 
 		notifyDataSetChanged();
+	}
+
+	private void addAttribute(String key, String value) {
+		TextView t;
+
+		// add the key
+		t = new TextView(context);
+		t.setTypeface(null, Typeface.BOLD_ITALIC);
+		t.setText(key + ":");
+		attributesLabels.addView(t);
+
+		// add the value
+		t = new TextView(context);
+		t.setText(value);
+		attributesValues.addView(t);
+
 	}
 }

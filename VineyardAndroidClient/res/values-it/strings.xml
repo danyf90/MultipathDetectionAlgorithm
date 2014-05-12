@@ -23,6 +23,9 @@
     <string name="action_settings_restore">Ripristina predefiniti</string>
     <string name="action_up">Su</string>
     <string name="loading_message">Caricamento&#8230;</string>
+    <string name="loading_places">Caricamento luoghi&#8230;</string>
+    <string name="loading_issues_and_tasks">Caricamento problemi e lavori&#8230;</string>
+    <string name="loading_sending_request">Invio richiesta in corso&#8230;</string>
     <string name="loading_error_message">Il server non risponde e le informazioni richieste non sono presenti in cache</string>
     <string name="issues_label">Problemi: </string>
     <string name="tasks_label">Lavori: </string>
