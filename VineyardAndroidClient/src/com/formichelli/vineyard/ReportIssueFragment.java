@@ -372,6 +372,7 @@ public class ReportIssueFragment extends Fragment {
 
 		@Override
 		protected void onPreExecute() {
+			activity.getLoadingFragment().setLoadingMessage(getString(R.string.loading_sending_request));
 			activity.switchFragment(activity.getLoadingFragment());
 		};
 

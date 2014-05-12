@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 /**
  * Fragment which shows either a progress bar or an error message
@@ -15,6 +16,8 @@ public class LoadingFragment extends Fragment {
 	VineyardMainActivity activity;
 	ViewGroup mainLayout, progressView, errorView;
 	ImageButton retry;
+	String errorMessage, loadingMessage;
+	TextView errorMessageTextView, loadingMessageTextView;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -33,17 +36,41 @@ public class LoadingFragment extends Fragment {
 		progressView = (ViewGroup) activity.findViewById(R.id.loading_progress);
 		errorView = (ViewGroup) activity.findViewById(R.id.loading_error);
 
+		loadingMessageTextView = (TextView) progressView
+				.findViewById(R.id.loading_message);
+		if (loadingMessage == null)
+			loadingMessage = getString(R.string.loading_message);
+
+		errorMessageTextView = (TextView) progressView
+				.findViewById(R.id.loading_error_message);
+		if (errorMessage == null)
+			errorMessage = getString(R.string.loading_error_message);
 		retry = (ImageButton) errorView.findViewById(R.id.loading_error_retry);
 		retry.setOnClickListener(retryOnClickListener);
 
 		setLoading(true);
 	}
 
+	public void setErrorMessage(String errorMessage) {
+		this.errorMessage = errorMessage;
+
+		if (errorMessageTextView != null)
+			errorMessageTextView.setText(errorMessage);
+	}
+
+	public void setLoadingMessage(String loadingMessage) {
+		this.loadingMessage = loadingMessage;
+
+		if (loadingMessageTextView != null)
+			loadingMessageTextView.setText(loadingMessage);
+	}
+
 	/**
 	 * Disables the navigation drawer and shows the progress bar or enables the
 	 * navigation drawer and shows an error message otherwise
 	 * 
-	 * @param loading wether to show the progress bar or the error
+	 * @param loading
+	 *            whether to show the progress bar or the error
 	 */
 	public void setLoading(boolean loading) {
 		activity.setNavigationDrawerLocked(loading);
@@ -51,6 +78,10 @@ public class LoadingFragment extends Fragment {
 				: R.string.loading_error));
 		progressView.setVisibility(loading ? View.VISIBLE : View.GONE);
 		errorView.setVisibility(loading ? View.GONE : View.VISIBLE);
+		if (loading)
+			loadingMessageTextView.setText(loadingMessage);
+		else
+			errorMessageTextView.setText(errorMessage);
 	}
 
 	private OnClickListener retryOnClickListener = new OnClickListener() {

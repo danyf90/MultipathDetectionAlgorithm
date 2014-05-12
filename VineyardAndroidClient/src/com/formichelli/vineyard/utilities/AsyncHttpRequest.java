@@ -7,11 +7,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpHead;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
@@ -33,6 +35,7 @@ public class AsyncHttpRequest extends
 	};
 
 	protected String serverUrl;
+	protected String lastModified;
 	protected List<NameValuePair> params;
 	protected Type type;
 
@@ -78,6 +81,14 @@ public class AsyncHttpRequest extends
 		this.serverUrl = serverUrl;
 	}
 
+	public String getLastModified() {
+		return lastModified;
+	}
+
+	public void setLastModified(String lastModified) {
+		this.lastModified = lastModified;
+	}
+
 	public Type getType() {
 		return type;
 	}
@@ -114,7 +125,7 @@ public class AsyncHttpRequest extends
 		HttpRequestBase request;
 
 		if (serverUrl == null || type == null)
-			return null;
+			return new Pair<Integer,String>(-1,null);
 
 		Log.i(TAG, "Sending " + type + " request to " + serverUrl);
 		if (type != Type.GET)
@@ -129,6 +140,18 @@ public class AsyncHttpRequest extends
 
 		case GET:
 			request = new HttpGet(serverUrl);
+			if (lastModified != null) {
+				HttpHead httpHead = new HttpHead(serverUrl);
+				httpHead.addHeader("If-Modified-Since", lastModified);
+				try {
+					// Sends the request only if the object has been modified since last time 
+					HttpResponse response = new DefaultHttpClient().execute(httpHead);
+					if (response.getStatusLine().getStatusCode() == HttpStatus.SC_NOT_MODIFIED)
+						return new Pair<Integer, String>(HttpStatus.SC_NOT_MODIFIED, null);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
 			break;
 
 		case POST:
@@ -140,7 +163,7 @@ public class AsyncHttpRequest extends
 			break;
 
 		default:
-			return null;
+			return new Pair<Integer,String>(-1,null);
 		}
 
 		// add the parameters for DELETE, POST and PUT requests
@@ -151,7 +174,7 @@ public class AsyncHttpRequest extends
 							.setEntity(new UrlEncodedFormEntity(this.params));
 				} catch (UnsupportedEncodingException e) {
 					Log.e(TAG, "Error: " + e.getLocalizedMessage());
-					return null;
+					return new Pair<Integer,String>(-1,null);
 				}
 		}
 
@@ -163,7 +186,7 @@ public class AsyncHttpRequest extends
 					.getStatusCode(), getResponseBody(result));
 		} catch (IOException e) {
 			Log.e(TAG, "Error: " + e.getLocalizedMessage());
-			return null;
+			return new Pair<Integer,String>(-1,null);
 		}
 
 	}

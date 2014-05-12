@@ -1,5 +1,10 @@
 package com.formichelli.vineyard.utilities;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
+
 import android.content.SharedPreferences;
 
 /**
@@ -10,6 +15,7 @@ public class Cache {
 	public final static String ISSUES_AND_TASKS = "cache_issuesAndTasks";
 	public final static String WORKERS = "cache_workers";
 	public final static String WORKER_GROUPS = "cache_workerGroups";
+	private final static String LAST_MODIFIED = "_last_modified";
 
 	SharedPreferences sp;
 
@@ -18,35 +24,56 @@ public class Cache {
 	}
 
 	public void putPlaces(String placesJSON) {
-		sp.edit().putString(PLACES, placesJSON).apply();
+		put(PLACES, placesJSON);
 	}
 
 	public String getPlaces() {
 		return sp.getString(PLACES, null);
 	}
-
+	public String getPlacesLastModified() {
+		return sp.getString(PLACES + LAST_MODIFIED, null);
+	}
 
 	public void putIssuesAndTasks(String issuesAndTasksJSON) {
-		sp.edit().putString(ISSUES_AND_TASKS, issuesAndTasksJSON).apply();		
+		put(ISSUES_AND_TASKS, issuesAndTasksJSON);
 	}
 
 	public String getIssuesAndTasks() {
-		return sp.getString(ISSUES_AND_TASKS, null);		
+		return sp.getString(ISSUES_AND_TASKS, null);
+	}
+
+	public String getIssuesAndTasksLastModified() {
+		return sp.getString(ISSUES_AND_TASKS + LAST_MODIFIED, null);
 	}
 
 	public void putWorkers(String workersJSON) {
-		sp.edit().putString(WORKERS, workersJSON).apply();		
+		put(WORKERS, workersJSON);
 	}
 
 	public String getWorkers() {
-		return sp.getString(WORKERS, null);		
+		return sp.getString(WORKERS, null);
 	}
+
+	public String getWorkersLastModified() {
+		return sp.getString(WORKERS + LAST_MODIFIED, null);
+	}
+
 	public void putWorkerGroups(String workerGroupsJSON) {
-		sp.edit().putString(WORKER_GROUPS, workerGroupsJSON).apply();		
+		put(WORKER_GROUPS, workerGroupsJSON);
 	}
 
 	public String getWorkerGroups() {
-		return sp.getString(WORKER_GROUPS, null);		
+		return sp.getString(WORKER_GROUPS, null);
 	}
 
+	public String getWorkerGroupsLastModified() {
+		return sp.getString(WORKER_GROUPS + LAST_MODIFIED, null);
+	}
+
+	private void put(String key, String value) {
+		final DateFormat df = new SimpleDateFormat("EEE, dd MMM yyyy, HH:mm", Locale.US);
+		final String currentDate = df.format(Calendar.getInstance().getTime());
+
+		sp.edit().putString(key, value).putString(key + LAST_MODIFIED, currentDate).commit();
+	}
 }
