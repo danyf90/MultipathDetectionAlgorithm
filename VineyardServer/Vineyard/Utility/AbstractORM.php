@@ -163,6 +163,24 @@ abstract class AbstractORM implements JsonSerializable {
         $this->_data = $sql->fetch(PDO::FETCH_ASSOC);
         $this->touchedFields = array();
     }
+    
+    /**
+     * Loads this instance without data from the entry with id $id.
+     */
+    public function loadEmpty($id) {
+        $pdo = DB::getConnection();
+        $tableName = static::getTableName();
+
+        $sql = $pdo->prepare("SELECT 1 FROM `" . $tableName . "` WHERE `id` = ?");
+        $id = (int) $id;
+        $sql->execute(array($id));
+
+        if ($sql->rowCount()  == 0)
+            throw new ORMException();
+        
+        $this->_data = array('id' => $id);
+        $this->touchedFields = array();
+    }
 
     /**
      * Populates this instance with $data.
@@ -280,7 +298,7 @@ abstract class AbstractORM implements JsonSerializable {
         });
 
         $s = new static();
-        $s->load($id);
+        $s->loadEmpty($id);
         $s->populate($_PUT);
 
         try {
