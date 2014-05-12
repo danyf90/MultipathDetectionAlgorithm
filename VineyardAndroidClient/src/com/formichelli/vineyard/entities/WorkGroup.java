@@ -3,9 +3,16 @@ package com.formichelli.vineyard.entities;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.formichelli.vineyard.entities.Worker;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class WorkGroup {
+	public final static String ID = "id";
+	public final static String NAME = "name";
+	public final static String DESCRIPTION = "description";
+	public final static String WORKERS = "workers";
+
 	private int id;
 	private String name;
 	private String description;
@@ -14,6 +21,20 @@ public class WorkGroup {
 	public WorkGroup() {
 		workers = new ArrayList<Worker>();
 	}
+
+	public WorkGroup(JSONObject jsonObject) throws JSONException {
+
+		setId(jsonObject.getInt(ID));
+
+		setName(jsonObject.getString(NAME));
+
+		setDescription(jsonObject.getString(DESCRIPTION));
+
+		workers = new ArrayList<Worker>();
+		if (!jsonObject.isNull(WORKERS))
+			setWorkers(jsonObject.getJSONArray(WORKERS));
+	}
+
 	public int getId() {
 		return id;
 	}
@@ -47,6 +68,19 @@ public class WorkGroup {
 			this.workers.clear();
 		else
 			this.workers = workers;
+	}
+
+	public void setWorkers(JSONArray workersArray) {
+		this.workers.clear();
+
+		for (int i = 0, l = workersArray.length(); i < l; i++)
+			try {
+				Worker w = new Worker();
+				w.setId(workersArray.getInt(i));
+				addWorker(w);
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
 	}
 
 	public void addWorker(Worker worker) {

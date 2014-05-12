@@ -1,9 +1,12 @@
 package com.formichelli.vineyard.utilities;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import com.formichelli.vineyard.R;
+import com.formichelli.vineyard.VineyardMainActivity;
 import com.formichelli.vineyard.entities.IssueTask;
 import com.formichelli.vineyard.entities.Task;
 import com.formichelli.vineyard.entities.Task.Priority;
@@ -33,8 +36,8 @@ public class TaskExpandableAdapter<T extends Task> extends
 			doneOnClickListener;
 
 	ViewGroup attributesLabels, attributesValues;
-	String placeLabel, priorityLabel, statusLabel, assignedWorkerLabel, assignedGroupLabel,
-			dueTimeLabel;
+	String placeLabel, priorityLabel, statusLabel, assignedWorkerLabel,
+			assignedGroupLabel, dueTimeLabel;
 	String assignedValue, notAssignedValue;
 	String[] priorities;
 
@@ -159,8 +162,7 @@ public class TaskExpandableAdapter<T extends Task> extends
 
 		// set place
 		if (object.getPlace() != null)
-			addAttribute(placeLabel,
-					object.getPlace().getName());
+			addAttribute(placeLabel, object.getPlace().getName());
 
 		// set priority
 		if (object.getPriority() != null)
@@ -174,16 +176,16 @@ public class TaskExpandableAdapter<T extends Task> extends
 			// set assignedWorker and assignedGroup
 			if (object.getAssignedWorker() != null)
 				addAttribute(assignedWorkerLabel,
-						String.valueOf(object.getAssignedWorker().getId()));
+						String.valueOf(object.getAssignedWorker().getName()));
 
 			if (object.getAssignedGroup() != null)
 				addAttribute(assignedGroupLabel,
-						String.valueOf(object.getAssignedGroup().getId()));
+						String.valueOf(object.getAssignedGroup().getName()));
 		}
 
 		// set dueTime
 		if (object.getDueTime() != null)
-			addAttribute(dueTimeLabel, object.getDueTime().toLocaleString());
+			addAttribute(dueTimeLabel, DateFormat.getDateInstance(DateFormat.SHORT, Locale.getDefault()).format(object.getDueTime()));
 
 		// TODO show on map?
 
@@ -193,10 +195,13 @@ public class TaskExpandableAdapter<T extends Task> extends
 			List<String> photos = ((IssueTask) object).getPhotos();
 			if (photos.size() == 0)
 				childView.removeView(gallery);
-			else
+			else {				
+				VineyardServer vineyardServer = ((VineyardMainActivity) context).getServer();
+				String photoApi = vineyardServer.getUrl() + VineyardServer.PHOTO_API;
 				for (String photo : photos)
-					gallery.addImage(photo, false);
-			
+					gallery.addImageFromServer(photoApi, photo);
+			}
+
 			childView.findViewById(R.id.issue_view_edit).setTag(object);
 			childView.findViewById(R.id.issue_view_edit).setOnClickListener(
 					editOnClickListener);

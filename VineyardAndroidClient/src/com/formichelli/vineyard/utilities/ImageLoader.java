@@ -25,15 +25,12 @@ import android.widget.ProgressBar;
  * Class which allows to retrieve an image from a server.
  * 
  */
-public class ImageLoader extends AsyncTask<String, Void, Bitmap> {
+public class ImageLoader extends AsyncTask<Void, Void, Bitmap> {
 	Context context;
 	ViewGroup container;
 	ProgressBar progress;
 	String imageUrl;
 	String localName;
-
-	public ImageLoader(Context context) {
-	}
 
 	/**
 	 * @param context
@@ -48,6 +45,7 @@ public class ImageLoader extends AsyncTask<String, Void, Bitmap> {
 		this.container = container;
 		this.progress = progress;
 		this.imageUrl = imageUrl;
+		android.util.Log.e("IMAGELOADER", imageUrl);
 	}
 
 	@Override
@@ -60,7 +58,7 @@ public class ImageLoader extends AsyncTask<String, Void, Bitmap> {
 	 * Sends an HTTP GET request and returns the image bitmap
 	 */
 	@Override
-	protected Bitmap doInBackground(String... params) {
+	protected Bitmap doInBackground(Void... params) {
 		if (container == null)
 			return null;
 
@@ -71,10 +69,9 @@ public class ImageLoader extends AsyncTask<String, Void, Bitmap> {
 
 		Bitmap imageBitmap;
 
-		if ((new File(localName)).exists()) {
+		if ((new File(localName)).exists())
 			// the image is already present locally
 			imageBitmap = BitmapFactory.decodeFile(localName);
-			android.util.Log.e("ASD", "loaded from file");}
 		else {
 			// the image must be retrieved from the server
 			try {

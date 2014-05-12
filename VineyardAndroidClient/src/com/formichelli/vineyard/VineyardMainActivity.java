@@ -1,5 +1,7 @@
 package com.formichelli.vineyard;
 
+import java.util.concurrent.ExecutionException;
+
 import org.apache.http.HttpStatus;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -27,6 +29,8 @@ import android.widget.Toast;
 import com.formichelli.vineyard.entities.IssueTask;
 import com.formichelli.vineyard.entities.Place;
 import com.formichelli.vineyard.entities.SimpleTask;
+import com.formichelli.vineyard.entities.WorkGroup;
+import com.formichelli.vineyard.entities.Worker;
 import com.formichelli.vineyard.utilities.AsyncHttpRequest;
 import com.formichelli.vineyard.utilities.Cache;
 import com.formichelli.vineyard.utilities.VineyardServer;
@@ -53,8 +57,10 @@ public class VineyardMainActivity extends ActionBarActivity implements
 	SparseArray<Place> places;
 	SparseArray<IssueTask> issues;
 	SparseArray<SimpleTask> tasks;
-	AsyncHttpRequest rootPlaceRequest, issuesAndTasksRequest;
-	Pair<Integer, String> rootPlaceResponse, issuesAndTasksResponse;
+	SparseArray<Worker> workers;
+	SparseArray<WorkGroup> workGroups;
+	AsyncHttpRequest rootPlaceRequest, issuesAndTasksRequest, workersRequest,
+			workGroupsRequest;
 	int userId;
 
 	/**
@@ -62,7 +68,6 @@ public class VineyardMainActivity extends ActionBarActivity implements
 	 * navigation drawer.
 	 */
 	private NavigationDrawerFragment mNavigationDrawerFragment;
-
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -101,21 +106,31 @@ public class VineyardMainActivity extends ActionBarActivity implements
 
 	private void serverInit() {
 		vineyardServer = new VineyardServer(serverUrl);
-
-		sendRootPlaceRequest();
+		requestData();
 	}
 
-	public void sendRootPlaceRequest() {
+	public void requestData() {
 
-		rootPlaceResponse = null;
+		places = null;
 		rootPlaceRequest = new RootPlaceAsyncHttpRequest(
 				vineyardServer.getUrl());
 		rootPlaceRequest.execute();
 
-		issuesAndTasksResponse = null;
+		issues = null;
+		tasks = null;
 		issuesAndTasksRequest = new IssuesAndTasksAsyncHttpRequest(
 				vineyardServer.getUrl());
 		issuesAndTasksRequest.execute();
+
+		workers = null;
+		workersRequest = new WorkersAsyncHttpRequest(vineyardServer.getUrl());
+		workersRequest.execute();
+
+		workGroups = null;
+		workGroupsRequest = new WorkGroupsAsyncHttpRequest(
+				vineyardServer.getUrl());
+		workGroupsRequest.execute();
+
 	}
 
 	@Override
@@ -309,6 +324,26 @@ public class VineyardMainActivity extends ActionBarActivity implements
 		issues.remove(issue.getId());
 	}
 
+	public SparseArray<Place> getPlaces() {
+		return places;
+	}
+
+	public void setPlace(SparseArray<Place> places) {
+		if (places != null)
+			this.places = places;
+		else
+			this.places.clear();
+	}
+
+	public void addPlace(Place place) {
+		if (place != null)
+			places.put(place.getId(), place);
+	}
+
+	public void removePlace(Place place) {
+		places.remove(place.getId());
+	}
+
 	public SparseArray<SimpleTask> getTasks() {
 		return tasks;
 	}
@@ -329,23 +364,108 @@ public class VineyardMainActivity extends ActionBarActivity implements
 		tasks.remove(task.getId());
 	}
 
-	private void onAsyncHttpRequestFinished(AsyncHttpRequest asyncHttpRequest,
-			Pair<Integer, String> response) {
+	public SparseArray<Worker> getWorkers() {
+		return workers;
+	}
 
-		if (asyncHttpRequest == rootPlaceRequest) {
-			rootPlaceResponse = response;
+	public void setWorkers(SparseArray<Worker> workers) {
+		if (workers != null)
+			this.workers = workers;
+		else
+			this.workers.clear();
+	}
 
-			rootPlaceResponseHandler(response);
-			if (issuesAndTasksResponse != null)
-				issuesAndTasksResponseHandler(issuesAndTasksResponse);
+	public void addWorker(Worker worker) {
+		if (worker != null)
+			workers.put(worker.getId(), worker);
+	}
+
+	public void removeWorker(Worker worker) {
+		workers.remove(worker.getId());
+	}
+
+	public SparseArray<WorkGroup> getWorkGroups() {
+		return workGroups;
+	}
+
+	public void setWorkGroups(SparseArray<WorkGroup> workGroups) {
+		if (workGroups != null)
+			this.workGroups = workGroups;
+		else
+			this.workGroups.clear();
+	}
+
+	public void addWorkGroup(WorkGroup workGroup) {
+		if (workGroup != null)
+			workGroups.put(workGroup.getId(), workGroup);
+	}
+
+	public void removeWorkGroup(Worker workGroup) {
+		workGroups.remove(workGroup.getId());
+	}
+
+	private void onAsyncHttpRequestFinished(AsyncHttpRequest asyncHttpRequest) {
+		try {
+			if (asyncHttpRequest.get() == null)
+				cancelRequests();
+		} catch (InterruptedException | ExecutionException e) {
+			cancelRequests();
 		}
 
-		if (asyncHttpRequest == issuesAndTasksRequest) {
-			issuesAndTasksResponse = response;
-
-			if (rootPlaceResponse != null)
-				issuesAndTasksResponseHandler(response);
+		if (places != null && issues != null && tasks != null
+				&& workers != null && workGroups != null) {
+			associateEntities();
+			switchFragment(placeViewerFragment);
 		}
+	}
+
+	private void associateEntities() {
+		for (int i = 0, l = issues.size(); i < l; i++) {
+			IssueTask issue = issues.valueAt(i);
+
+			issue.setPlace(places.get(issue.getPlace().getId()));
+			issue.getPlace().addIssue(issue);
+
+			if (issue.getAssignedWorker() != null)
+				issue.setAssignedWorker(workers.get(issue.getAssignedWorker()
+						.getId()));
+
+			if (issue.getAssignedGroup() != null)
+				issue.setAssignedGroup(workGroups.get(issue.getAssignedGroup()
+						.getId()));
+		}
+
+		for (int i = 0, l = tasks.size(); i < l; i++) {
+			SimpleTask task = tasks.valueAt(i);
+
+			task.setPlace(places.get(task.getPlace().getId()));
+			task.getPlace().addTask(task);
+
+			if (task.getAssignedWorker() != null)
+				task.setAssignedWorker(workers.get(task.getAssignedWorker()
+						.getId()));
+
+			if (task.getAssignedGroup() != null)
+				task.setAssignedGroup(workGroups.get(task.getAssignedGroup()
+						.getId()));
+		}
+
+		for (int i = 0, l = workGroups.size(); i < l; i++) {
+			// TODO
+			// WorkGroup workGroup = workGroups.valueAt(i);
+			//
+			// for (Worker worker : workGroup.getWorkers()) {
+			// workGroup.removeWorker(worker);
+			// workGroup.addWorker(workers.get(worker.getId()));
+			// }
+		}
+	}
+
+	private void cancelRequests() {
+		rootPlaceRequest.cancel(true);
+		issuesAndTasksRequest.cancel(true);
+		workersRequest.cancel(true);
+		workGroupsRequest.cancel(true);
 	}
 
 	/*
@@ -356,13 +476,16 @@ public class VineyardMainActivity extends ActionBarActivity implements
 	 * error message will be displayed in loadingFragment.
 	 */
 	private class RootPlaceAsyncHttpRequest extends AsyncHttpRequest {
+		protected final static String TAG = "RootPlaceAsyncHttpRequest";
+
 		public RootPlaceAsyncHttpRequest(String serverUrl) {
 			super(serverUrl + VineyardServer.PLACES_HIERARCHY_API, Type.GET);
 		}
 
 		@Override
 		protected void onPreExecute() {
-			loadingFragment.setLoadingMessage(getString(R.string.loading_places));
+			loadingFragment
+					.setLoadingMessage(getString(R.string.loading_places));
 			switchFragment(loadingFragment);
 		}
 
@@ -372,69 +495,65 @@ public class VineyardMainActivity extends ActionBarActivity implements
 		 */
 		@Override
 		protected void onPostExecute(Pair<Integer, String> response) {
-			onAsyncHttpRequestFinished(this, response);
-		}
+			String rootPlaceJSON = null;
 
-	}
+			if (response != null) {
+				switch (response.first) {
 
-	private void rootPlaceResponseHandler(Pair<Integer, String> response) {
-		String rootPlaceJSON = null;
+				case HttpStatus.SC_OK:
+					// get places hierarchy from server response
+					rootPlaceJSON = response.second;
+					cache.putPlaces(rootPlaceJSON);
+					break;
 
-		if (response != null) {
-			switch (response.first) {
+				case HttpStatus.SC_NOT_MODIFIED:
+					rootPlaceJSON = cache.getPlaces();
+					break;
 
-			case HttpStatus.SC_OK:
-				// get places hierarchy from server response
-				rootPlaceJSON = response.second;
-				cache.putPlaces(rootPlaceJSON);
-				break;
-
-			case HttpStatus.SC_NOT_MODIFIED:
-				rootPlaceJSON = cache.getPlaces();
-				break;
-
+				}
 			}
-		}
-
-		if (rootPlaceJSON == null) {
-			// response == null or invalid response code: get places
-			// hierarchy from shared preferences
-			rootPlaceJSON = cache.getPlaces();
 
 			if (rootPlaceJSON == null) {
-				Log.e(TAG,
-						"places not available neither from server nor from sharedPreference");
-				loadingFragment.setLoading(false);
-				return;
+				// response == null or invalid response code: get places
+				// hierarchy from shared preferences
+				rootPlaceJSON = cache.getPlaces();
+
+				if (rootPlaceJSON == null) {
+					Log.e(TAG,
+							"places not available neither from server nor from sharedPreference");
+					loadingFragment.setLoading(false);
+					onAsyncHttpRequestFinished(this);
+					return;
+				}
+
+				Toast.makeText(VineyardMainActivity.this,
+						getString(R.string.cache_data_used), Toast.LENGTH_SHORT)
+						.show();
 			}
 
-			Toast.makeText(VineyardMainActivity.this,
-					getString(R.string.cache_data_used), Toast.LENGTH_SHORT)
-					.show();
+			try {
+
+				rootPlace = new Place(new JSONObject(rootPlaceJSON));
+				setCurrentPlace(rootPlace);
+
+				places = new SparseArray<Place>();
+				addPlaceToHashMap(rootPlace);
+
+			} catch (JSONException e) {
+				// show an error fragment if something is gone wrong
+				Log.e(TAG, e.getLocalizedMessage());
+				loadingFragment.setLoading(false);
+			}
+
+			onAsyncHttpRequestFinished(this);
 		}
 
-		try {
+		private void addPlaceToHashMap(Place place) {
+			places.put(place.getId(), place);
 
-			rootPlace = new Place(new JSONObject(rootPlaceJSON));
-			setCurrentPlace(rootPlace);
-
-			// needed by IssuesAndTasksAsyncHttpRequest
-			places = new SparseArray<Place>();
-			addPlaceToHashMap(rootPlace);
-
-		} catch (JSONException e) {
-			// show an error fragment if something is gone wrong
-			Log.e(TAG, e.getLocalizedMessage());
-			loadingFragment.setLoading(false);
+			for (Place child : place.getChildren())
+				addPlaceToHashMap(child);
 		}
-
-	}
-
-	private void addPlaceToHashMap(Place place) {
-		places.put(place.getId(), place);
-
-		for (Place child : place.getChildren())
-			addPlaceToHashMap(child);
 	}
 
 	/*
@@ -445,6 +564,8 @@ public class VineyardMainActivity extends ActionBarActivity implements
 	 * loadingFragment.
 	 */
 	private class IssuesAndTasksAsyncHttpRequest extends AsyncHttpRequest {
+		protected final static String TAG = "IssuesAndTasksAsyncHttpRequest";
+
 		public IssuesAndTasksAsyncHttpRequest(String serverUrl) {
 			super(serverUrl + VineyardServer.OPEN_ISSUES_AND_TASKS_API,
 					Type.GET);
@@ -452,7 +573,8 @@ public class VineyardMainActivity extends ActionBarActivity implements
 
 		@Override
 		protected void onPreExecute() {
-			loadingFragment.setLoadingMessage(getString(R.string.loading_issues_and_tasks));
+			loadingFragment
+					.setLoadingMessage(getString(R.string.loading_issues_and_tasks));
 			switchFragment(loadingFragment);
 		}
 
@@ -461,86 +583,245 @@ public class VineyardMainActivity extends ActionBarActivity implements
 		 */
 		@Override
 		protected void onPostExecute(Pair<Integer, String> response) {
-			onAsyncHttpRequestFinished(this, response);
-		}
-	}
+			onAsyncHttpRequestFinished(this);
+			String issuesAndTasksJSON = null;
 
-	private void issuesAndTasksResponseHandler(Pair<Integer, String> response) {
-		String issuesAndTasksJSON = null;
+			if (rootPlace == null)
+				return;
 
-		if (rootPlace == null)
-			return;
+			if (response != null)
+				switch (response.first) {
 
-		if (response != null)
-			switch (response.first) {
-
-			case HttpStatus.SC_OK:
-				// get issues and tasks from server response
-				issuesAndTasksJSON = response.second;
-				cache.putIssuesAndTasks(issuesAndTasksJSON);
-				break;
-			case HttpStatus.SC_NOT_MODIFIED:
-				// get issues and tasks from shared preferences
-				issuesAndTasksJSON = cache.getIssuesAndTasks();
-				Log.e(TAG, "not modified");
-				break;
-			}
-
-		if (issuesAndTasksJSON == null) {
-			// response == null or invalid response code: get issues and
-			// tasks from shared preferences
-			issuesAndTasksJSON = cache.getIssuesAndTasks();
+				case HttpStatus.SC_OK:
+					// get issues and tasks from server response
+					issuesAndTasksJSON = response.second;
+					cache.putIssuesAndTasks(issuesAndTasksJSON);
+					break;
+				case HttpStatus.SC_NOT_MODIFIED:
+					// get issues and tasks from shared preferences
+					issuesAndTasksJSON = cache.getIssuesAndTasks();
+					Log.e(TAG, "not modified");
+					break;
+				}
 
 			if (issuesAndTasksJSON == null) {
-				Log.e(TAG,
-						"issuesAndTasks not available neither from server nor from sharedPreference");
-				loadingFragment.setLoading(false);
-				return;
+				// response == null or invalid response code: get issues and
+				// tasks from shared preferences
+				issuesAndTasksJSON = cache.getIssuesAndTasks();
+
+				if (issuesAndTasksJSON == null) {
+					Log.e(TAG,
+							"issuesAndTasks not available neither from server nor from sharedPreference");
+					loadingFragment.setLoading(false);
+					onAsyncHttpRequestFinished(this);
+					return;
+				}
+
+				Toast.makeText(VineyardMainActivity.this,
+						getString(R.string.cache_data_used), Toast.LENGTH_SHORT)
+						.show();
 			}
 
-			Toast.makeText(VineyardMainActivity.this,
-					getString(R.string.cache_data_used), Toast.LENGTH_SHORT)
-					.show();
-		}
+			// associate issues and tasks to places and viceversa
+			try {
+				JSONArray issuesAndTasks = new JSONArray(issuesAndTasksJSON);
 
-		// associate issues and tasks to places and viceversa
-		try {
-			JSONArray issuesAndTasks = new JSONArray(issuesAndTasksJSON);
+				issues = new SparseArray<IssueTask>();
+				tasks = new SparseArray<SimpleTask>();
 
-			issues = new SparseArray<IssueTask>();
-			tasks = new SparseArray<SimpleTask>();
+				for (int i = 0, l = issuesAndTasks.length(); i < l; i++) {
+					JSONObject object = issuesAndTasks.getJSONObject(i);
 
-			for (int i = 0, l = issuesAndTasks.length(); i < l; i++) {
-				JSONObject object = issuesAndTasks.getJSONObject(i);
-
-				Place place = places.get(object.getInt(SimpleTask.PLACE));
-
-				if (place != null) {
 					if (!object.isNull(IssueTask.ISSUER)) {
 						IssueTask issue = new IssueTask(object);
-						issue.setPlace(place);
-						place.addIssue(issue);
+						issue.setPlace(places.get(object
+								.getInt(SimpleTask.PLACE)));
 						addIssue(issue);
 					} else {
 						SimpleTask task = new SimpleTask(object);
-						task.setPlace(place);
-						place.addTask(task);
+						task.setPlace(places.get(object
+								.getInt(SimpleTask.PLACE)));
 						addTask(task);
 					}
-				} else
-					Log.e(TAG,
-							"Place not found: "
-									+ String.valueOf(object
-											.getInt(SimpleTask.PLACE)));
+				}
+
+			} catch (JSONException e) {
+				e.printStackTrace();
+				Log.e(TAG,
+						"Error parsing issues and tasks JSON: "
+								+ e.getLocalizedMessage());
 			}
 
-		} catch (JSONException e) {
-			e.printStackTrace();
-			Log.e(TAG,
-					"Error parsing issues and tasks JSON: "
-							+ e.getLocalizedMessage());
+			onAsyncHttpRequestFinished(this);
+		}
+	}
+
+	/*
+	 * Sends a GET request to the server to obtain workers. During the loading
+	 * the fragment loadingFragment will be displayed. At the end of the
+	 * execution workers will be associated to issues. If something goes wrong
+	 * an error message will be displayed in loadingFragment.
+	 */
+	private class WorkersAsyncHttpRequest extends AsyncHttpRequest {
+		protected final static String TAG = "WorkersAsyncHttpRequest";
+
+		public WorkersAsyncHttpRequest(String serverUrl) {
+			super(serverUrl + VineyardServer.WORKERS_API, Type.GET);
 		}
 
-		switchFragment(placeViewerFragment);
+		@Override
+		protected void onPreExecute() {
+			loadingFragment
+					.setLoadingMessage(getString(R.string.loading_workers));
+			switchFragment(loadingFragment);
+		}
+
+		/*
+		 * Add received issues and places to the respective place.
+		 */
+		@Override
+		protected void onPostExecute(Pair<Integer, String> response) {
+			String workersJSON = null;
+
+			if (rootPlace == null)
+				return;
+
+			if (response != null)
+				switch (response.first) {
+
+				case HttpStatus.SC_OK:
+					// get issues and tasks from server response
+					workersJSON = response.second;
+					cache.putWorkers(workersJSON);
+					break;
+				case HttpStatus.SC_NOT_MODIFIED:
+					// get issues and tasks from shared preferences
+					workersJSON = cache.getWorkers();
+					Log.e(TAG, "not modified");
+					break;
+				}
+
+			if (workersJSON == null) {
+				// response == null or invalid response code: get issues and
+				// tasks from shared preferences
+				workersJSON = cache.getWorkers();
+
+				if (workersJSON == null) {
+					Log.e(TAG,
+							"workers not available neither from server nor from sharedPreference");
+					loadingFragment.setLoading(false);
+					onAsyncHttpRequestFinished(this);
+					return;
+				}
+
+				Toast.makeText(VineyardMainActivity.this,
+						getString(R.string.cache_data_used), Toast.LENGTH_SHORT)
+						.show();
+			}
+
+			// associate issues and tasks to places and viceversa
+			try {
+				JSONArray workersArray = new JSONArray(workersJSON);
+
+				workers = new SparseArray<Worker>();
+
+				for (int i = 0, l = workersArray.length(); i < l; i++) {
+					Log.e(TAG, workersArray.getJSONObject(i).toString());
+					addWorker(new Worker(workersArray.getJSONObject(i)));
+				}
+
+			} catch (JSONException e) {
+				e.printStackTrace();
+				Log.e(TAG,
+						"Error parsing workers JSON: "
+								+ e.getLocalizedMessage());
+			}
+
+			onAsyncHttpRequestFinished(this);
+		}
 	}
+
+	/*
+	 * Sends a GET request to the server to obtain workgroups. During the
+	 * loading the fragment loadingFragment will be displayed. At the end of the
+	 * execution workgroups will be associated to workers. If something goes
+	 * wrong an error message will be displayed in loadingFragment.
+	 */
+	private class WorkGroupsAsyncHttpRequest extends AsyncHttpRequest {
+		protected final static String TAG = "WorkGroupsAsyncHttpRequest";
+
+		public WorkGroupsAsyncHttpRequest(String serverUrl) {
+			super(serverUrl + VineyardServer.WORKGROUPS_API, Type.GET);
+		}
+
+		@Override
+		protected void onPreExecute() {
+			loadingFragment
+					.setLoadingMessage(getString(R.string.loading_workgroups));
+			switchFragment(loadingFragment);
+		}
+
+		/*
+		 * Add received issues and places to the respective place.
+		 */
+		@Override
+		protected void onPostExecute(Pair<Integer, String> response) {
+			String workGroupsJSON = null;
+
+			if (rootPlace == null)
+				return;
+
+			if (response != null)
+				switch (response.first) {
+
+				case HttpStatus.SC_OK:
+					// get issues and tasks from server response
+					workGroupsJSON = response.second;
+					cache.putWorkGroups(workGroupsJSON);
+					break;
+				case HttpStatus.SC_NOT_MODIFIED:
+					// get issues and tasks from shared preferences
+					workGroupsJSON = cache.getWorkGroups();
+					Log.e(TAG, "not modified");
+					break;
+				}
+
+			if (workGroupsJSON == null) {
+				// response == null or invalid response code: get issues and
+				// tasks from shared preferences
+				workGroupsJSON = cache.getWorkGroups();
+
+				if (workGroupsJSON == null) {
+					Log.e(TAG,
+							"workgroups not available neither from server nor from sharedPreference");
+					loadingFragment.setLoading(false);
+					onAsyncHttpRequestFinished(this);
+					return;
+				}
+
+				Toast.makeText(VineyardMainActivity.this,
+						getString(R.string.cache_data_used), Toast.LENGTH_SHORT)
+						.show();
+			}
+
+			// associate issues and tasks to places and viceversa
+			try {
+				JSONArray workGroupsArray = new JSONArray(workGroupsJSON);
+
+				workGroups = new SparseArray<WorkGroup>();
+
+				for (int i = 0, l = workGroupsArray.length(); i < l; i++)
+					addWorkGroup(new WorkGroup(workGroupsArray.getJSONObject(i)));
+
+			} catch (JSONException e) {
+				e.printStackTrace();
+				Log.e(TAG,
+						"Error parsing workgroups JSON: "
+								+ e.getLocalizedMessage());
+			}
+
+			onAsyncHttpRequestFinished(this);
+		}
+	}
+
 }

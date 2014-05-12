@@ -14,7 +14,7 @@ public class Cache {
 	public final static String PLACES = "cache_places";
 	public final static String ISSUES_AND_TASKS = "cache_issuesAndTasks";
 	public final static String WORKERS = "cache_workers";
-	public final static String WORKER_GROUPS = "cache_workerGroups";
+	public final static String WORK_GROUPS = "cache_workGroups";
 	private final static String LAST_MODIFIED = "_last_modified";
 
 	SharedPreferences sp;
@@ -58,16 +58,16 @@ public class Cache {
 		return sp.getString(WORKERS + LAST_MODIFIED, null);
 	}
 
-	public void putWorkerGroups(String workerGroupsJSON) {
-		put(WORKER_GROUPS, workerGroupsJSON);
+	public void putWorkGroups(String workGroupsJSON) {
+		put(WORK_GROUPS, workGroupsJSON);
 	}
 
-	public String getWorkerGroups() {
-		return sp.getString(WORKER_GROUPS, null);
+	public String getWorkGroups() {
+		return sp.getString(WORK_GROUPS, null);
 	}
 
-	public String getWorkerGroupsLastModified() {
-		return sp.getString(WORKER_GROUPS + LAST_MODIFIED, null);
+	public String getWorkGroupsLastModified() {
+		return sp.getString(WORK_GROUPS + LAST_MODIFIED, null);
 	}
 
 	private void put(String key, String value) {

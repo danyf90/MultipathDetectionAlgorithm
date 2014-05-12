@@ -351,12 +351,12 @@ public class ReportIssueFragment extends Fragment {
 		public AsyncIssueSend(String serverUrl, IssueTask issue) {
 			if (!editMode) {
 				// POST request to add an issue
-				setServerUrl(serverUrl + VineyardServer.ADD_ISSUE_API);
+				setServerUrl(serverUrl + VineyardServer.ISSUES_AND_TASKS_API);
 				setType(Type.POST);
 				setParams(issue.getParams());
 			} else {
 				// PUT request to edit an issue
-				setServerUrl(serverUrl + VineyardServer.EDIT_ISSUE_API
+				setServerUrl(serverUrl + VineyardServer.ISSUES_AND_TASKS_API
 						+ issue.getId());
 				setType(Type.PUT);
 				List<NameValuePair> params = issue.getParams();

@@ -1,18 +1,49 @@
 package com.formichelli.vineyard.entities;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class Worker {
+	public final static String ID = "id";
+	public final static String USERNAME = "username";
+	public final static String NAME = "name";
+	public final static String EMAIL = "email";
+	public final static String ROLES = "role";
+
 	private int id;
 	private String username;
 	private String name;
 	private String email;
-	private String password;
-	private int role;
+	private Set<Role> roles;
 	private List<WorkGroup> groups;
 
+	public enum Role {
+		OPERATOR, ADMIN;
+	}
+
 	public Worker() {
+		groups = new ArrayList<WorkGroup>();
+	}
+
+	public Worker(JSONObject jsonObject) throws JSONException {
+
+		setId(jsonObject.getInt(ID));
+
+		setUsername(jsonObject.getString(USERNAME));
+		
+		setEmail(jsonObject.getString(EMAIL));
+		
+		setName(jsonObject.getString(NAME));
+
+		roles = new HashSet<Role>();
+		setRoles(jsonObject.getString(ROLES));
+		
 		groups = new ArrayList<WorkGroup>();
 	}
 
@@ -48,20 +79,30 @@ public class Worker {
 		this.email = email;
 	}
 
-	public String getPassword() {
-		return this.password;
+	public Set<Role> getRole() {
+		return roles;
 	}
 
-	public void setPassword(String password) {
-		this.password = password;
+	public void setRoles(Set<Role> roles) {
+		if (roles != null)
+			this.roles = roles;
+		else
+			this.roles.clear();
 	}
 
-	public int getRole() {
-		return this.role;
+	public void addRole(Role role) {
+		if (role != null)
+			roles.add(role);
 	}
 
-	public void setRole(int role) {
-		this.role = role;
+	public void setRoles(String rolesJSON) {
+		this.roles.clear();
+
+		if (rolesJSON != null) {
+			String[] roles = rolesJSON.split(",");
+			for (String role : roles)
+				this.roles.add(Role.valueOf(role.toUpperCase(Locale.US)));
+		}
 	}
 
 	public List<WorkGroup> getGroups() {

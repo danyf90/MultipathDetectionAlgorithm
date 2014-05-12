@@ -30,7 +30,6 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
 import com.formichelli.vineyard.R;
-import com.formichelli.vineyard.VineyardMainActivity;
 
 /**
  * A Gallery is an horizontal LinearLayout that can contain zero or more photos,
@@ -163,8 +162,8 @@ public class VineyardGallery extends HorizontalScrollView {
 
 		if (path.startsWith("http://") || path.startsWith("https://")) {
 			// the image must be load from a server
-			new GalleryImageLoader((VineyardMainActivity) getContext())
-					.execute(path);
+			addImageFromServer(path, null);
+
 			return null;
 		} else {
 			// the image is locally stored
@@ -185,6 +184,43 @@ public class VineyardGallery extends HorizontalScrollView {
 				toBeDeleted.put(v, path);
 			return v;
 		}
+	}
+
+	@SuppressWarnings("deprecation")
+	public void addImageFromServer(String serverUrl, String path) {
+		Context context = getContext();
+		
+		// create a container for the image
+		FrameLayout container = new FrameLayout(context);
+		ProgressBar progress = new ProgressBar(context);
+		int size = context.getResources().getDimensionPixelSize(
+				R.dimen.gallery_height);
+		int margin = context.getResources().getDimensionPixelSize(
+				R.dimen.gallery_padding);
+		Drawable background = context.getResources().getDrawable(
+				R.drawable.wine_light_with_wine_dark_border);
+
+		FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
+				size / 2, size / 2);
+		params.setMargins(size / 4 + margin, size / 4 + margin, size / 4
+				+ margin, size / 4 + margin);
+		progress.setLayoutParams(params);
+		container.addView(progress);
+
+		params = new FrameLayout.LayoutParams(size, size);
+		params.setMargins(margin, margin, margin, margin);
+		container.setLayoutParams(params);
+		container.setBackgroundDrawable(background);
+		
+		// add the container to the gallery
+		gallery.addView(container, 0);
+		
+		// TODO fare meglio
+		if (path != null)
+			path = String.format(serverUrl, path, size, size);
+		
+		new ImageLoader(context, container, progress, path)
+				.execute();
 	}
 
 	/**
@@ -325,38 +361,5 @@ public class VineyardGallery extends HorizontalScrollView {
 		if (resultCode == Activity.RESULT_OK) {
 			addImage(currentPhotoPath, true);
 		}
-	}
-
-	/*
-	 * Retrieves and adds an image to the gallery
-	 */
-	private class GalleryImageLoader extends ImageLoader {
-		@SuppressWarnings("deprecation")
-		public GalleryImageLoader(Activity activity) {
-			super(activity);
-
-			container = new FrameLayout(activity);
-			progress = new ProgressBar(activity);
-			int size = activity.getResources().getDimensionPixelSize(
-					R.dimen.gallery_height);
-			int margin = activity.getResources().getDimensionPixelSize(
-					R.dimen.gallery_padding);
-			Drawable background = activity.getResources().getDrawable(
-					R.drawable.wine_light_with_wine_dark_border);
-
-			FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
-					size / 2, size / 2);
-			params.setMargins(size / 4 + margin, size / 4 + margin, size / 4
-					+ margin, size / 4 + margin);
-			progress.setLayoutParams(params);
-			container.addView(progress);
-
-			params = new FrameLayout.LayoutParams(size, size);
-			params.setMargins(margin, margin, margin, margin);
-			container.setLayoutParams(params);
-			container.setBackgroundDrawable(background);
-			gallery.addView(container, 0);
-		}
-
 	}
 }

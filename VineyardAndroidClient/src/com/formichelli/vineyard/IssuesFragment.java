@@ -158,7 +158,7 @@ public class IssuesFragment extends Fragment {
 		IssueTask issue;
 
 		public AsyncMarkIssueAsDone(String serverUrl, IssueTask issue) {
-			super(serverUrl + VineyardServer.EDIT_ISSUE_API + issue.getId(),
+			super(serverUrl + VineyardServer.ISSUES_AND_TASKS_API + issue.getId(),
 					AsyncHttpRequest.Type.PUT);
 
 			this.issue = issue;

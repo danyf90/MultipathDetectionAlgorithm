@@ -10,10 +10,8 @@ import com.formichelli.vineyard.utilities.PlaceAdapter;
 import com.formichelli.vineyard.utilities.Util;
 import com.formichelli.vineyard.utilities.VineyardServer;
 
-import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -46,7 +44,7 @@ public class PlaceViewerFragment extends Fragment {
 	Drawable redBorder, wineBorder;
 	ProgressBar progress;
 	boolean first;
-	AsyncTask<String, Void, Bitmap> imageLoader;
+	ImageLoader imageLoader;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -166,7 +164,7 @@ public class PlaceViewerFragment extends Fragment {
 			loadPlace(activity.getCurrentPlace().getParent());
 			break;
 		case R.id.action_place_viewer_refresh:
-			activity.sendRootPlaceRequest();
+			activity.requestData();
 			break;
 		default:
 			return false;
