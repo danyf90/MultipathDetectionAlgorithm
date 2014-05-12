@@ -1,6 +1,7 @@
 <?php
 namespace Vineyard\Model;
 
+use \PDO;
 use \Vineyard\Utility\DB;
 use \Vineyard\Utility\AbstractORM;
 use \Vineyard\Utility\IResource;
