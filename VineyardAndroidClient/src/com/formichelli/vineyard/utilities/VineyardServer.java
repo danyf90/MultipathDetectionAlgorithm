@@ -3,6 +3,8 @@ package com.formichelli.vineyard.utilities;
 public class VineyardServer {
 	public final static String PLACES_HIERARCHY_API = "/api/place/hierarchy/";
 	public static final String PHOTO_API = "/api/photo/%s?w=%d&h=%d";
+	public static final String PHOTO_SEND_API = "/api/task/%d/photo";
+	public static final String PHOTO_DELETE_API = "/api/task/%d/photo/%s";
 	public static final String LOGIN_API = "/api/worker/login/";
 	public static final String ISSUES_AND_TASKS_API = "/api/task/";
 	public static final String OPEN_ISSUES_AND_TASKS_API = "/api/task/open/";

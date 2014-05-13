@@ -34,6 +34,8 @@ public class ImageLoader extends AsyncTask<Void, Void, Bitmap> {
 	String imageUrl;
 	String localName;
 
+	protected ImageLoader() {}
+	
 	/**
 	 * @param context
 	 * @param container
@@ -60,7 +62,7 @@ public class ImageLoader extends AsyncTask<Void, Void, Bitmap> {
 	 */
 	@Override
 	protected Bitmap doInBackground(Void... params) {
-		if (container == null)
+		if (context == null || container == null || imageUrl == null)
 			return null;
 
 		// get the filename only

@@ -1,5 +1,6 @@
 package com.formichelli.vineyard;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -9,15 +10,19 @@ import java.util.List;
 
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
+import android.util.Base64;
 import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
@@ -351,6 +356,8 @@ public class ReportIssueFragment extends Fragment {
 		IssueTask issue;
 
 		public AsyncIssueSend(String serverUrl, IssueTask issue) {
+			this.issue = issue;
+			
 			if (!editMode) {
 				// POST request to add an issue
 				setServerUrl(serverUrl + VineyardServer.ISSUES_AND_TASKS_API);
@@ -383,12 +390,29 @@ public class ReportIssueFragment extends Fragment {
 		protected void onPostExecute(Pair<Integer, String> response) {
 			if (response != null) {
 				if (!editMode && response.first == HttpStatus.SC_CREATED) {
-					// TODO delete photos from sdcard
+
+					// associate issue to place
 					issue.getPlace().addIssue(issue);
+
+					// send images to server
+					for (String image : gallery.getImagesFromCamera())
+						new AsyncImageSend(vineyardServer.getUrl(), issue
+								.getPlace().getId(), image).execute();
+
+					if (gallery.getImagesFromCamera() != null)
+						Toast.makeText(activity, "Image uploading continues in background...", Toast.LENGTH_SHORT);
+					
 					activity.switchFragment(activity.getIssuesFragment());
 					return;
 				} else if (editMode && response.first == HttpStatus.SC_ACCEPTED) {
-					// TODO
+
+					for (String image : gallery.getImagesFromCamera())
+						new AsyncImageSend(vineyardServer.getUrl(), issue
+								.getPlace().getId(), image).execute();
+
+					if (gallery.getImagesFromCamera() != null)
+						Toast.makeText(activity, "Image uploading continues in background...", Toast.LENGTH_SHORT);
+					
 					activity.switchFragment(activity.getIssuesFragment());
 					return;
 				}
@@ -399,6 +423,40 @@ public class ReportIssueFragment extends Fragment {
 					Toast.LENGTH_SHORT).show();
 			Log.e(TAG, String.valueOf(response.first) + ": " + response.second);
 			activity.switchFragment();
+		}
+	}
+
+	private class AsyncImageSend extends AsyncHttpRequest {
+		private static final String TAG = "AsyncImageSend";
+		
+		String path;
+		
+		public AsyncImageSend(String serverUrl, int placeId, String path) {
+			super(String.format(serverUrl + VineyardServer.PHOTO_SEND_API, placeId), Type.POST);
+
+			this.path = path;
+			
+			Bitmap image = BitmapFactory.decodeFile(path);
+			if (image == null)
+				throw new IllegalArgumentException(path + " cannot be decoded");
+			
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+	        image.compress(Bitmap.CompressFormat.JPEG, 90, out);
+	        String imageString = Base64.encodeToString(out.toByteArray(), Base64.DEFAULT);
+
+	        List<NameValuePair> postParams = new ArrayList<NameValuePair>();
+	        postParams.add(new BasicNameValuePair("photo", imageString));
+	        setParams(postParams);
+		}
+
+		@Override
+		protected void onPostExecute(Pair<Integer, String> response) {
+			
+			File f = new File(path);
+			if (f != null)
+				f.delete();
+			
+			Log.e(TAG, response.first + ": " + response.second);
 		}
 	}
 

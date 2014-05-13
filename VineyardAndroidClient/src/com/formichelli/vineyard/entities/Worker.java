@@ -36,14 +36,14 @@ public class Worker {
 		setId(jsonObject.getInt(ID));
 
 		setUsername(jsonObject.getString(USERNAME));
-		
+
 		setEmail(jsonObject.getString(EMAIL));
-		
+
 		setName(jsonObject.getString(NAME));
 
 		roles = new HashSet<Role>();
 		setRoles(jsonObject.getString(ROLES));
-		
+
 		groups = new ArrayList<WorkGroup>();
 	}
 
@@ -52,6 +52,9 @@ public class Worker {
 	}
 
 	public void setId(int id) {
+		if (id < 0)
+			throw new IllegalArgumentException("id cannot be negative");
+
 		this.id = id;
 	}
 
@@ -60,6 +63,10 @@ public class Worker {
 	}
 
 	public void setUsername(String username) {
+		if (username == null || username.compareTo("") == 0)
+			throw new IllegalArgumentException(
+					"username cannot be neither null nor empty");
+
 		this.username = username;
 	}
 
@@ -68,6 +75,10 @@ public class Worker {
 	}
 
 	public void setName(String name) {
+		if (name == null || name.compareTo("") == 0)
+			throw new IllegalArgumentException(
+					"name cannot be neither null nor empty");
+
 		this.name = name;
 	}
 
@@ -76,6 +87,10 @@ public class Worker {
 	}
 
 	public void setEmail(String email) {
+		if (email == null || email.compareTo("") == 0)
+			throw new IllegalArgumentException(
+					"email cannot be neither null nor empty");
+
 		this.email = email;
 	}
 

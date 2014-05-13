@@ -3,10 +3,10 @@ package com.formichelli.vineyard.utilities;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map.Entry;
+import java.util.List;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -23,7 +23,6 @@ import android.support.v4.app.Fragment;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -43,8 +42,8 @@ public class VineyardGallery extends HorizontalScrollView {
 	LinearLayout gallery;
 	boolean locked;
 	int size, padding, selectedColor, notSelectedColor;
-	HashSet<ImageView> selected;
-	HashMap<ImageView, String> images, toBeDeleted;
+	List<ImageView> images, selected;
+	HashMap<ImageView, String> imagesFromCamera;
 	Drawable add, delete;
 	Fragment fragment;
 
@@ -90,9 +89,9 @@ public class VineyardGallery extends HorizontalScrollView {
 		padding = context.getResources().getDimensionPixelSize(
 				R.dimen.gallery_padding);
 
-		selected = new HashSet<ImageView>();
-		images = new HashMap<ImageView, String>();
-		toBeDeleted = new HashMap<ImageView, String>();
+		selected = new ArrayList<ImageView>();
+		images = new ArrayList<ImageView>();
+		imagesFromCamera = new HashMap<ImageView, String>();
 
 		selectedColor = context.getResources().getColor(R.color.white);
 		notSelectedColor = context.getResources().getColor(R.color.wine_light);
@@ -156,9 +155,7 @@ public class VineyardGallery extends HorizontalScrollView {
 	 *            the gallery
 	 * @return view of the added image
 	 */
-	public ImageView addImage(String path, boolean mustBeDeleted) {
-		ImageView v;
-		Bitmap b;
+	public ImageView addImage(String path, boolean isFromCamera) {
 
 		if (path.startsWith("http://") || path.startsWith("https://")) {
 			// the image must be load from a server
@@ -167,56 +164,94 @@ public class VineyardGallery extends HorizontalScrollView {
 			return null;
 		} else {
 			// the image is locally stored
-			b = getThumbnailFromFilePath(path, size);
+			Bitmap b = getThumbnailFromFilePath(path, size);
 			if (b == null)
 				return null;
 
-			v = new ImageView(getContext());
-			v.setImageBitmap(b);
-			v.setPadding(padding, padding, padding, padding);
+			ImageView v = addImage(b);
 
-			if (!locked)
+			if (isFromCamera) {
 				v.setOnClickListener(selectOnClick);
+				imagesFromCamera.put(v, path);
+			}
 
-			gallery.addView(v, 0);
-			images.put(v, path);
-			if (mustBeDeleted)
-				toBeDeleted.put(v, path);
 			return v;
 		}
 	}
-	
-	@SuppressWarnings("deprecation")
+
+	private ImageView addImage(Bitmap photo) {
+		if (photo == null)
+			throw new IllegalArgumentException("photo cannot be null");
+
+		ImageView v = new ImageView(getContext());
+		v.setImageBitmap(photo);
+		v.setPadding(padding, padding, padding, padding);
+
+		gallery.addView(v, 0);
+		images.add(v);
+
+		return v;
+	}
+
+	public List<String> getImagesFromCamera() {
+		List<String> ret = new ArrayList<String>();
+
+		for (String image : imagesFromCamera.values())
+			ret.add(image);
+
+		return ret;
+	}
+
 	public void addImageFromServer(String serverUrl, String path) {
-		Context context = getContext();
+		new LoadImageFromServer(serverUrl, path).execute();
+	}
 
-		// create a container for the image
-		LinearLayout container = new LinearLayout(context);
-		ProgressBar progress = new ProgressBar(context);
-		int size = context.getResources().getDimensionPixelSize(
-				R.dimen.gallery_height);
-		int margin = context.getResources().getDimensionPixelSize(
-						R.dimen.gallery_padding);
-		Drawable background = context.getResources().getDrawable(
-				R.drawable.wine_light_with_wine_dark_border);
+	@SuppressWarnings("deprecation")
+	public class LoadImageFromServer extends ImageLoader {
+		public LoadImageFromServer(String serverUrl, String path) {
+			context = getContext();
 
-		LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-				size / 2, size / 2);
-		params.setMargins(size / 4, size / 4, size / 4, size / 4);
-		progress.setLayoutParams(params);
-		container.addView(progress);
+			// create a container for the image
+			container = new LinearLayout(context);
+			progress = new ProgressBar(context);
+			int size = context.getResources().getDimensionPixelSize(
+					R.dimen.gallery_height);
+			int margin = context.getResources().getDimensionPixelSize(
+					R.dimen.gallery_padding);
+			Drawable background = context.getResources().getDrawable(
+					R.drawable.wine_light_with_wine_dark_border);
 
-		params = new LinearLayout.LayoutParams(size, size);
-		params.setMargins(margin, margin, margin, margin);
-		container.setLayoutParams(params);
-		container.setBackgroundDrawable(background);
+			LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+					size / 2, size / 2);
+			params.setMargins(size / 4, size / 4, size / 4, size / 4);
+			progress.setLayoutParams(params);
+			container.addView(progress);
 
-		// add the container to the gallery
-		gallery.addView(container, 0);
+			params = new LinearLayout.LayoutParams(size, size);
+			params.setMargins(margin, margin, margin, margin);
+			container.setLayoutParams(params);
+			container.setBackgroundDrawable(background);
 
-		path = String.format(serverUrl, path, size, size);
+			// add the container to the gallery
+			gallery.addView(container, 0);
 
-		new ImageLoader(context, container, progress, path).execute();
+			imageUrl = String.format(serverUrl, path, size, size);
+		}
+
+		@Override
+		protected void onPostExecute(Bitmap photo) {
+			if (progress != null)
+				progress.setVisibility(View.GONE);
+			gallery.removeView(container);
+
+			if (photo == null)
+				addImage(BitmapFactory.decodeResource(context.getResources(),
+						R.drawable.action_issue_dark));
+			else
+				saveBitmap(photo, localName);
+
+			addImage(photo);
+		}
 	}
 
 	/**
@@ -230,9 +265,9 @@ public class VineyardGallery extends HorizontalScrollView {
 		images.remove(v);
 		selected.remove(v);
 
-		if (toBeDeleted.containsKey(v)) {
+		if (imagesFromCamera.containsKey(v)) {
 			// delete image from disk
-			File f = new File(toBeDeleted.remove(v));
+			File f = new File(imagesFromCamera.remove(v));
 			if (f != null)
 				f.delete();
 		}
@@ -245,7 +280,7 @@ public class VineyardGallery extends HorizontalScrollView {
 	 * Removes the images that are currently selected
 	 */
 	public void removeSelectedImages() {
-		for (ImageView v : (ImageView[]) selected.toArray())
+		for (ImageView v : selected)
 			removeImage(v);
 	}
 
@@ -253,8 +288,8 @@ public class VineyardGallery extends HorizontalScrollView {
 	 * Remove all the images from the gallery
 	 */
 	public void removeAllImages() {
-		for (Entry<ImageView, String> entry : images.entrySet())
-			removeImage(entry.getKey());
+		for (ImageView image : images)
+			removeImage(image);
 	}
 
 	/*
@@ -281,11 +316,11 @@ public class VineyardGallery extends HorizontalScrollView {
 			selected.add(v);
 			v.setBackgroundColor(selectedColor);
 		} else {
-			if (selected.isEmpty())
-				showAddPhoto();
-
 			selected.remove(v);
 			v.setBackgroundColor(notSelectedColor);
+
+			if (selected.isEmpty())
+				showAddPhoto();
 		}
 	}
 

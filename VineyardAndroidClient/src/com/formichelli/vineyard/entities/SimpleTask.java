@@ -93,10 +93,13 @@ public class SimpleTask implements Task, Comparable<SimpleTask> {
 		else
 			setDescription(null);
 
-		if (!jsonObject.isNull(LATITUDE))
+		if (!jsonObject.isNull(LATITUDE) && !jsonObject.isNull(LONGITUDE)) {
 			setLatitude(jsonObject.getDouble(LATITUDE));
-		if (!jsonObject.isNull(LONGITUDE))
 			setLongitude(jsonObject.getDouble(LONGITUDE));
+		} else {
+			setLatitude(-1);
+			setLongitude(-1);
+		}
 
 		if (!jsonObject.isNull(ASSIGNED_WORKER)) {
 			Worker w = new Worker();
@@ -128,6 +131,9 @@ public class SimpleTask implements Task, Comparable<SimpleTask> {
 
 	@Override
 	public void setAssignerId(int assignerId) {
+		if (assignerId < 0)
+			throw new IllegalArgumentException("assignerId cannot be negative");
+
 		this.assignerId = assignerId;
 	}
 
@@ -168,6 +174,9 @@ public class SimpleTask implements Task, Comparable<SimpleTask> {
 
 	@Override
 	public void setStatus(Status status) {
+		if (status == null)
+			throw new IllegalArgumentException("status cannot be null");
+		
 		this.status = status;
 	}
 
@@ -193,6 +202,9 @@ public class SimpleTask implements Task, Comparable<SimpleTask> {
 
 	@Override
 	public void setPlace(Place place) {
+		if (place == null)
+			throw new IllegalArgumentException("place cannot be null");
+
 		this.place = place;
 	}
 
@@ -203,6 +215,9 @@ public class SimpleTask implements Task, Comparable<SimpleTask> {
 
 	@Override
 	public void setTitle(String title) {
+		if (title == null || title.compareTo("") == 0)
+			throw new IllegalArgumentException("title cannot be neither null nor empty");
+		
 		this.title = title;
 	}
 
@@ -253,30 +268,39 @@ public class SimpleTask implements Task, Comparable<SimpleTask> {
 	}
 
 	/**
-	 * returns the list of parameters needed for a post request to create a new task
+	 * returns the list of parameters needed for a post request to create a new
+	 * task
 	 */
 	public List<NameValuePair> getParams() {
 
 		List<NameValuePair> params = new ArrayList<NameValuePair>();
-		
+
 		if (getPriority() != null)
-			params.add(new BasicNameValuePair(PRIORITY, getPriority().toString()));
-		
+			params.add(new BasicNameValuePair(PRIORITY, getPriority()
+					.toString()));
+
 		params.add(new BasicNameValuePair(PLACE, String.valueOf(getPlace()
 				.getId())));
+
 		params.add(new BasicNameValuePair(TITLE, title));
-		params.add(new BasicNameValuePair(DESCRIPTION, description));
-		params.add(new BasicNameValuePair(LATITUDE, String
-				.valueOf(getLatitude())));
-		params.add(new BasicNameValuePair(LONGITUDE, String
-				.valueOf(getLongitude())));
+
+		if (description != null && description.compareTo("") != 0)
+			params.add(new BasicNameValuePair(DESCRIPTION, description));
+
+		if (getLatitude() != -1 && getLongitude() != -1) {
+			params.add(new BasicNameValuePair(LATITUDE, String
+					.valueOf(getLatitude())));
+			params.add(new BasicNameValuePair(LONGITUDE, String
+					.valueOf(getLongitude())));
+		}
 
 		return params;
 	}
 
 	@Override
 	public int compareTo(SimpleTask another) {
-		return Priority.getIndex(another.priority) - Priority.getIndex(priority);
+		return Priority.getIndex(another.priority)
+				- Priority.getIndex(priority);
 	}
 
 }

@@ -40,6 +40,9 @@ public class WorkGroup {
 	}
 
 	public void setId(int id) {
+		if (id < 0)
+			throw new IllegalArgumentException("id cannot be negative");
+
 		this.id = id;
 	}
 
@@ -48,6 +51,10 @@ public class WorkGroup {
 	}
 
 	public void setName(String name) {
+		if (name == null || name.compareTo("") == 0)
+			throw new IllegalArgumentException(
+					"name cannot be neither null nor empty");
+
 		this.name = name;
 	}
 

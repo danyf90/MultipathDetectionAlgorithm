@@ -119,7 +119,7 @@ public class TaskExpandableAdapter<T extends Task> extends
 			t.setCompoundDrawablesWithIntrinsicBounds(
 					R.drawable.action_add_dark, 0, 0, 0);
 			t.setText(context.getString(R.string.action_report_issue));
-			t.setOnClickListener(reportIssueOnClickListener);
+			item.setOnClickListener(reportIssueOnClickListener);
 
 		} else {
 			// Other items are real issues
@@ -131,13 +131,14 @@ public class TaskExpandableAdapter<T extends Task> extends
 			if (isExpanded)
 				t.setCompoundDrawablesWithIntrinsicBounds(
 						R.drawable.action_up_dark, 0, 0, 0);
-			else
+			else {
 				t.setCompoundDrawablesWithIntrinsicBounds(
 						R.drawable.action_expand_dark, 0, 0, 0);
 
-			if (showPlace && !isExpanded)
-				((TextView) item.findViewById(R.id.issue_list_item_place))
-						.setText(object.getPlace().getName());
+				if (showPlace)
+					((TextView) item.findViewById(R.id.issue_list_item_place))
+							.setText(object.getPlace().getName());
+			}
 		}
 
 		return item;
@@ -185,7 +186,10 @@ public class TaskExpandableAdapter<T extends Task> extends
 
 		// set dueTime
 		if (object.getDueTime() != null)
-			addAttribute(dueTimeLabel, DateFormat.getDateInstance(DateFormat.SHORT, Locale.getDefault()).format(object.getDueTime()));
+			addAttribute(
+					dueTimeLabel,
+					DateFormat.getDateInstance(DateFormat.SHORT,
+							Locale.getDefault()).format(object.getDueTime()));
 
 		// TODO show on map?
 
@@ -195,9 +199,11 @@ public class TaskExpandableAdapter<T extends Task> extends
 			List<String> photos = ((IssueTask) object).getPhotos();
 			if (photos.size() == 0)
 				childView.removeView(gallery);
-			else {				
-				VineyardServer vineyardServer = ((VineyardMainActivity) context).getServer();
-				String photoApi = vineyardServer.getUrl() + VineyardServer.PHOTO_API;
+			else {
+				VineyardServer vineyardServer = ((VineyardMainActivity) context)
+						.getServer();
+				String photoApi = vineyardServer.getUrl()
+						+ VineyardServer.PHOTO_API;
 				for (String photo : photos)
 					gallery.addImageFromServer(photoApi, photo);
 			}
