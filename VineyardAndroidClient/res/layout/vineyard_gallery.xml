@@ -3,7 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     class="com.formichelli.vineyard.utilities.VineyardGallery"
-    android:background="@color/wine_light" >
+    android:background="@color/wine_light"
+    android:padding="5dp" >
 
     <LinearLayout
         android:id="@+id/com_formichelli_vineyard_gallery_linear_layout"

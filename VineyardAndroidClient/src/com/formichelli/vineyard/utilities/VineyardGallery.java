@@ -185,42 +185,38 @@ public class VineyardGallery extends HorizontalScrollView {
 			return v;
 		}
 	}
-
+	
 	@SuppressWarnings("deprecation")
 	public void addImageFromServer(String serverUrl, String path) {
 		Context context = getContext();
-		
+
 		// create a container for the image
-		FrameLayout container = new FrameLayout(context);
+		LinearLayout container = new LinearLayout(context);
 		ProgressBar progress = new ProgressBar(context);
 		int size = context.getResources().getDimensionPixelSize(
 				R.dimen.gallery_height);
 		int margin = context.getResources().getDimensionPixelSize(
-				R.dimen.gallery_padding);
+						R.dimen.gallery_padding);
 		Drawable background = context.getResources().getDrawable(
 				R.drawable.wine_light_with_wine_dark_border);
 
-		FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
+		LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
 				size / 2, size / 2);
-		params.setMargins(size / 4 + margin, size / 4 + margin, size / 4
-				+ margin, size / 4 + margin);
+		params.setMargins(size / 4, size / 4, size / 4, size / 4);
 		progress.setLayoutParams(params);
 		container.addView(progress);
 
-		params = new FrameLayout.LayoutParams(size, size);
+		params = new LinearLayout.LayoutParams(size, size);
 		params.setMargins(margin, margin, margin, margin);
 		container.setLayoutParams(params);
 		container.setBackgroundDrawable(background);
-		
+
 		// add the container to the gallery
 		gallery.addView(container, 0);
-		
-		// TODO fare meglio
-		if (path != null)
-			path = String.format(serverUrl, path, size, size);
-		
-		new ImageLoader(context, container, progress, path)
-				.execute();
+
+		path = String.format(serverUrl, path, size, size);
+
+		new ImageLoader(context, container, progress, path).execute();
 	}
 
 	/**

@@ -10,6 +10,8 @@
     <string name="title_section_tasks">Lavori</string>
     <string name="title_section_settings">Impostazioni</string>
     <string name="title_report_issue">Segnala un problema</string>
+    <string name="title_issue_fragment">Problemi di %s</string>
+    <string name="title_issue_fragment_all">Problemi</string>
     <string name="action_add_photo">Aggiungi foto</string>
     <string name="action_cancel">Annulla</string>
     <string name="action_delete">Cancella</string>
@@ -29,10 +31,10 @@
     <string name="loading_workgroups">Caricamento gruppi di lavoro&#8230;</string>
     <string name="loading_sending_request">Invio richiesta in corso&#8230;</string>
     <string name="loading_error_message">Il server non risponde e le informazioni richieste non sono presenti in cache</string>
-    <string name="issues_label">Problemi: </string>
-    <string name="tasks_label">Lavori: </string>
-    <string name="attributes_label">Attributi:</string>
-    <string name="children_label">Figli: </string>
+    <string name="issues_label">Problemi</string>
+    <string name="tasks_label">Lavori</string>
+    <string name="attributes_label">Attributi</string>
+    <string name="children_label">Figli</string>
     <string name="dialog_title">Sei sicuro?</string>
     <string name="dialog_exit_message">Sei sicuro di voler uscire?</string>
     <string name="dialog_confirm">Sì</string>

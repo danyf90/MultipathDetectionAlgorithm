@@ -179,6 +179,7 @@ public class PlaceViewerFragment extends Fragment {
 			throw new IllegalArgumentException("place cannot be null");
 
 		activity.setCurrentPlace(place);
+		activity.setTitle(place.getName());
 
 		if (place.getParent() == null)
 			upItem.setVisible(false);
@@ -196,7 +197,6 @@ public class PlaceViewerFragment extends Fragment {
 		header.setBackgroundColor(getResources().getColor(R.color.wine_light));
 		
 		if (place.getPhoto() != null) {
-			android.util.Log.e("ASD", place.getPhoto());
 			final String imageUrl = activity.getServer().getUrl()
 					+ String.format(Locale.US, VineyardServer.PHOTO_API,
 							place.getPhoto(), header.getMeasuredWidth(),

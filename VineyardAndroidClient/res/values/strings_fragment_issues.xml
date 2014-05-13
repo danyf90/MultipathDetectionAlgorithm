@@ -2,9 +2,9 @@
 <resources>
 
     <string name="issue_title_error">Title is mandatory</string>
-    <string name="issue_title_label">Title: </string>
+    <string name="issue_title_label">Title</string>
     <string name="issue_title_hint">Issue title</string>
-    <string name="issue_description_label">Description: </string>
+    <string name="issue_description_label">Description</string>
     <string name="issue_description_hint">Issue details</string>
     <string name="issue_photos_label">Photos</string>
     <string name="issue_place_label">Place</string>

@@ -17,6 +17,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
@@ -26,6 +27,7 @@ import android.widget.ProgressBar;
  * 
  */
 public class ImageLoader extends AsyncTask<Void, Void, Bitmap> {
+	private static final String TAG = "ImageLoader";
 	Context context;
 	ViewGroup container;
 	ProgressBar progress;
@@ -45,7 +47,6 @@ public class ImageLoader extends AsyncTask<Void, Void, Bitmap> {
 		this.container = container;
 		this.progress = progress;
 		this.imageUrl = imageUrl;
-		android.util.Log.e("IMAGELOADER", imageUrl);
 	}
 
 	@Override
@@ -69,24 +70,28 @@ public class ImageLoader extends AsyncTask<Void, Void, Bitmap> {
 
 		Bitmap imageBitmap;
 
-		if ((new File(localName)).exists())
+		if ((new File(localName)).exists()) {
 			// the image is already present locally
 			imageBitmap = BitmapFactory.decodeFile(localName);
-		else {
-			// the image must be retrieved from the server
-			try {
-				HttpResponse response = new DefaultHttpClient()
-						.execute(new HttpGet(imageUrl));
-				StatusLine statusLine = response.getStatusLine();
-				if (statusLine.getStatusCode() == HttpStatus.SC_OK)
-					imageBitmap = BitmapFactory.decodeStream(response
-							.getEntity().getContent());
-				else
-					imageBitmap = null;
-			} catch (IllegalStateException | IOException e) {
-				e.printStackTrace();
+			if (imageBitmap != null)
+				return imageBitmap;
+
+			Log.e(TAG, localName + " is not valid, downloading it from server...");
+		}
+		
+		// the image must be retrieved from the server
+		try {
+			HttpResponse response = new DefaultHttpClient()
+					.execute(new HttpGet(imageUrl));
+			StatusLine statusLine = response.getStatusLine();
+			if (statusLine.getStatusCode() == HttpStatus.SC_OK)
+				imageBitmap = BitmapFactory.decodeStream(response.getEntity()
+						.getContent());
+			else
 				imageBitmap = null;
-			}
+		} catch (IllegalStateException | IOException e) {
+			e.printStackTrace();
+			imageBitmap = null;
 		}
 
 		return imageBitmap;
@@ -103,15 +108,16 @@ public class ImageLoader extends AsyncTask<Void, Void, Bitmap> {
 			progress.setVisibility(View.GONE);
 
 		if (photo == null) {
-			container.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.action_issue_dark));
+			container.setBackgroundDrawable(context.getResources().getDrawable(
+					R.drawable.action_issue_dark));
 			return;
 		}
-		
-		saveBitmap(photo, localName);
+
+		//saveBitmap(photo, localName);
 		container.setBackgroundDrawable(new BitmapDrawable(photo));
 	}
 
-	private void saveBitmap(Bitmap b, String filename) {
+	protected void saveBitmap(Bitmap b, String filename) {
 		FileOutputStream out;
 		try {
 			out = new FileOutputStream(filename);

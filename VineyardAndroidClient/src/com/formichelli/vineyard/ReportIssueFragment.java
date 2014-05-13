@@ -73,7 +73,7 @@ public class ReportIssueFragment extends Fragment {
 	public ReportIssueFragment(IssueTask issue) {
 		super();
 
-		if (issue == null)
+		if (issue == null || issue.getPlace() == null)
 			throw new IllegalArgumentException("issue cannot be null");
 
 		this.issue = issue;
@@ -110,18 +110,20 @@ public class ReportIssueFragment extends Fragment {
 		activity = (VineyardMainActivity) getActivity();
 		activity.setTitle(getString(R.string.title_report_issue));
 		vineyardServer = activity.getServer();
-		
+
 		/* Create a LocationClients that connects to Google Play Services. */
 		/* So far, callbacks for connection events are not handled. */
 		LocationClientCallbacks dummyCallbacks = new LocationClientCallbacks();
-		locationClient = new LocationClient(activity, dummyCallbacks, dummyCallbacks);
+		locationClient = new LocationClient(activity, dummyCallbacks,
+				dummyCallbacks);
 
 		title = (EditText) activity.findViewById(R.id.report_issue_title);
 
 		description = (EditText) activity
 				.findViewById(R.id.report_issue_description);
-		
-		locationButton = (ToggleButton) activity.findViewById(R.id.report_issue_use_location);
+
+		locationButton = (ToggleButton) activity
+				.findViewById(R.id.report_issue_use_location);
 
 		placeButton = (Button) activity.findViewById(R.id.report_issue_place);
 		placeButton.setOnClickListener(new OnClickListener() {
@@ -176,7 +178,7 @@ public class ReportIssueFragment extends Fragment {
 	}
 
 	// This function must be called only once after both onActivityCreated and
-	// onCreateOptionMenu and 
+	// onCreateOptionMenu and
 	private void init() {
 		gallery = (VineyardGallery) activity
 				.findViewById(R.id.report_issue_gallery);
@@ -197,9 +199,9 @@ public class ReportIssueFragment extends Fragment {
 
 			priorities.setSelection(Priority.getIndex(issue.getPriority()));
 
-			// TODO
-			for (String photo: issue.getPhotos())
-				gallery.addImage(vineyardServer.getUrl() + VineyardServer.PHOTO_API + photo, false);
+			for (String photo : issue.getPhotos())
+				gallery.addImageFromServer(vineyardServer.getUrl()
+						+ VineyardServer.PHOTO_API, photo);
 		}
 	}
 
@@ -234,7 +236,7 @@ public class ReportIssueFragment extends Fragment {
 		} else
 			issue.setTitle(s);
 
-		issue.setDescription(s);
+		issue.setDescription(description.getText().toString());
 
 		switch (priorities.getSelectedItemPosition()) {
 		case 1:
@@ -249,7 +251,7 @@ public class ReportIssueFragment extends Fragment {
 		default:
 			break;
 		}
-		
+
 		if (locationButton.isEnabled() && locationButton.isChecked()) {
 			Location loc = locationClient.getLastLocation();
 			if (loc != null) {
@@ -259,7 +261,7 @@ public class ReportIssueFragment extends Fragment {
 				Log.i("ReportIssue", "No location info available.. sure?");
 			}
 		}
-		
+
 		return true;
 	}
 
@@ -372,35 +374,42 @@ public class ReportIssueFragment extends Fragment {
 
 		@Override
 		protected void onPreExecute() {
-			activity.getLoadingFragment().setLoadingMessage(getString(R.string.loading_sending_request));
+			activity.getLoadingFragment().setLoadingMessage(
+					getString(R.string.loading_sending_request));
 			activity.switchFragment(activity.getLoadingFragment());
 		};
 
 		@Override
 		protected void onPostExecute(Pair<Integer, String> response) {
-			if (response != null && response.first == HttpStatus.SC_CREATED) {
-				// TODO delete photos from sdcard
-				issue.getPlace().addIssue(issue);
-			} else {
-				Toast.makeText(activity,
-						activity.getString(R.string.issue_report_error),
-						Toast.LENGTH_SHORT).show();
-				return;
+			if (response != null) {
+				if (!editMode && response.first == HttpStatus.SC_CREATED) {
+					// TODO delete photos from sdcard
+					issue.getPlace().addIssue(issue);
+					activity.switchFragment(activity.getIssuesFragment());
+					return;
+				} else if (editMode && response.first == HttpStatus.SC_ACCEPTED) {
+					// TODO
+					activity.switchFragment(activity.getIssuesFragment());
+					return;
+				}
 			}
 
+			Toast.makeText(activity,
+					activity.getString(R.string.issue_report_error),
+					Toast.LENGTH_SHORT).show();
+			Log.e(TAG, String.valueOf(response.first) + ": " + response.second);
 			activity.switchFragment();
 		}
 	}
-	
+
 	/**
-	 * GooglePlayServicesClient callbacks implementation.
-	 * Does notihng so far.
+	 * GooglePlayServicesClient callbacks implementation. Does notihng so far.
+	 * 
 	 * @author Fabio Carrara
 	 */
 	private class LocationClientCallbacks implements
-		GooglePlayServicesClient.ConnectionCallbacks,
-		GooglePlayServicesClient.OnConnectionFailedListener
-	{
+			GooglePlayServicesClient.ConnectionCallbacks,
+			GooglePlayServicesClient.OnConnectionFailedListener {
 		@Override
 		public void onConnectionFailed(ConnectionResult arg0) {
 			Log.i("ReportIssue", "Connection to Google Play Services failed..");
@@ -414,8 +423,9 @@ public class ReportIssueFragment extends Fragment {
 		}
 
 		@Override
-		public void onDisconnected() {}
-		
+		public void onDisconnected() {
+		}
+
 	}
 
 };

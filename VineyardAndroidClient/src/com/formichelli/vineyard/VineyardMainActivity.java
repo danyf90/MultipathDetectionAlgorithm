@@ -239,7 +239,6 @@ public class VineyardMainActivity extends ActionBarActivity implements
 			throw new IllegalArgumentException("place cannot be null");
 
 		currentPlace = place;
-		setTitle(place.getName());
 	}
 
 	/**
@@ -725,10 +724,8 @@ public class VineyardMainActivity extends ActionBarActivity implements
 
 				workers = new SparseArray<Worker>();
 
-				for (int i = 0, l = workersArray.length(); i < l; i++) {
-					Log.e(TAG, workersArray.getJSONObject(i).toString());
+				for (int i = 0, l = workersArray.length(); i < l; i++)
 					addWorker(new Worker(workersArray.getJSONObject(i)));
-				}
 
 			} catch (JSONException e) {
 				e.printStackTrace();

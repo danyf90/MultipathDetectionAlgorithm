@@ -87,8 +87,12 @@ public class IssuesFragment extends Fragment {
 		if (showAllIssues) {
 			Place p = activity.getRootPlace();
 			issues = getAllIssues(p);
-		} else
+			activity.setTitle(getString(R.string.title_issue_fragment_all));
+		} else {
+
+			activity.setTitle(String.format(getString(R.string.title_issue_fragment), selectedPlace.getName()));
 			issues = selectedPlace.getIssues();
+			}
 
 		Collections.sort(issues);
 
