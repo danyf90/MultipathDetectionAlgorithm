@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -193,12 +194,14 @@ public class VineyardGallery extends HorizontalScrollView {
 		return v;
 	}
 
-	public List<String> getImagesFromCamera() {
-		List<String> ret = new ArrayList<String>();
-
-		for (String image : imagesFromCamera.values())
+	public ArrayList<String> getImagesFromCamera() {
+		Collection<String> images = imagesFromCamera.values();
+		if (images.size() == 0)
+			return null;
+		
+		ArrayList<String> ret = new ArrayList<String>();
+		for (String image : images)
 			ret.add(image);
-
 		return ret;
 	}
 

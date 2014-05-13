@@ -49,6 +49,8 @@
             android:parentActivityName="com.formichelli.vineyard.VineyardMainActivity" >
         </activity>
 
+        <service android:name="com.formichelli.vineyard.ReportIssueFragment$SendImagesIntent" />
+
         <provider
             android:name="com.tyczj.extendedcalendarview.CalendarProvider"
             android:authorities="com.tyczj.extendedcalendarview.calendarprovider"

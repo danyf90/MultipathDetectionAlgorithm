@@ -8,12 +8,17 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.IntentService;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -357,26 +362,19 @@ public class ReportIssueFragment extends Fragment {
 
 		public AsyncIssueSend(String serverUrl, IssueTask issue) {
 			this.issue = issue;
-			
+
 			if (!editMode) {
 				// POST request to add an issue
 				setServerUrl(serverUrl + VineyardServer.ISSUES_AND_TASKS_API);
 				setType(Type.POST);
-				setParams(issue.getParams());
 			} else {
 				// PUT request to edit an issue
 				setServerUrl(serverUrl + VineyardServer.ISSUES_AND_TASKS_API
 						+ issue.getId());
 				setType(Type.PUT);
-				List<NameValuePair> params = issue.getParams();
-				for (NameValuePair param : params)
-					if (param.getName() == IssueTask.ID) {
-						params.remove(param);
-						break;
-					}
-				setParams(params);
 			}
 
+			setParams(issue.getParams());
 		}
 
 		@Override
@@ -395,24 +393,19 @@ public class ReportIssueFragment extends Fragment {
 					issue.getPlace().addIssue(issue);
 
 					// send images to server
-					for (String image : gallery.getImagesFromCamera())
-						new AsyncImageSend(vineyardServer.getUrl(), issue
-								.getPlace().getId(), image).execute();
+					ArrayList<String> images = gallery.getImagesFromCamera();
+					if (images != null)
+						sendImages(images);
 
-					if (gallery.getImagesFromCamera() != null)
-						Toast.makeText(activity, "Image uploading continues in background...", Toast.LENGTH_SHORT);
-					
 					activity.switchFragment(activity.getIssuesFragment());
 					return;
 				} else if (editMode && response.first == HttpStatus.SC_ACCEPTED) {
 
-					for (String image : gallery.getImagesFromCamera())
-						new AsyncImageSend(vineyardServer.getUrl(), issue
-								.getPlace().getId(), image).execute();
+					// send images to server
+					ArrayList<String> images = gallery.getImagesFromCamera();
+					if (images != null)
+						sendImages(images);
 
-					if (gallery.getImagesFromCamera() != null)
-						Toast.makeText(activity, "Image uploading continues in background...", Toast.LENGTH_SHORT);
-					
 					activity.switchFragment(activity.getIssuesFragment());
 					return;
 				}
@@ -424,39 +417,93 @@ public class ReportIssueFragment extends Fragment {
 			Log.e(TAG, String.valueOf(response.first) + ": " + response.second);
 			activity.switchFragment();
 		}
+
+		private void sendImages(ArrayList<String> images) {
+			Intent intent = new Intent(activity, SendImagesIntent.class);
+			intent.putExtra(SendImagesIntent.SERVER_URL,
+					vineyardServer.getUrl());
+			intent.putExtra(SendImagesIntent.PLACE_ID, issue.getPlace().getId());
+			intent.putStringArrayListExtra(SendImagesIntent.IMAGE, images);
+			activity.startService(intent);
+			Toast.makeText(activity,
+					"Image uploading continues in background...",
+					Toast.LENGTH_SHORT).show();
+		}
+
 	}
 
-	private class AsyncImageSend extends AsyncHttpRequest {
-		private static final String TAG = "AsyncImageSend";
-		
-		String path;
-		
-		public AsyncImageSend(String serverUrl, int placeId, String path) {
-			super(String.format(serverUrl + VineyardServer.PHOTO_SEND_API, placeId), Type.POST);
+	public class SendImagesIntent extends IntentService {
+		private static final String TAG = "SendImageIntent";
+		private static final String SERVER_URL = "serverUrl";
+		private static final String PLACE_ID = "placeId";
+		private static final String IMAGE = "image";
 
-			this.path = path;
-			
-			Bitmap image = BitmapFactory.decodeFile(path);
-			if (image == null)
-				throw new IllegalArgumentException(path + " cannot be decoded");
-			
-			ByteArrayOutputStream out = new ByteArrayOutputStream();
-	        image.compress(Bitmap.CompressFormat.JPEG, 90, out);
-	        String imageString = Base64.encodeToString(out.toByteArray(), Base64.DEFAULT);
-
-	        List<NameValuePair> postParams = new ArrayList<NameValuePair>();
-	        postParams.add(new BasicNameValuePair("photo", imageString));
-	        setParams(postParams);
+		public SendImagesIntent() {
+			super("SendImagesIntent");
 		}
 
 		@Override
-		protected void onPostExecute(Pair<Integer, String> response) {
-			
-			File f = new File(path);
-			if (f != null)
-				f.delete();
-			
-			Log.e(TAG, response.first + ": " + response.second);
+		protected void onHandleIntent(Intent intent) {
+			String serverUrl = intent.getExtras().getString(SERVER_URL);
+			int placeId = intent.getExtras().getInt(PLACE_ID);
+			ArrayList<String> images = intent.getExtras().getStringArrayList(
+					IMAGE);
+
+			for (String path : images) {
+				Log.i(TAG, "Sending image " + path + "to the server...");
+
+				Bitmap image = BitmapFactory.decodeFile(path);
+				if (image == null)
+					throw new IllegalArgumentException(path
+							+ " cannot be decoded");
+
+				ByteArrayOutputStream out = new ByteArrayOutputStream();
+				image.compress(Bitmap.CompressFormat.JPEG, 90, out);
+				String imageString = Base64.encodeToString(out.toByteArray(),
+						Base64.DEFAULT);
+
+				List<NameValuePair> postParams = new ArrayList<NameValuePair>();
+				postParams.add(new BasicNameValuePair("photo", imageString));
+
+				final String requestUrl = String.format(serverUrl
+						+ VineyardServer.PHOTO_SEND_API, placeId);
+				HttpPost request = new HttpPost(requestUrl);
+				try {
+					request.setEntity(new UrlEncodedFormEntity(postParams));
+					HttpResponse result = new DefaultHttpClient()
+							.execute(request);
+					if (result.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED)
+						Toast.makeText(this, "Image sent!", Toast.LENGTH_LONG)
+								.show();
+					else {
+						Toast.makeText(this,
+								"An error occurred while sending the image",
+								Toast.LENGTH_LONG).show();
+						Log.e(TAG,
+								"An error occurred while sending the image: "
+										+ result.getStatusLine()
+												.getStatusCode());
+					}
+
+					File f = new File(path);
+					if (f != null)
+						f.delete();
+
+					return;
+				} catch (IOException e) {
+					e.printStackTrace();
+					Log.e("SendImageIntent", e.getLocalizedMessage());
+				}
+
+				Toast.makeText(
+						this,
+						"An error occurred while sending an image to the server...",
+						Toast.LENGTH_LONG).show();
+
+				File f = new File(path);
+				if (f != null)
+					f.delete();
+			}
 		}
 	}
 
