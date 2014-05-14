@@ -159,10 +159,12 @@ public class LoginActivity extends Activity {
 			mEmailView.setError(getString(R.string.error_field_required));
 			focusView = mEmailView;
 			cancel = true;
-		} else if (!mEmail.contains("@")) {
-			mEmailView.setError(getString(R.string.error_invalid_email));
-			focusView = mEmailView;
-			cancel = true;
+		} else if (mEmail.contains("@")) {
+			if (!android.util.Patterns.EMAIL_ADDRESS.matcher(mEmail).matches()) {
+				mEmailView.setError(getString(R.string.error_invalid_email));
+				focusView = mEmailView;
+				cancel = true;
+			}
 		}
 
 		if (cancel) {
@@ -197,7 +199,10 @@ public class LoginActivity extends Activity {
 			super(serverUrl + VineyardServer.LOGIN_API,
 					AsyncHttpRequest.Type.POST);
 
-			addParam(new BasicNameValuePair("email", mEmail));
+			if (mEmail.contains("@"))
+				addParam(new BasicNameValuePair("email", mEmail));
+			else
+				addParam(new BasicNameValuePair("username", mEmail));
 
 			try {
 				String passwordHash = getHexString(MessageDigest.getInstance(
