@@ -384,7 +384,7 @@ public class ReportIssueFragment extends Fragment {
 					// send images to server
 					ArrayList<String> images = gallery.getImagesFromCamera();
 					if (images != null)
-						sendImages(images);
+						sendImages(issue.getId(), images);
 
 					activity.switchFragment(activity.getIssuesFragment());
 					return;
@@ -393,7 +393,7 @@ public class ReportIssueFragment extends Fragment {
 					// send images to server
 					ArrayList<String> images = gallery.getImagesFromCamera();
 					if (images != null)
-						sendImages(images);
+						sendImages(issue.getId(), images);
 
 					activity.switchFragment(activity.getIssuesFragment());
 					return;
@@ -407,15 +407,15 @@ public class ReportIssueFragment extends Fragment {
 			activity.switchFragment();
 		}
 
-		private void sendImages(ArrayList<String> images) {
+		private void sendImages(int placeId, ArrayList<String> images) {
 			Intent intent = new Intent(activity, SendImagesIntent.class);
 			intent.putExtra(SendImagesIntent.SERVER_URL,
 					String.format(vineyardServer.getUrl()
-							+ VineyardServer.PHOTO_SEND_API, issue.getPlace().getId()));
+							+ VineyardServer.PHOTO_SEND_API, placeId));
 			intent.putStringArrayListExtra(SendImagesIntent.IMAGE, images);
 			activity.startService(intent);
 			Toast.makeText(activity,
-					"Image uploading continues in background...",
+					activity.getString(R.string.issue_report_sending_image),
 					Toast.LENGTH_SHORT).show();
 		}
 

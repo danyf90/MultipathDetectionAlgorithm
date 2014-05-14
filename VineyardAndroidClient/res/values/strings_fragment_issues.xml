@@ -18,6 +18,9 @@
     <string name="issue_assigned">Assigned</string>
     <string name="issues_no_issues">No issues in this place</string>
     <string name="issue_report_error">An error occurred, the issues has not been reported</string>
+    <string name="issue_report_sending_image">Image uploading continues in background</string>
+    <string name="issue_report_sending_image_completed">Image uploading completed</string>
+    <string name="issue_report_sending_image_error">An error occurred while sending an image to the server</string>
     <string name="issue_mark_done_error">An error occurred, the issues has not been marked as done</string>
 
     <string-array name="issue_priorities">
