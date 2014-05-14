@@ -1,33 +1,21 @@
 package com.formichelli.vineyard;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
-import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.IntentService;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
-import android.util.Base64;
 import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
@@ -48,6 +36,7 @@ import com.formichelli.vineyard.entities.IssueTask;
 import com.formichelli.vineyard.entities.Place;
 import com.formichelli.vineyard.entities.Task.Priority;
 import com.formichelli.vineyard.utilities.AsyncHttpRequest;
+import com.formichelli.vineyard.utilities.SendImagesIntent;
 import com.formichelli.vineyard.utilities.VineyardGallery;
 import com.formichelli.vineyard.utilities.VineyardServer;
 import com.google.android.gms.common.ConnectionResult;
@@ -421,8 +410,8 @@ public class ReportIssueFragment extends Fragment {
 		private void sendImages(ArrayList<String> images) {
 			Intent intent = new Intent(activity, SendImagesIntent.class);
 			intent.putExtra(SendImagesIntent.SERVER_URL,
-					vineyardServer.getUrl());
-			intent.putExtra(SendImagesIntent.PLACE_ID, issue.getPlace().getId());
+					String.format(vineyardServer.getUrl()
+							+ VineyardServer.PHOTO_SEND_API, issue.getPlace().getId()));
 			intent.putStringArrayListExtra(SendImagesIntent.IMAGE, images);
 			activity.startService(intent);
 			Toast.makeText(activity,
@@ -430,81 +419,6 @@ public class ReportIssueFragment extends Fragment {
 					Toast.LENGTH_SHORT).show();
 		}
 
-	}
-
-	public class SendImagesIntent extends IntentService {
-		private static final String TAG = "SendImageIntent";
-		private static final String SERVER_URL = "serverUrl";
-		private static final String PLACE_ID = "placeId";
-		private static final String IMAGE = "image";
-
-		public SendImagesIntent() {
-			super("SendImagesIntent");
-		}
-
-		@Override
-		protected void onHandleIntent(Intent intent) {
-			String serverUrl = intent.getExtras().getString(SERVER_URL);
-			int placeId = intent.getExtras().getInt(PLACE_ID);
-			ArrayList<String> images = intent.getExtras().getStringArrayList(
-					IMAGE);
-
-			for (String path : images) {
-				Log.i(TAG, "Sending image " + path + "to the server...");
-
-				Bitmap image = BitmapFactory.decodeFile(path);
-				if (image == null)
-					throw new IllegalArgumentException(path
-							+ " cannot be decoded");
-
-				ByteArrayOutputStream out = new ByteArrayOutputStream();
-				image.compress(Bitmap.CompressFormat.JPEG, 90, out);
-				String imageString = Base64.encodeToString(out.toByteArray(),
-						Base64.DEFAULT);
-
-				List<NameValuePair> postParams = new ArrayList<NameValuePair>();
-				postParams.add(new BasicNameValuePair("photo", imageString));
-
-				final String requestUrl = String.format(serverUrl
-						+ VineyardServer.PHOTO_SEND_API, placeId);
-				HttpPost request = new HttpPost(requestUrl);
-				try {
-					request.setEntity(new UrlEncodedFormEntity(postParams));
-					HttpResponse result = new DefaultHttpClient()
-							.execute(request);
-					if (result.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED)
-						Toast.makeText(this, "Image sent!", Toast.LENGTH_LONG)
-								.show();
-					else {
-						Toast.makeText(this,
-								"An error occurred while sending the image",
-								Toast.LENGTH_LONG).show();
-						Log.e(TAG,
-								"An error occurred while sending the image: "
-										+ result.getStatusLine()
-												.getStatusCode());
-					}
-
-					File f = new File(path);
-					if (f != null)
-						f.delete();
-
-					return;
-				} catch (IOException e) {
-					e.printStackTrace();
-					Log.e("SendImageIntent", e.getLocalizedMessage());
-				}
-
-				Toast.makeText(
-						this,
-						"An error occurred while sending an image to the server...",
-						Toast.LENGTH_LONG).show();
-
-				File f = new File(path);
-				if (f != null)
-					f.delete();
-			}
-		}
 	}
 
 	/**
