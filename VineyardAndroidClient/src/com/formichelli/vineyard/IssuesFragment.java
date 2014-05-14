@@ -190,5 +190,9 @@ public class IssuesFragment extends Fragment {
 
 			activity.switchFragment();
 		}
+	}
+
+	public void refresh() {
+init();
 	};
 }

@@ -150,7 +150,7 @@ public class ReportIssueFragment extends Fragment {
 
 		priorities = (Spinner) activity
 				.findViewById(R.id.report_issue_priority);
-		setSpinnerAdapter(priorities, R.array.issue_priorities);
+		setSpinnerAdapter(priorities, R.array.task_priorities);
 	}
 
 	private void setSpinnerAdapter(Spinner s, int array) {

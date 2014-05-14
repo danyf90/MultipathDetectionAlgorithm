@@ -116,7 +116,8 @@ public class PlaceViewerFragment extends Fragment {
 		issues.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				activity.getIssuesFragment().setSelectedPlace(activity.getCurrentPlace());
+				activity.getIssuesFragment().setSelectedPlace(
+						activity.getCurrentPlace());
 				activity.switchFragment(activity.getIssuesFragment());
 			}
 		});
@@ -124,7 +125,8 @@ public class PlaceViewerFragment extends Fragment {
 		tasks.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				activity.getTasksFragment().setSelectedPlace(activity.getCurrentPlace());
+				activity.getTasksFragment().setSelectedPlace(
+						activity.getCurrentPlace());
 				activity.switchFragment(activity.getTasksFragment());
 			}
 		});
@@ -195,7 +197,7 @@ public class PlaceViewerFragment extends Fragment {
 
 		// load photo
 		header.setBackgroundColor(getResources().getColor(R.color.wine_light));
-		
+
 		if (place.getPhoto() != null) {
 			final String imageUrl = activity.getServer().getUrl()
 					+ String.format(Locale.US, VineyardServer.PHOTO_API,
@@ -264,4 +266,21 @@ public class PlaceViewerFragment extends Fragment {
 		childrenList.setVisibility(visibility);
 	}
 
+	public void refresh() {
+		init();
+	}
+
+	public boolean onBackPressed() {
+		// navigate the hierarchy up or ask for close if the current place
+		// is the root
+		if (activity.getCurrentPlace() != activity.getRootPlace())
+			return false;
+
+		Place parent = activity.getCurrentPlace().getParent();
+		if (parent == null)
+			return false;
+		loadPlace(parent);
+		
+		return true;
+	}
 }

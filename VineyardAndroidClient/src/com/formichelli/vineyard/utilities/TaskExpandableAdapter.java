@@ -38,8 +38,7 @@ public class TaskExpandableAdapter<T extends Task> extends
 	ViewGroup attributesLabels, attributesValues;
 	String placeLabel, priorityLabel, statusLabel, assignedWorkerLabel,
 			assignedGroupLabel, dueTimeLabel;
-	String assignedValue, notAssignedValue;
-	String[] priorities;
+	String[] priorities, status;
 
 	/**
 	 * 
@@ -97,7 +96,9 @@ public class TaskExpandableAdapter<T extends Task> extends
 		priorityLabel = context.getString(R.string.issue_priority_label);
 		statusLabel = context.getString(R.string.issue_status_label);
 		priorities = context.getResources().getStringArray(
-				R.array.issue_priorities);
+				R.array.task_priorities);
+		status = context.getResources().getStringArray(
+				R.array.task_status);
 		assignedWorkerLabel = context
 				.getString(R.string.issue_assigned_worker_label);
 		assignedGroupLabel = context
@@ -170,19 +171,19 @@ public class TaskExpandableAdapter<T extends Task> extends
 			addAttribute(priorityLabel,
 					priorities[Priority.getIndex(object.getPriority())]);
 
-		if (object.getStatus() != Status.ASSIGNED)
-			// set status
-			addAttribute(statusLabel, notAssignedValue);
-		else {
-			// set assignedWorker and assignedGroup
-			if (object.getAssignedWorker() != null)
-				addAttribute(assignedWorkerLabel,
-						String.valueOf(object.getAssignedWorker().getName()));
+		// set status
+		if (object.getStatus() != null)
+			addAttribute(statusLabel,
+					status[Status.getIndex(object.getStatus())]);
 
-			if (object.getAssignedGroup() != null)
-				addAttribute(assignedGroupLabel,
-						String.valueOf(object.getAssignedGroup().getName()));
-		}
+		// set assignedWorker and assignedGroup
+		if (object.getAssignedWorker() != null)
+			addAttribute(assignedWorkerLabel,
+					String.valueOf(object.getAssignedWorker().getName()));
+
+		if (object.getAssignedGroup() != null)
+			addAttribute(assignedGroupLabel,
+					String.valueOf(object.getAssignedGroup().getName()));
 
 		// set dueTime
 		if (object.getDueTime() != null)
@@ -191,11 +192,10 @@ public class TaskExpandableAdapter<T extends Task> extends
 					DateFormat.getDateInstance(DateFormat.SHORT,
 							Locale.getDefault()).format(object.getDueTime()));
 
-		// TODO show on map?
+		VineyardGallery gallery = (VineyardGallery) childView
+				.findViewById(R.id.issue_view_gallery);
 
 		if (object instanceof IssueTask) {
-			VineyardGallery gallery = (VineyardGallery) childView
-					.findViewById(R.id.issue_view_gallery);
 			List<String> photos = ((IssueTask) object).getPhotos();
 			if (photos.size() == 0)
 				childView.removeView(gallery);
@@ -211,9 +211,11 @@ public class TaskExpandableAdapter<T extends Task> extends
 			childView.findViewById(R.id.issue_view_edit).setTag(object);
 			childView.findViewById(R.id.issue_view_edit).setOnClickListener(
 					editOnClickListener);
-		} else
+		} else {
+			childView.removeView(gallery);
 			childView.findViewById(R.id.issue_view_edit).setVisibility(
 					View.INVISIBLE);
+		}
 
 		childView.findViewById(R.id.issue_view_done).setTag(object);
 		childView.findViewById(R.id.issue_view_done).setOnClickListener(

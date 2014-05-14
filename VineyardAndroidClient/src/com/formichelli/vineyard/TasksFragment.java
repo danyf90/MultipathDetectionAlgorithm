@@ -31,8 +31,8 @@ public class TasksFragment extends Fragment {
 	VineyardMainActivity activity;
 	Place selectedPlace;
 
-	ExpandableListView agendaListView;
-	TaskExpandableAdapter<SimpleTask> issueAdapter;
+	ExpandableListView tasksListView;
+	TaskExpandableAdapter<SimpleTask> taskAdapter;
 	ExtendedCalendarView calendarView;
 	SparseArray<IssueTask> tasks = new SparseArray<IssueTask>();
 
@@ -52,24 +52,33 @@ public class TasksFragment extends Fragment {
 		populateCalendarProvider();
 
 		calendarView = (ExtendedCalendarView) activity
-				.findViewById(R.id.calendar);
-		agendaListView = (ExpandableListView) activity
-				.findViewById(R.id.daily_agenda);
+				.findViewById(R.id.tasks_calendar);
+		calendarView.setOnDayClickListener(onDayClickListener);
+		
+		tasksListView = (ExpandableListView) activity
+				.findViewById(R.id.tasks_list);
 
+		init();
+	}
+	
+	private void init () {
 		if (selectedPlace != null) {
+			activity.setTitle(String.format(activity.getString(R.string.title_tasks_fragment), selectedPlace.getName()));
 			calendarView.setVisibility(View.GONE);
-			issueAdapter = new TaskExpandableAdapter<SimpleTask>(activity,
+			tasksListView.setVisibility(View.VISIBLE);
+			taskAdapter = new TaskExpandableAdapter<SimpleTask>(activity,
 					R.layout.issues_list_item, R.layout.issue_view,
 					selectedPlace.getTasks(), false, null, null, null);
 		} else {
-			calendarView.setOnDayClickListener(onDayClickListener);
-			issueAdapter = new TaskExpandableAdapter<SimpleTask>(activity,
+			activity.setTitle(activity.getString(R.string.title_tasks_fragment_all));
+			calendarView.setVisibility(View.VISIBLE);
+			tasksListView.setVisibility(View.GONE);
+			taskAdapter = new TaskExpandableAdapter<SimpleTask>(activity,
 					R.layout.issues_list_item, R.layout.issue_view, null, true,
 					null, null, null);
 		}
-		
-		agendaListView.setAdapter(issueAdapter);
 
+		tasksListView.setAdapter(taskAdapter);
 	}
 
 	public void populateCalendarProvider() {
@@ -152,19 +161,33 @@ public class TasksFragment extends Fragment {
 	}
 
 	private OnDayClickListener onDayClickListener = new OnDayClickListener() {
-
 		@Override
 		public void onDayClicked(AdapterView<?> adapter, View view,
 				int position, long id, Day day) {
+			SparseArray<SimpleTask> allTasks = activity.getTasks();
 			ArrayList<SimpleTask> tasks = new ArrayList<SimpleTask>();
 
 			for (Event e : day.getEvents())
 				// title contains issue ID
-				tasks.add(tasks.get(Integer.valueOf(e.getTitle())));
+				tasks.add(allTasks.get(Integer.valueOf(e.getTitle())));
 
-			issueAdapter.replaceItems(tasks);
+			calendarView.setVisibility(View.GONE);
+			tasksListView.setVisibility(View.VISIBLE);
+			taskAdapter.replaceItems(tasks);
 		}
-
 	};
 
+	public void refresh() {
+		init();
+	}
+
+	public boolean onBackPressed() {
+		if (calendarView.getVisibility() == View.GONE) {
+			calendarView.setVisibility(View.VISIBLE);
+			tasksListView.setVisibility(View.GONE);
+			return true;
+		}
+		
+		return false;
+	}
 }

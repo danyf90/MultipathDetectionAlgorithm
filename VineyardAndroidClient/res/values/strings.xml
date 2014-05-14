@@ -13,6 +13,8 @@
     <string name="title_report_issue">Report Issue</string>
     <string name="title_issue_fragment">Issue of %s</string>
     <string name="title_issue_fragment_all">Issues</string>
+    <string name="title_tasks_fragment">Tasks of %s</string>
+    <string name="title_tasks_fragment_all">Tasks schedule</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="action_add_photo">Add photo</string>

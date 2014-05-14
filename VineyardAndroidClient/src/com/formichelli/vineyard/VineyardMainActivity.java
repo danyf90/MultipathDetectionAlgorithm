@@ -1,5 +1,6 @@
 package com.formichelli.vineyard;
 
+import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
 import org.apache.http.HttpStatus;
@@ -136,21 +137,37 @@ public class VineyardMainActivity extends ActionBarActivity implements
 	@Override
 	public void onNavigationDrawerItemSelected(int position) {
 		switch (position) {
-		case 0:
-			switchFragment(placeViewerFragment);
+
+		case 0: // places
+			if (rootPlace != null)
+				setCurrentPlace(rootPlace);
+			if (currentFragment != placeViewerFragment)
+				switchFragment(placeViewerFragment);
+			else
+				placeViewerFragment.refresh();
 			break;
-		case 1:
-			lastFragment = null; // force fragment switch
+
+		case 1: // issues
 			issuesFragment.setSelectedPlace(null);
-			switchFragment(issuesFragment);
+			if (currentFragment != issuesFragment)
+				switchFragment(issuesFragment);
+			else
+				issuesFragment.refresh();
 			break;
-		case 2:
-			switchFragment(tasksFragment);
+
+		case 2: // tasks
+			tasksFragment.setSelectedPlace(null);
+			if (currentFragment != tasksFragment)
+				switchFragment(tasksFragment);
+			else
+				tasksFragment.refresh();
 			break;
-		case 3:
+
+		case 3: // settings
 			startActivity(new Intent(this, SettingsActivity.class));
 			return;
-		case 4:
+
+		case 4: // logout
 			sp.edit().remove(getString(R.string.preference_user_id)).commit();
 			startLoginActivity();
 			return;
@@ -166,23 +183,18 @@ public class VineyardMainActivity extends ActionBarActivity implements
 
 	@Override
 	public void onBackPressed() {
-		if (currentFragment == placeViewerFragment)
-			// navigate the hierarchy up or ask for close if the current place
-			// is the root
-			if (currentPlace == rootPlace)
+		if (currentFragment == placeViewerFragment) {
+			if (!placeViewerFragment.onBackPressed())
 				askExit();
-			else {
-				Place parent = currentPlace.getParent();
-				if (parent != null)
-					placeViewerFragment.loadPlace(parent);
-			}
-		// switch to previous fragment
-		else if (currentFragment == issuesFragment)
+		} else if (currentFragment == issuesFragment)
 			switchFragment(placeViewerFragment);
-		else if (currentFragment == tasksFragment)
-			switchFragment(placeViewerFragment);
-		else if (currentFragment == loadingFragment)
+
+		else if (currentFragment == tasksFragment) {
+			if (!tasksFragment.onBackPressed())
+				switchFragment(placeViewerFragment);
+		} else if (currentFragment == loadingFragment)
 			askExit();
+
 		return;
 	}
 
@@ -455,6 +467,7 @@ public class VineyardMainActivity extends ActionBarActivity implements
 	}
 
 	private void associateEntities() {
+		// associate issues with places, workers and workgroups
 		for (int i = 0, l = issues.size(); i < l; i++) {
 			IssueTask issue = issues.valueAt(i);
 
@@ -470,6 +483,7 @@ public class VineyardMainActivity extends ActionBarActivity implements
 						.getId()));
 		}
 
+		// associate tasks with places, workers and workgroups
 		for (int i = 0, l = tasks.size(); i < l; i++) {
 			SimpleTask task = tasks.valueAt(i);
 
@@ -485,14 +499,16 @@ public class VineyardMainActivity extends ActionBarActivity implements
 						.getId()));
 		}
 
+		// associate workers and workgroups
 		for (int i = 0, l = workGroups.size(); i < l; i++) {
-			// TODO
-			// WorkGroup workGroup = workGroups.valueAt(i);
-			//
-			// for (Worker worker : workGroup.getWorkers()) {
-			// workGroup.removeWorker(worker);
-			// workGroup.addWorker(workers.get(worker.getId()));
-			// }
+			WorkGroup workGroup = workGroups.valueAt(i);
+
+			ArrayList<Worker> newWorkers = new ArrayList<Worker>();
+			
+			for (Worker worker : workGroup.getWorkers())
+				newWorkers.add(workers.get(worker.getId()));
+			
+			workGroup.setWorkers(newWorkers);
 		}
 	}
 
