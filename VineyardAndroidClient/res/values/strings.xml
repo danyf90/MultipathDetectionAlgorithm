@@ -48,5 +48,6 @@
     <string name="cache_data_used">Unable to contact server, last cached data has been used</string>
     <string name="loading">Loading&#8230;</string>
     <string name="loading_error">An error occurred</string>
+    <string name="tasks_no_tasks">There are no tasks for the selecion</string>
 
 </resources>

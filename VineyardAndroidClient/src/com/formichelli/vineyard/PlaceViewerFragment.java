@@ -273,7 +273,7 @@ public class PlaceViewerFragment extends Fragment {
 	public boolean onBackPressed() {
 		// navigate the hierarchy up or ask for close if the current place
 		// is the root
-		if (activity.getCurrentPlace() != activity.getRootPlace())
+		if (activity.getCurrentPlace() == activity.getRootPlace())
 			return false;
 
 		Place parent = activity.getCurrentPlace().getParent();

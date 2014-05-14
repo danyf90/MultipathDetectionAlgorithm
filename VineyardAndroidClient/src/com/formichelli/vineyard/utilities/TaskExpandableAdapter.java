@@ -63,6 +63,8 @@ public class TaskExpandableAdapter<T extends Task> extends
 	 *            will be associated to the deleteOnClickListener
 	 * @param objects
 	 *            issues to be added to the adapter
+	 * @param showAdd
+	 *            indicates wether an "Add" button should be shown or not
 	 * @param showPlace
 	 *            indicates wether the place name should be shown or not
 	 * @param reportIssueOnClickListener
@@ -105,6 +107,14 @@ public class TaskExpandableAdapter<T extends Task> extends
 		assignedGroupLabel = context
 				.getString(R.string.issue_assigned_group_label);
 		dueTimeLabel = context.getString(R.string.issue_due_time_label);
+	}
+
+	public boolean isShowPlace() {
+		return showPlace;
+	}
+
+	public void setShowPlace(boolean showPlace) {
+		this.showPlace = showPlace;
 	}
 
 	@Override

@@ -66,11 +66,16 @@ public class TasksFragment extends Fragment {
 				.findViewById(R.id.tasks_calendar);
 		calendarView.setOnDayClickListener(onDayClickListener);
 
+		taskAdapter = new TaskExpandableAdapter<SimpleTask>(activity,
+				R.layout.issues_list_item, R.layout.issue_view, null, false, true,
+				null, null, null);
 		tasksListView = (ExpandableListView) activity
 				.findViewById(R.id.tasks_list);
+		tasksListView.setAdapter(taskAdapter);
 
 		showAllLabel = getString(R.string.issue_view_all);
 		showMineLabel = getString(R.string.issue_view_mine);
+
 
 	}
 
@@ -114,22 +119,25 @@ public class TasksFragment extends Fragment {
 			activity.setTitle(activity
 					.getString(R.string.title_tasks_fragment_all));
 			calendarView.setVisibility(View.VISIBLE);
+			
+			taskAdapter.setShowPlace(true);
+			
 			tasksListView.setVisibility(View.GONE);
-			taskAdapter = new TaskExpandableAdapter<SimpleTask>(activity,
-					R.layout.issues_list_item, R.layout.issue_view, null, false, true,
-					null, null, null);
 		} else {
 			activity.setTitle(String.format(
 					activity.getString(R.string.title_tasks_fragment),
 					selectedPlace.getName()));
 			calendarView.setVisibility(View.GONE);
-			tasksListView.setVisibility(View.VISIBLE);
-			taskAdapter = new TaskExpandableAdapter<SimpleTask>(activity,
-					R.layout.issues_list_item, R.layout.issue_view,
-					selectedPlace.getTasks(), false, false, null, null, null);
+			
+			taskAdapter.replaceItems(selectedPlace.getTasks());
+			taskAdapter.setShowPlace(false);
+			
+			if (taskAdapter.getGroupCount() > 0)
+				tasksListView.setVisibility(View.VISIBLE);
+			else
+				tasksListView.setVisibility(View.GONE);
 		}
 
-		tasksListView.setAdapter(taskAdapter);
 	}
 
 	public void populateCalendarProvider() {
@@ -263,12 +271,12 @@ public class TasksFragment extends Fragment {
 	}
 
 	public boolean onBackPressed() {
-		if (calendarView.getVisibility() == View.GONE) {
+		if (selectedPlace == null && calendarView.getVisibility() == View.GONE) {
 			calendarView.setVisibility(View.VISIBLE);
 			tasksListView.setVisibility(View.GONE);
 			showMine = false;
 			showMode.setTitle(showMine ? showAllLabel : showMineLabel);
-			showMode.setVisible(true);
+			showMode.setVisible(false);
 			return true;
 		}
 
