@@ -11,6 +11,7 @@ import com.formichelli.vineyard.entities.IssueTask;
 import com.formichelli.vineyard.entities.Place;
 import com.formichelli.vineyard.entities.SimpleTask;
 import com.formichelli.vineyard.entities.Task;
+import com.formichelli.vineyard.entities.Worker;
 import com.formichelli.vineyard.utilities.AsyncHttpRequest;
 import com.formichelli.vineyard.utilities.TaskExpandableAdapter;
 import com.formichelli.vineyard.utilities.VineyardServer;
@@ -21,6 +22,7 @@ import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
@@ -38,9 +40,11 @@ public class IssuesFragment extends Fragment {
 	ExpandableListView issuesList;
 	TaskExpandableAdapter<IssueTask> issueAdapter;
 	TextView noIssuesMessage;
-	boolean first;
+	boolean first, showMine;
 	AsyncHttpRequest asyncTask;
 	Place selectedPlace;
+	MenuItem showMode;
+	String showAllLabel, showMineLabel;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -55,6 +59,7 @@ public class IssuesFragment extends Fragment {
 		super.onActivityCreated(savedInstanceState);
 
 		first = true;
+		showMine = false;
 
 		activity = (VineyardMainActivity) getActivity();
 		vineyardServer = activity.getServer();
@@ -63,11 +68,16 @@ public class IssuesFragment extends Fragment {
 
 		noIssuesMessage = (TextView) activity
 				.findViewById(R.id.issues_no_issues);
+
+		showAllLabel = getString(R.string.issue_view_all);
+		showMineLabel = getString(R.string.issue_view_mine);
 	}
 
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		inflater.inflate(R.menu.issues, menu);
+
+		showMode = menu.findItem(R.id.action_issue_view_mode);
 
 		if (first) {
 			// init() must be called just once after that both onActivityCreated
@@ -79,20 +89,59 @@ public class IssuesFragment extends Fragment {
 		super.onCreateOptionsMenu(menu, inflater);
 	}
 
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+
+		if (item.getItemId() == R.id.action_issue_view_mode) {
+			showMine = !showMine;
+			showMode.setTitle(showMine ? showAllLabel : showMineLabel);
+			init();
+			return true;
+		}
+
+		return false;
+	}
+
 	private void init() {
 		List<IssueTask> issues;
 
 		final boolean showAllIssues = selectedPlace == null;
 
 		if (showAllIssues) {
+			showMode.setVisible(true);
 			Place p = activity.getRootPlace();
 			issues = getAllIssues(p);
+			if (showMine) {
+				// show only issues of current user
+				int userId = activity.getUserId();
+				ArrayList<IssueTask> myIssues = new ArrayList<IssueTask>();
+
+				// show the issue only if it is assigned to the current user or
+				// to one of his groups
+				for (IssueTask issue : issues) {
+					if (issue.getAssignedWorker() != null
+							&& issue.getAssignedWorker().getId() == userId)
+						myIssues.add(issue);
+					else if (issue.getAssignedGroup() != null) {
+						for (Worker worker : issue.getAssignedGroup()
+								.getWorkers())
+							if (worker.getId() == userId) {
+								myIssues.add(issue);
+								break;
+							}
+					}
+				}
+				issues = myIssues;
+			}
+
 			activity.setTitle(getString(R.string.title_issue_fragment_all));
 		} else {
-
-			activity.setTitle(String.format(getString(R.string.title_issue_fragment), selectedPlace.getName()));
+			showMode.setVisible(false);
+			activity.setTitle(String.format(
+					getString(R.string.title_issue_fragment),
+					selectedPlace.getName()));
 			issues = selectedPlace.getIssues();
-			}
+		}
 
 		Collections.sort(issues);
 
@@ -162,8 +211,8 @@ public class IssuesFragment extends Fragment {
 		IssueTask issue;
 
 		public AsyncMarkIssueAsDone(String serverUrl, IssueTask issue) {
-			super(serverUrl + VineyardServer.ISSUES_AND_TASKS_API + issue.getId(),
-					AsyncHttpRequest.Type.PUT);
+			super(serverUrl + VineyardServer.ISSUES_AND_TASKS_API
+					+ issue.getId(), AsyncHttpRequest.Type.PUT);
 
 			this.issue = issue;
 
@@ -175,7 +224,8 @@ public class IssuesFragment extends Fragment {
 
 		@Override
 		protected void onPreExecute() {
-			activity.getLoadingFragment().setLoadingMessage(getString(R.string.loading_sending_request));
+			activity.getLoadingFragment().setLoadingMessage(
+					getString(R.string.loading_sending_request));
 			activity.switchFragment(activity.getLoadingFragment());
 		}
 
@@ -193,6 +243,6 @@ public class IssuesFragment extends Fragment {
 	}
 
 	public void refresh() {
-init();
+		init();
 	};
 }

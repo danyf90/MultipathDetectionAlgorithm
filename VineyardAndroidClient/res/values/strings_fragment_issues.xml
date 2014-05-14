@@ -22,7 +22,9 @@
     <string name="issue_report_sending_image_completed">Image uploading completed</string>
     <string name="issue_report_sending_image_error">An error occurred while sending an image to the server</string>
     <string name="issue_mark_done_error">An error occurred, the issues has not been marked as done</string>
-    <string name="use_location_label">Use current location</string>
+    <string name="issue_view_mine">Mine</string>
+    <string name="issue_view_all">All</string>
+    <string name="issue_use_location_label">Use current location</string>
 
     <string-array name="task_priorities">
         <item>--</item>

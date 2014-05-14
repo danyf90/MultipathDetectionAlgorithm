@@ -12,6 +12,9 @@ import android.support.v4.app.Fragment;
 import android.text.format.Time;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -20,6 +23,7 @@ import android.widget.ExpandableListView;
 import com.formichelli.vineyard.entities.IssueTask;
 import com.formichelli.vineyard.entities.Place;
 import com.formichelli.vineyard.entities.SimpleTask;
+import com.formichelli.vineyard.entities.Worker;
 import com.formichelli.vineyard.utilities.TaskExpandableAdapter;
 import com.tyczj.extendedcalendarview.CalendarProvider;
 import com.tyczj.extendedcalendarview.Day;
@@ -35,6 +39,10 @@ public class TasksFragment extends Fragment {
 	TaskExpandableAdapter<SimpleTask> taskAdapter;
 	ExtendedCalendarView calendarView;
 	SparseArray<IssueTask> tasks = new SparseArray<IssueTask>();
+	boolean first, showMine;
+	MenuItem showMode;
+	String showAllLabel, showMineLabel;
+	Day currentDay;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -48,34 +56,77 @@ public class TasksFragment extends Fragment {
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 
+		first = true;
+		showMine = false;
+
 		activity = (VineyardMainActivity) getActivity();
 		populateCalendarProvider();
 
 		calendarView = (ExtendedCalendarView) activity
 				.findViewById(R.id.tasks_calendar);
 		calendarView.setOnDayClickListener(onDayClickListener);
-		
+
 		tasksListView = (ExpandableListView) activity
 				.findViewById(R.id.tasks_list);
 
-		init();
+		showAllLabel = getString(R.string.issue_view_all);
+		showMineLabel = getString(R.string.issue_view_mine);
+
 	}
-	
-	private void init () {
-		if (selectedPlace != null) {
-			activity.setTitle(String.format(activity.getString(R.string.title_tasks_fragment), selectedPlace.getName()));
-			calendarView.setVisibility(View.GONE);
-			tasksListView.setVisibility(View.VISIBLE);
-			taskAdapter = new TaskExpandableAdapter<SimpleTask>(activity,
-					R.layout.issues_list_item, R.layout.issue_view,
-					selectedPlace.getTasks(), false, null, null, null);
-		} else {
-			activity.setTitle(activity.getString(R.string.title_tasks_fragment_all));
+
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		inflater.inflate(R.menu.tasks, menu);
+
+		showMode = menu.findItem(R.id.action_task_view_mode);
+
+		if (first) {
+			// init() must be called just once after that both onActivityCreated
+			// and onCreateOptionMenu are called
+			init();
+			first = false;
+		}
+
+		super.onCreateOptionsMenu(menu, inflater);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+
+		if (item.getItemId() == R.id.action_task_view_mode) {
+			showMine = !showMine;
+			showMode.setTitle(showMine ? showAllLabel : showMineLabel);
+			taskAdapter.replaceItems(getTasksOfTheDay(currentDay));
+			return true;
+		}
+
+		return false;
+	}
+
+	private void init() {
+
+		showMode.setVisible(false);
+		showMine = false;
+
+		final boolean showAllTasks = selectedPlace == null;
+
+		if (showAllTasks) {
+			activity.setTitle(activity
+					.getString(R.string.title_tasks_fragment_all));
 			calendarView.setVisibility(View.VISIBLE);
 			tasksListView.setVisibility(View.GONE);
 			taskAdapter = new TaskExpandableAdapter<SimpleTask>(activity,
 					R.layout.issues_list_item, R.layout.issue_view, null, true,
 					null, null, null);
+		} else {
+			activity.setTitle(String.format(
+					activity.getString(R.string.title_tasks_fragment),
+					selectedPlace.getName()));
+			calendarView.setVisibility(View.GONE);
+			tasksListView.setVisibility(View.VISIBLE);
+			taskAdapter = new TaskExpandableAdapter<SimpleTask>(activity,
+					R.layout.issues_list_item, R.layout.issue_view,
+					selectedPlace.getTasks(), false, null, null, null);
 		}
 
 		tasksListView.setAdapter(taskAdapter);
@@ -164,18 +215,48 @@ public class TasksFragment extends Fragment {
 		@Override
 		public void onDayClicked(AdapterView<?> adapter, View view,
 				int position, long id, Day day) {
-			SparseArray<SimpleTask> allTasks = activity.getTasks();
-			ArrayList<SimpleTask> tasks = new ArrayList<SimpleTask>();
+			currentDay = day;
 
-			for (Event e : day.getEvents())
-				// title contains issue ID
-				tasks.add(allTasks.get(Integer.valueOf(e.getTitle())));
+			ArrayList<SimpleTask> tasks = getTasksOfTheDay(day);
 
-			calendarView.setVisibility(View.GONE);
-			tasksListView.setVisibility(View.VISIBLE);
-			taskAdapter.replaceItems(tasks);
+			// change view only if there is at least one task
+			if (tasks.size() != 0) {
+				calendarView.setVisibility(View.GONE);
+				tasksListView.setVisibility(View.VISIBLE);
+				showMode.setVisible(true);
+				taskAdapter.replaceItems(tasks);
+			}
 		}
 	};
+
+	private ArrayList<SimpleTask> getTasksOfTheDay(Day day) {
+		SparseArray<SimpleTask> allTasks = activity.getTasks();
+		ArrayList<SimpleTask> tasks = new ArrayList<SimpleTask>();
+		int userId = activity.getUserId();
+
+		for (Event e : day.getEvents()) {
+			// title contains issue ID
+			SimpleTask task = allTasks.get(Integer.valueOf(e.getTitle()));
+
+			if (showMine) {
+				// show the task only if it is assigned to him or to one of
+				// his groups
+				if (task.getAssignedWorker() != null
+						&& task.getAssignedWorker().getId() == userId)
+					tasks.add(task);
+				else if (task.getAssignedGroup() != null) {
+					for (Worker worker : task.getAssignedGroup().getWorkers())
+						if (worker.getId() == userId) {
+							tasks.add(task);
+							break;
+						}
+				}
+			} else
+				tasks.add(task);
+		}
+
+		return tasks;
+	}
 
 	public void refresh() {
 		init();
@@ -185,9 +266,12 @@ public class TasksFragment extends Fragment {
 		if (calendarView.getVisibility() == View.GONE) {
 			calendarView.setVisibility(View.VISIBLE);
 			tasksListView.setVisibility(View.GONE);
+			showMine = false;
+			showMode.setTitle(showMine ? showAllLabel : showMineLabel);
+			showMode.setVisible(true);
 			return true;
 		}
-		
+
 		return false;
 	}
 }

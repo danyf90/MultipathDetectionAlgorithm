@@ -90,7 +90,7 @@
             android:layout_alignParentLeft="true"
             android:layout_below="@id/report_issue_priority_label"
             android:layout_marginTop="30dp"
-            android:text="@string/use_location_label" />
+            android:text="@string/issue_use_location_label" />
 
         <ToggleButton
             android:id="@+id/report_issue_use_location"

@@ -22,7 +22,9 @@
     <string name="issue_report_sending_image_complete">Caricamento delle immagini completato</string>
     <string name="issue_report_sending_image_error">Si è verificato un errore durante il caricamento delle immagini</string>
     <string name="issue_mark_done_error">Si è verificato un errore, il problema non è stato marcato come risolto</string>
-    <string name="use_location_label">Invia posizione</string>
+    <string name="issue_view_mine">Miei</string>
+    <string name="issue_view_all">Tutti</string>
+    <string name="issue_use_location_label">Invia posizione</string>
 
     <string-array name="task_priorities">
         <item>--</item>

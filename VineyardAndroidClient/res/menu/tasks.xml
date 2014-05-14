@@ -2,11 +2,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.formichelli.vit.VineyardMainActivity" >
-    
+
     <item
-        android:id="@+id/action_tasks_up"
-        android:title="@string/action_up"
-        android:icon="@drawable/action_up"
-        app:showAsAction="ifRoom"/>
-    
+        android:id="@+id/action_task_view_mode"
+        android:title="@string/issue_view_mine"
+        android:visible="false"/>
+
 </menu>
