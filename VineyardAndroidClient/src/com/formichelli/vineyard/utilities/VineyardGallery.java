@@ -38,6 +38,8 @@ import com.formichelli.vineyard.R;
  */
 public class VineyardGallery extends HorizontalScrollView {
 	public static final int REQUEST_TAKE_PHOTO = 1;
+	private static final int addPosition = 1; // add new images near to camera
+												// icon
 
 	ImageView addDeletePhoto;
 	LinearLayout gallery;
@@ -188,7 +190,12 @@ public class VineyardGallery extends HorizontalScrollView {
 		v.setImageBitmap(photo);
 		v.setPadding(padding, padding, padding, padding);
 
-		gallery.addView(v, 0);
+		// add the container to the gallery
+		if (gallery.getChildCount() > addPosition)
+			gallery.addView(v, addPosition);
+		else
+			gallery.addView(v);
+
 		images.add(v);
 
 		return v;
@@ -198,7 +205,7 @@ public class VineyardGallery extends HorizontalScrollView {
 		Collection<String> images = imagesFromCamera.values();
 		if (images.size() == 0)
 			return null;
-		
+
 		ArrayList<String> ret = new ArrayList<String>();
 		for (String image : images)
 			ret.add(image);
@@ -236,7 +243,10 @@ public class VineyardGallery extends HorizontalScrollView {
 			container.setBackgroundDrawable(background);
 
 			// add the container to the gallery
-			gallery.addView(container, 0);
+			if (gallery.getChildCount() > addPosition)
+				gallery.addView(container, addPosition);
+			else
+				gallery.addView(container);
 
 			imageUrl = String.format(serverUrl, path, size, size);
 		}
