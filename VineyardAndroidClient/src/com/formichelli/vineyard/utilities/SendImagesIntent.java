@@ -5,11 +5,14 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.mime.HttpMultipartMode;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 
@@ -33,32 +36,24 @@ public class SendImagesIntent extends IntentService {
 	@Override
 	protected void onHandleIntent(Intent intent) {
 		String serverUrl = intent.getExtras().getString(SERVER_URL);
-		ArrayList<String> images = intent.getExtras().getStringArrayList(
-				IMAGE);
+		ArrayList<String> images = intent.getExtras().getStringArrayList(IMAGE);
 
 		Log.e(TAG, "starting...");
-		
+
 		for (String path : images) {
 			Log.i(TAG, "Sending image " + path + " to the server...");
-
-			Bitmap image = BitmapFactory.decodeFile(path);
-			if (image == null)
-				throw new IllegalArgumentException(path
-						+ " cannot be decoded");
-
-			ByteArrayOutputStream out = new ByteArrayOutputStream();
-			image.compress(Bitmap.CompressFormat.JPEG, 90, out);
-			String imageString = Base64.encodeToString(out.toByteArray(),
-					Base64.DEFAULT);
-
-			ArrayList<NameValuePair> postParams = new ArrayList<NameValuePair>();
-			postParams.add(new BasicNameValuePair("photo", imageString));
+			File image = new File(path);
 
 			HttpPost request = new HttpPost(serverUrl);
 			try {
-				request.setEntity(new UrlEncodedFormEntity(postParams));
-				HttpResponse result = new DefaultHttpClient()
-						.execute(request);
+				MultipartEntityBuilder entityBuilder = MultipartEntityBuilder
+						.create();
+				entityBuilder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
+				entityBuilder.addBinaryBody("photo", image);
+				HttpEntity entity = entityBuilder.build();
+				request.setEntity(entity);
+				
+				HttpResponse result = new DefaultHttpClient().execute(request);
 				if (result.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED)
 					Toast.makeText(this, "Image sent!", Toast.LENGTH_LONG)
 							.show();
@@ -66,10 +61,8 @@ public class SendImagesIntent extends IntentService {
 					Toast.makeText(this,
 							"An error occurred while sending the image",
 							Toast.LENGTH_LONG).show();
-					Log.e(TAG,
-							"An error occurred while sending the image: "
-									+ result.getStatusLine()
-											.getStatusCode());
+					Log.e(TAG, "An error occurred while sending the image: "
+							+ result.getStatusLine().getStatusCode());
 				}
 
 				File f = new File(path);
