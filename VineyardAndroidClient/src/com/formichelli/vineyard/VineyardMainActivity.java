@@ -405,17 +405,53 @@ public class VineyardMainActivity extends ActionBarActivity implements
 
 	private void onAsyncHttpRequestFinished(AsyncHttpRequest asyncHttpRequest) {
 		try {
-			if (asyncHttpRequest.get() == null)
+			if (asyncHttpRequest.get() == null) {
+				// one of the requests is failed: cancel requests, the error
+				// message is shown by the failed request
 				cancelRequests();
+				return;
+			}
 		} catch (InterruptedException | ExecutionException e) {
 			cancelRequests();
+			return;
 		}
 
-		if (places != null && issues != null && tasks != null
-				&& workers != null && workGroups != null) {
+		markAsFinished(asyncHttpRequest);
+
+		if (allRequestsAreFinished()) {
 			associateEntities();
 			switchFragment(placeViewerFragment);
 		}
+	}
+
+	private void cancelRequests() {
+		rootPlaceRequest.cancel(true);
+		rootPlaceRequest = null;
+
+		issuesAndTasksRequest.cancel(true);
+		issuesAndTasksRequest = null;
+
+		workersRequest.cancel(true);
+		workersRequest = null;
+
+		workGroupsRequest.cancel(true);
+		workGroupsRequest = null;
+	}
+
+	private void markAsFinished(AsyncHttpRequest asyncHttpRequest) {
+		if (asyncHttpRequest == rootPlaceRequest)
+			rootPlaceRequest = null;
+		else if (asyncHttpRequest == issuesAndTasksRequest)
+			issuesAndTasksRequest = null;
+		else if (asyncHttpRequest == workersRequest)
+			workersRequest = null;
+		else if (asyncHttpRequest == workGroupsRequest)
+			workGroupsRequest = null;
+	}
+
+	private boolean allRequestsAreFinished() {
+		return rootPlaceRequest == null && issuesAndTasksRequest == null
+				&& workersRequest == null && workGroupsRequest == null;
 	}
 
 	private void associateEntities() {
@@ -458,13 +494,6 @@ public class VineyardMainActivity extends ActionBarActivity implements
 			// workGroup.addWorker(workers.get(worker.getId()));
 			// }
 		}
-	}
-
-	private void cancelRequests() {
-		rootPlaceRequest.cancel(true);
-		issuesAndTasksRequest.cancel(true);
-		workersRequest.cancel(true);
-		workGroupsRequest.cancel(true);
 	}
 
 	/*
