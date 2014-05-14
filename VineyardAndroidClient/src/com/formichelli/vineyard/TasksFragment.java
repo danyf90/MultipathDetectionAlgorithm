@@ -116,7 +116,7 @@ public class TasksFragment extends Fragment {
 			calendarView.setVisibility(View.VISIBLE);
 			tasksListView.setVisibility(View.GONE);
 			taskAdapter = new TaskExpandableAdapter<SimpleTask>(activity,
-					R.layout.issues_list_item, R.layout.issue_view, null, true,
+					R.layout.issues_list_item, R.layout.issue_view, null, false, true,
 					null, null, null);
 		} else {
 			activity.setTitle(String.format(
@@ -126,7 +126,7 @@ public class TasksFragment extends Fragment {
 			tasksListView.setVisibility(View.VISIBLE);
 			taskAdapter = new TaskExpandableAdapter<SimpleTask>(activity,
 					R.layout.issues_list_item, R.layout.issue_view,
-					selectedPlace.getTasks(), false, null, null, null);
+					selectedPlace.getTasks(), false, false, null, null, null);
 		}
 
 		tasksListView.setAdapter(taskAdapter);

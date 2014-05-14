@@ -30,6 +30,7 @@ public class TaskExpandableAdapter<T extends Task> extends
 		BaseExpandableListAdapter {
 	private final Context context;
 	List<T> objects;
+	int offset;
 	boolean showPlace;
 	int groupResource, childResource;
 	OnClickListener reportIssueOnClickListener, editOnClickListener,
@@ -74,8 +75,8 @@ public class TaskExpandableAdapter<T extends Task> extends
 	 *            will be added as a tag to the associated view
 	 */
 	public TaskExpandableAdapter(Activity context, int groupResource,
-			int childResource, List<T> objects, boolean showPlace,
-			OnClickListener reportIssueOnClickListener,
+			int childResource, List<T> objects, boolean showAdd,
+			boolean showPlace, OnClickListener reportIssueOnClickListener,
 			OnClickListener editOnClickListener,
 			OnClickListener doneOnClickListener) {
 
@@ -86,6 +87,7 @@ public class TaskExpandableAdapter<T extends Task> extends
 			this.objects = objects;
 		else
 			this.objects = new ArrayList<T>();
+		this.offset = showAdd ? 1 : 0;
 		this.showPlace = showPlace;
 
 		this.reportIssueOnClickListener = reportIssueOnClickListener;
@@ -97,8 +99,7 @@ public class TaskExpandableAdapter<T extends Task> extends
 		statusLabel = context.getString(R.string.issue_status_label);
 		priorities = context.getResources().getStringArray(
 				R.array.task_priorities);
-		status = context.getResources().getStringArray(
-				R.array.task_status);
+		status = context.getResources().getStringArray(R.array.task_status);
 		assignedWorkerLabel = context
 				.getString(R.string.issue_assigned_worker_label);
 		assignedGroupLabel = context
@@ -115,7 +116,7 @@ public class TaskExpandableAdapter<T extends Task> extends
 		View item = inflater.inflate(groupResource, parent, false);
 		t = (TextView) item.findViewById(R.id.issue_list_item_label);
 
-		if (groupPosition == 0) {
+		if (groupPosition < offset) {
 			// First item is report issue
 			t.setCompoundDrawablesWithIntrinsicBounds(
 					R.drawable.action_add_dark, 0, 0, 0);
@@ -124,7 +125,7 @@ public class TaskExpandableAdapter<T extends Task> extends
 
 		} else {
 			// Other items are real issues
-			Task object = objects.get(groupPosition - 1);
+			Task object = objects.get(groupPosition - offset);
 
 			t.setText(object.getTitle());
 			t.setTag(object);
@@ -148,7 +149,7 @@ public class TaskExpandableAdapter<T extends Task> extends
 	@Override
 	public View getChildView(int groupPosition, int childPosition,
 			boolean isLastChild, View convertView, ViewGroup parent) {
-		Task object = objects.get(groupPosition - 1);
+		Task object = objects.get(groupPosition - offset);
 		LayoutInflater inflater = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		ViewGroup childView = (ViewGroup) inflater.inflate(childResource,
@@ -226,12 +227,12 @@ public class TaskExpandableAdapter<T extends Task> extends
 
 	@Override
 	public int getGroupCount() {
-		return objects.size() + 1;
+		return objects.size() + offset;
 	}
 
 	@Override
 	public int getChildrenCount(int groupPosition) {
-		if (groupPosition == 0)
+		if (groupPosition < offset)
 			return 0;
 
 		return 1;
@@ -239,18 +240,18 @@ public class TaskExpandableAdapter<T extends Task> extends
 
 	@Override
 	public Object getGroup(int groupPosition) {
-		if (groupPosition == 0)
+		if (groupPosition < offset)
 			return null;
 
-		return objects.get(groupPosition - 1);
+		return objects.get(groupPosition - offset);
 	}
 
 	@Override
 	public Object getChild(int groupPosition, int childPosition) {
-		if (childPosition > 0)
+		if (groupPosition < offset || childPosition > 0)
 			return null;
 
-		return objects.get(groupPosition - 1);
+		return objects.get(groupPosition - offset);
 	}
 
 	@Override

@@ -222,6 +222,7 @@ public class VineyardMainActivity extends ActionBarActivity implements
 			OnClickListener positiveClick = new OnClickListener() {
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
+					VineyardMainActivity.this.cancelRequests();
 					VineyardMainActivity.this.finish();
 				}
 			};

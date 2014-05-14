@@ -5,6 +5,7 @@
 
     <item
         android:id="@+id/action_task_view_mode"
+        android:showAsAction="withText"
         android:title="@string/issue_view_mine"
         android:visible="false"/>
 

@@ -2,10 +2,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.formichelli.vineyard.VineyardMainActivity$IssuesFragment" >
-    
+
     <item
         android:id="@+id/action_issue_view_mode"
-        android:showAsAction="always|withText"
+        android:showAsAction="withText"
         android:title="@string/issue_view_mine"/>
-    
+
 </menu>

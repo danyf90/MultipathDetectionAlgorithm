@@ -146,7 +146,7 @@ public class IssuesFragment extends Fragment {
 		Collections.sort(issues);
 
 		issueAdapter = new TaskExpandableAdapter<IssueTask>(activity,
-				R.layout.issues_list_item, R.layout.issue_view, issues,
+				R.layout.issues_list_item, R.layout.issue_view, issues, true,
 				showAllIssues, reportIssueOnClickListener, editOnClickListener,
 				doneOnClickListener);
 		issuesList.setAdapter(issueAdapter);
