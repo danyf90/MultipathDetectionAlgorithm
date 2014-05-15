@@ -138,6 +138,7 @@ public class AsyncHttpRequest extends
 
 		case GET:
 			request = new HttpGet(serverUrl);
+			
 			if (lastModified != null)
 				request.addHeader("If-Modified-Since", lastModified);
 			break;

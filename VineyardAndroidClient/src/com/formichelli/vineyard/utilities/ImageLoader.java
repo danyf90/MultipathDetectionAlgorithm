@@ -49,7 +49,6 @@ public class ImageLoader extends AsyncTask<Void, Void, Bitmap> {
 		this.container = container;
 		this.progress = progress;
 		this.imageUrl = imageUrl;
-		Log.e(TAG,"ImageLoader started.");
 	}
 
 	@Override

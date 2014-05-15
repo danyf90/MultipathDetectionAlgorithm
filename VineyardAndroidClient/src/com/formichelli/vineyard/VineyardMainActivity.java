@@ -525,6 +525,10 @@ public class VineyardMainActivity extends ActionBarActivity implements
 
 		public RootPlaceAsyncHttpRequest(String serverUrl) {
 			super(serverUrl + VineyardServer.PLACES_HIERARCHY_API, Type.GET);
+			
+			final String lastModified = cache.getPlacesLastModified(); 
+			if (lastModified != null)
+				setLastModified(lastModified);
 		}
 
 		@Override
@@ -614,6 +618,10 @@ public class VineyardMainActivity extends ActionBarActivity implements
 		public IssuesAndTasksAsyncHttpRequest(String serverUrl) {
 			super(serverUrl + VineyardServer.OPEN_ISSUES_AND_TASKS_API,
 					Type.GET);
+
+			final String lastModified = cache.getIssuesAndTasksLastModified(); 
+			if (lastModified != null)
+				setLastModified(lastModified);
 		}
 
 		@Override
@@ -712,6 +720,10 @@ public class VineyardMainActivity extends ActionBarActivity implements
 
 		public WorkersAsyncHttpRequest(String serverUrl) {
 			super(serverUrl + VineyardServer.WORKERS_API, Type.GET);
+
+			final String lastModified = cache.getWorkersLastModified(); 
+			if (lastModified != null)
+				setLastModified(lastModified);
 		}
 
 		@Override
@@ -795,6 +807,10 @@ public class VineyardMainActivity extends ActionBarActivity implements
 
 		public WorkGroupsAsyncHttpRequest(String serverUrl) {
 			super(serverUrl + VineyardServer.WORKGROUPS_API, Type.GET);
+
+			final String lastModified = cache.getWorkGroupsLastModified(); 
+			if (lastModified != null)
+				setLastModified(lastModified);
 		}
 
 		@Override
