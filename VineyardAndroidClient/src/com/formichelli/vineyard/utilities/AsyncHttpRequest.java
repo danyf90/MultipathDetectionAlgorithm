@@ -7,13 +7,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpHead;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
@@ -140,18 +138,8 @@ public class AsyncHttpRequest extends
 
 		case GET:
 			request = new HttpGet(serverUrl);
-			if (lastModified != null) {
-				HttpHead httpHead = new HttpHead(serverUrl);
-				httpHead.addHeader("If-Modified-Since", lastModified);
-				try {
-					// Sends the request only if the object has been modified since last time 
-					HttpResponse response = new DefaultHttpClient().execute(httpHead);
-					if (response.getStatusLine().getStatusCode() == HttpStatus.SC_NOT_MODIFIED)
-						return new Pair<Integer, String>(HttpStatus.SC_NOT_MODIFIED, null);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
+			if (lastModified != null)
+				request.addHeader("If-Modified-Since", lastModified);
 			break;
 
 		case POST:
