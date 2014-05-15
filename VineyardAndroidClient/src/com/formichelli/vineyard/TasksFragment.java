@@ -86,9 +86,9 @@ public class TasksFragment extends Fragment {
 		showMode = menu.findItem(R.id.action_task_view_mode);
 
 		if (first) {
-			// init() must be called just once after that both onActivityCreated
+			// loadData() must be called just once after that both onActivityCreated
 			// and onCreateOptionMenu are called
-			init();
+			loadData();
 			first = false;
 		}
 
@@ -108,7 +108,7 @@ public class TasksFragment extends Fragment {
 		return false;
 	}
 
-	private void init() {
+	public void loadData() {
 
 		showMode.setVisible(false);
 		showMine = false;
@@ -264,10 +264,6 @@ public class TasksFragment extends Fragment {
 		}
 
 		return tasks;
-	}
-
-	public void refresh() {
-		init();
 	}
 
 	public boolean onBackPressed() {

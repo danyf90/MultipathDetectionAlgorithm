@@ -80,9 +80,9 @@ public class IssuesFragment extends Fragment {
 		showMode = menu.findItem(R.id.action_issue_view_mode);
 
 		if (first) {
-			// init() must be called just once after that both onActivityCreated
+			// loadData() must be called just once after that both onActivityCreated
 			// and onCreateOptionMenu are called
-			init();
+			loadData();
 			first = false;
 		}
 
@@ -95,14 +95,14 @@ public class IssuesFragment extends Fragment {
 		if (item.getItemId() == R.id.action_issue_view_mode) {
 			showMine = !showMine;
 			showMode.setTitle(showMine ? showAllLabel : showMineLabel);
-			init();
+			loadData();
 			return true;
 		}
 
 		return false;
 	}
 
-	private void init() {
+	public void loadData() {
 		List<IssueTask> issues;
 
 		final boolean showAllIssues = selectedPlace == null;
@@ -241,8 +241,4 @@ public class IssuesFragment extends Fragment {
 			activity.switchFragment();
 		}
 	}
-
-	public void refresh() {
-		init();
-	};
 }

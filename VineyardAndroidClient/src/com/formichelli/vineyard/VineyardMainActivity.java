@@ -144,7 +144,7 @@ public class VineyardMainActivity extends ActionBarActivity implements
 			if (currentFragment != placeViewerFragment)
 				switchFragment(placeViewerFragment);
 			else
-				placeViewerFragment.refresh();
+				placeViewerFragment.loadData();
 			break;
 
 		case 1: // issues
@@ -152,7 +152,7 @@ public class VineyardMainActivity extends ActionBarActivity implements
 			if (currentFragment != issuesFragment)
 				switchFragment(issuesFragment);
 			else
-				issuesFragment.refresh();
+				issuesFragment.loadData();
 			break;
 
 		case 2: // tasks
@@ -160,7 +160,7 @@ public class VineyardMainActivity extends ActionBarActivity implements
 			if (currentFragment != tasksFragment)
 				switchFragment(tasksFragment);
 			else
-				tasksFragment.refresh();
+				tasksFragment.loadData();
 			break;
 
 		case 3: // settings

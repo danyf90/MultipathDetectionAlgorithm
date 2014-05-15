@@ -139,7 +139,7 @@ public class PlaceViewerFragment extends Fragment {
 		upItem = menu.findItem(R.id.action_place_viewer_up);
 
 		if (first) {
-			init();
+			loadData();
 			first = false;
 		}
 
@@ -148,7 +148,7 @@ public class PlaceViewerFragment extends Fragment {
 
 	// This function must be called only once after both onActivityCreated and
 	// onCreateOptionMenu
-	private void init() {
+	public void loadData() {
 		// loadPlace needs that the header is already placed in the layout
 		header.post(new Runnable() {
 			@Override
@@ -206,6 +206,8 @@ public class PlaceViewerFragment extends Fragment {
 			imageLoader = new ImageLoader(activity, header, progress, imageUrl);
 			imageLoader.execute();
 		}
+		else
+			progress.setVisibility(View.INVISIBLE);
 
 		int c;
 
@@ -264,10 +266,6 @@ public class PlaceViewerFragment extends Fragment {
 
 		childrenLabel.setVisibility(visibility);
 		childrenList.setVisibility(visibility);
-	}
-
-	public void refresh() {
-		init();
 	}
 
 	public boolean onBackPressed() {
