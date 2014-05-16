@@ -29,7 +29,7 @@ class RequestRouter {
     }
 	
 	public static function route() {
-        
+	header('Access-Control-Allow-Origin: *'); // permits cross-domain AJAX
         // echo "Your request: ", $_SERVER['REQUEST_METHOD'], " ", $_SERVER['REQUEST_URI'];
         
         $uriWithoutParams = strtok($_SERVER['REQUEST_URI'], '?');

@@ -125,7 +125,8 @@ class Validator {
      */
 
     protected function enum($fieldName, $enumValues) {
-        if (!in_array($this->object->{$fieldName}, $enumValues)) {
+	$value = strtolower($this->object->{$fieldName});
+        if (!in_array($value, $enumValues)) {
             $this->addWrongField($fieldName, self::INVALID_FORMAT);
             return false;
         }
