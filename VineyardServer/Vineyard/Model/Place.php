@@ -40,28 +40,9 @@ class Place extends AbstractORM implements IResource {
         $s = new static();
         $s->load($id);
 
-        // add attributes to place instance
-        $pdo = DB::getConnection();
-
-        try {
-            $sql = $pdo->prepare("SELECT `key`, `value` FROM `place_attribute` WHERE `place` = ?");
-            $sql->execute(array($id));
-            // TODO better empty array if no attributes?
-            if ($sql->rowCount() > 0) {
-                $attributes = array();
-                while($row = $sql->fetch(PDO::FETCH_ASSOC))
-                    $attributes[$row['key']] = $row['value'];
-
-                $s->attributes = $attributes;
-            }
-
-        } catch (PDOException $e) {
-            // check which SQL error occured
-            switch ($e->getCode()) {
-                default:
-                    http_response_code(400); // Bad Request
-            }
-        }
+        // add attributes and stats to place instance
+		$s->loadAttributes();
+		$s->loadStats();
 
         return $s;
     }
@@ -129,6 +110,25 @@ class Place extends AbstractORM implements IResource {
     /**************************
      * ATTRIBUTE HANDLING
      **************************/
+	
+	public function loadAttributes() {
+		if (!isset($this->id))
+			return;
+		
+		$pdo = DB::getConnection();
+
+		$sql = $pdo->prepare("SELECT `key`, `value` FROM `place_attribute` WHERE `place` = ?");
+		$sql->execute(array($id));
+		
+		if ($sql->rowCount() > 0) {
+			$attributes = array();
+			while($row = $sql->fetch(PDO::FETCH_ASSOC))
+				$attributes[$row['key']] = $row['value'];
+
+			$this->attributes = $attributes;
+		}
+	}
+	
 
     public static function handleAttributeRequest($method, $id) {
         switch ($method) {
@@ -355,6 +355,34 @@ class Place extends AbstractORM implements IResource {
      /**************************
      * STATS HANDLING
      **************************/
+	
+	protected function loadStats() {
+		if (!isset($this->id))
+			return;
+		
+		$pdo = DB::getConnection();
+        $tQuery = "SELECT COUNT(*) AS `tasks`
+            FROM `task`
+            WHERE `end_time` IS NULL
+			AND `issuer` IS NULL
+			AND `place` = ?";
+
+       $iQuery = "SELECT COUNT(*) AS `issues`
+            FROM `task`
+            WHERE `end_time` IS NULL
+			AND `issuer` IS NOT NULL
+            AND `place` = ?";
+
+		$tSql = $pdo->prepare($tQuery);
+		$tSql->execute(array($this->id));
+
+		$this->tasks = $tSql->fetchColumn(0);
+
+		$iSql = $pdo->prepare($iQuery);
+		$iSql->execute(array($this->id));
+
+		$this->issues = $iSql->fetchColumn(0);		
+	}
 
     public static function handleStatsRequest($method) {
         if ($method != "GET") {

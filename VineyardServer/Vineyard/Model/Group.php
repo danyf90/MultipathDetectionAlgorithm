@@ -2,11 +2,11 @@
 namespace Vineyard\Model;
 
 use \PDO;
+use \PDOException;
 use \Vineyard\Utility\DB;
 use \Vineyard\Utility\AbstractORM;
 use \Vineyard\Utility\IResource;
 use \Vineyard\Utility\TCrudRequestHandlers;
-
 
 class Group extends AbstractORM implements IResource {
     
