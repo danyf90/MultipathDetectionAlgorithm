@@ -2,7 +2,7 @@
 Vineyard APIs List
 =============
 
-This file describes the REST API available in the Vineyard PHP Server.  
+This file describes the REST API available in the Vineyard PHP Server.
 All data is returned in JSON format.
 
 Implemented APIs
@@ -10,9 +10,13 @@ Implemented APIs
 
 ### Place
 
-* Retrieve all Place instances:
+* Retrieve all Place instances (array):
 
         GET http://vineyard-server.org/api/place
+
+* Retrieve all Place instances (hierarchy):
+
+        GET http://vineyard-server.org/place/hierarchy
 
 * Retrieve the Place instance with specified id:
 
@@ -21,7 +25,7 @@ Implemented APIs
 * Create a new Place:
 
         POST http://vineyard-server.org/place/
-        
+
         POST DATA:
         name=...
         description=...
@@ -31,7 +35,7 @@ Implemented APIs
 * Update an existant Place with specified id:
 
         PUT http://vineyard-server.org/place/<id>
-        
+
         PUT DATA:
         name=...
         description=...
@@ -41,13 +45,13 @@ Implemented APIs
 * Delete the Place with specified id:
 
         DELETE http://vineyard-server.org/place/<id>/
-#### Place attributes
 
+#### Place attributes
 
 * Add an attribute (key-value string pair) to an existing Place with given id:
 
-        POST http://vineyard-server.org/place/<id>/attribute/    
-        
+        POST http://vineyard-server.org/place/<id>/attribute/
+
         POST DATA:
         key=...
         value=...
@@ -55,7 +59,7 @@ Implemented APIs
 * Update an existant attribute (key-value string pair) to an existing Place with given id:
 
         PUT http://vineyard-server.org/place/<id>/attribute/
-        
+
         PUT DATA:
         key=...
         value=...
@@ -63,24 +67,24 @@ Implemented APIs
 * Delete an attribute with a given key of an existing Place with given id:
 
         DELETE http://vineyard-server.org/place/<id>/attribute/
-        
+
         DELETE DATA:
         key=...
-#### Place photo
 
+#### Place photo
 
 * Add or replace the photo of the Place with given id:
 
         POST http://vineyard-server.org/place/<id>/photo/
-        
+
         POST DATA:
         photo=<image data>
 
 * Delete the Place photo:
 
         DELETE http://vineyard-server.org/place/<id>/photo/
-#### Other Place data
 
+#### Other Place data
 
 * Get the list of issues or tasks of the Place with given id:
 
@@ -91,10 +95,6 @@ Implemented APIs
 
         GET http://vineyard-server.org/place/stats
 
-* Get the hierarchy of Places
-
-        GET http://vineyard-server.org/place/hierarchy
-
 ---
 
 ### Photo
@@ -103,6 +103,10 @@ Implemented APIs
 
         GET http://vineyard-server.org/photo/<photoUrl>
 
+* Get cropped photo image data given the url referenced by a resource field
+
+        GET http://vineyard-server.org/photo/<photoUrl>/?w=<width>&h=<height>
+
 ---
 
 ### Task
@@ -110,7 +114,7 @@ Implemented APIs
 * Get all Task instances
 
         GET http://vineyard-server.org/task
-        
+
 * Get all Task instances with status not equal to 'done'
 
         GET http://vineyard-server.org/task/open
@@ -123,7 +127,7 @@ Implemented APIs
 * Create a new Task:
 
         POST http://vineyard-server.org/task/
-        
+
         POST DATA:
         title=...
         description=...
@@ -133,7 +137,7 @@ Implemented APIs
 * Update an existant Task with specified id:
 
         PUT	http://vineyard-server.org/issue/<id>/
-        
+
         PUT DATA:
         title=...
         description=...
@@ -143,13 +147,21 @@ Implemented APIs
 * Delete the Task with specified id:
 
         DELETE http://vineyard-server.org/task/<id>/
-#### Task photo
 
+
+* Get Tasks per status
+
+        GET http://vineyard-server.org/task/new/
+        GET http://vineyard-server.org/task/assigned/
+        GET http://vineyard-server.org/task/resolved/
+        GET http://vineyard-server.org/task/open/
+
+#### Issue photo
 
 * Add a photo and associate it to the Task with given <id>
 
         POST http://vineyard-server.org/task/<id>/photo
-        
+
         POST DATA:
         photo=<image data>
 
@@ -163,11 +175,11 @@ Implemented APIs
 
 * Worker Login (unsecure, but easy way)
 
-		POST http://vineyard-server.org/worker/login/
-		
-		POST DATA:
-		email=...
-		password=...
+        POST http://vineyard-server.org/worker/login/
+
+        POST DATA:
+        email=...
+        password=md5(<password>)
 
 ---
 
@@ -186,10 +198,6 @@ Implemented APIs
 * add/remove a worker from a group
 
         PUT/DELETE http://vineyard-server.org/group/<gid>/worker/<wid>
-		
-
-Not Implemented Yet
--------------------
 
 ### Worker
 
@@ -203,18 +211,3 @@ Not Implemented Yet
         POST http://vineyard-server.org/worker/
         PUT/DELETE http://vineyard-server.org/worker/87
         PUT/DELETE http://vineyard-server.org/worker/pinco.pallo
-
-### Task/Issue
-
-* Get Tasks per status
-
-        GET http://vineyard-server.org/task/new/
-        GET http://vineyard-server.org/task/assigned/
-        GET http://vineyard-server.org/task/resolved/
-
-### Photo
-
-* Get cropped version of a particular photo
-
-	GET http://vineyard-server.org/photo/<filename>/?w=<width>&h=<height>
-
