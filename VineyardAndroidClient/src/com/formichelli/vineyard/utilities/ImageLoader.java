@@ -115,7 +115,7 @@ public class ImageLoader extends AsyncTask<Void, Void, Bitmap> {
 			return;
 		}
 
-		//saveBitmap(photo, localName);
+		saveBitmap(photo, localName);
 		container.setBackgroundDrawable(new BitmapDrawable(photo));
 	}
 

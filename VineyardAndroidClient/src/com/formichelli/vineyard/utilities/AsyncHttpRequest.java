@@ -160,7 +160,7 @@ public class AsyncHttpRequest extends
 			if (this.params != null)
 				try {
 					((HttpEntityEnclosingRequestBase) request)
-							.setEntity(new UrlEncodedFormEntity(this.params));
+							.setEntity(new UrlEncodedFormEntity(this.params, "UTF-8"));
 				} catch (UnsupportedEncodingException e) {
 					Log.e(TAG, "Error: " + e.getLocalizedMessage());
 					return new Pair<Integer,String>(-1,null);

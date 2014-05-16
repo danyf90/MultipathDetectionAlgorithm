@@ -169,7 +169,7 @@ public class ReportIssueFragment extends Fragment {
 		this.menu = menu;
 
 		if (first) {
-			init();
+			loadData();
 			first = false;
 		}
 
@@ -178,7 +178,7 @@ public class ReportIssueFragment extends Fragment {
 
 	// This function must be called only once after both onActivityCreated and
 	// onCreateOptionMenu and
-	private void init() {
+	private void loadData() {
 		gallery = (VineyardGallery) activity
 				.findViewById(R.id.report_issue_gallery);
 		gallery.setFragment(this);
