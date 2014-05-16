@@ -19,7 +19,7 @@ ul { list-style-type: none; }
 a { text-decoration: none; color: #333; }
 
 /*
- * COLORS
+ * GENERAL
  */
 
 header, footer {
@@ -88,22 +88,38 @@ main {
     background: url('images/background.png') center center no-repeat #e6e6e6;
 }
 
-#content { flex: 1;  display: flex; }
+.content { flex: 1;  display: flex; }
 
-#content a { color: #620042; }
-#content a:hover { text-decoration: underline; }
+.content a { color: #620042; }
+.content a:hover { text-decoration: underline; }
 
-#content #photo {
-    flex: 1;
+/**
+ * PLACE
+ */
+
+#place #loading {
+    border-right: none;
+    font-weight: normal;
+    font-size: 0.8em;    
+}
+
+#place #loading img {
+    vertical-align:text-bottom;
+    margin-right: 5px;
+}
+
+#place #place-photo {
+    flex: 2;
     position: relative;
     border-left: 2px solid #620042;
     background-color: #ffd3ed;
     background-position: center center;
     background-repeat: no-repeat;
+	background-image: url(images/no_pic_available.png);
 }
 
-#content #photo a {
-    display: none;
+#place #place-photo a {
+    visibility: hidden;
     box-sizing: border-box;
     width: 40px;
     height: 40px;
@@ -112,52 +128,143 @@ main {
     background-size: contain;
     background-color: rgba(255,255,255,0.7);
     position: absolute;
-    top: 0px;
+	border-radius: 10px;
+	top: 5px;
 }
 
-#content #photo:hover a {
-    display: inline-block;
+#place #place-photo:hover a {
+    visibility: visible;
 }
 
-#content #photo .modify {
-    left: 0px;
-    border-bottom-right-radius: 10px;
+#place #place-photo .add {
+	left: 5px;
+    background-image: url(images/action_add_dark.png);
+}
+
+#place #place-photo .modify {
+    left: 5px;
     background-image: url(images/action_edit_dark.png);
 }
 
-#content #photo .delete {
-    right: 0px;
-    border-bottom-left-radius: 10px;
+#place #place-photo .delete {
+	display: none;
+    right: 5px;
     background-image:
     url(images/action_delete_dark.png);
 }
 
-#content table { border-collapse: collapse; border-spacing: 0; flex 2; min-width: 580px; }
-
-#content table tbody tr:hover { background-color: rgba(215,215,215,0.5); }
-
-#content table th, #content table td {
+#place table { border-collapse: collapse; border-spacing: 0; flex 2; min-width: 550px; }
+#place table tbody tr:hover { background-color: rgba(215,215,215,0.5); }
+#place table th, #place table td {
     padding-top: 7px;
     padding-bottom: 7px;
 }
 
-#content table th {
+#place table th {
     text-align: right;
     padding-right: 7px;
     border-right: 1px solid #aaa;
-    vertical-align: top;
     width: 120px;
 }
 
-#content table thead td {
+#place table thead td {
     padding-bottom: 15px;
     padding-top: 15px;
 }
 
-#content table td {
+#place table td {
     padding-left: 15px;
     padding-right: 20px;
 }
+
+#place .empty {
+    font-size: 0.8em;
+    color: gray;
+    font-style: italic;
+}
+
+#place input {
+    padding: 5px 0;
+    width: 100%;
+    font-family: 'Roboto', sans-serif;
+    font-size: 1em;
+    background-color: transparent;
+    border-width: 2px;
+    border-style: solid;
+    border-color: transparent;
+    font-weight: inherit;
+}
+
+#place input:hover {
+    border-color: #aaa;
+    background-color: #e6e6e6;
+    box-shadow: 1px 1px 3px #aaa inset;
+}
+
+#place input:focus {
+    border-color: #ffbde2;
+    background-color: white;
+    outline: none;
+}
+
+#place-all table {
+	box-sizing: border-box;
+	border-collapse: collapse;
+	border-spacing: 0;
+	width: 97%;
+	margin: 10px;
+}
+
+#place-all table tbody tr { border-bottom:1px solid #aaa; }
+#place-all table tbody tr:hover { background-color: rgba(215,215,215,0.5); }
+#place-all table th, #place-all table td {
+    padding-top: 7px;
+    padding-bottom: 7px;
+	padding-left: 10px;
+	text-align: left;
+}
+
+#place-all .children-row {
+	border-bottom: none;
+}
+
+.first-col { width: 25%; }
+.third-col { width: 15%; }
+.has-children { cursor: pointer; }
+.has-children .first-col:before {
+	font-family: monospace;
+	content: '[+] ';
+}
+
+.open .first-col:before {
+	font-family: monospace;
+	content: '[-] ';
+}
+
+
+
+#place-all .children-row > td {
+	padding: 0;
+	margin: 0;
+	width: 100% !important;
+}
+
+#place-all .children-row table {
+	margin: 0;
+	width: 100%;
+}
+
+#place-all .issues, #place-all .tasks {
+	height: 20px;
+	padding-left: 25px;
+	padding-right: 10px;
+	background-position: left center;
+	background-size: contain;
+	background-repeat: no-repeat;
+}
+
+#place-all .issues { background-image: url(images/action_issue_dark.png); }
+#place-all .tasks { background-image: url(images/action_task_dark.png); }
 
 footer {
     height: 50px;

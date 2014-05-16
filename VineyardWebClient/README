@@ -1,0 +1,5 @@
+To test locally the Vineyard Web Client:
+
+cd /path/to/VineyardWebClient
+php -S localhost:50000 -t .
+google-chrome http://localhost:50000/
