@@ -431,24 +431,32 @@ public class VineyardMainActivity extends ActionBarActivity implements
 
 		markAsFinished(asyncHttpRequest);
 
-		if (allRequestsAreFinished()) {
+		if (areAllRequestsFinished()) {
 			associateEntities();
 			switchFragment(placeViewerFragment);
 		}
 	}
 
 	private void cancelRequests() {
-		rootPlaceRequest.cancel(true);
-		rootPlaceRequest = null;
+		if (rootPlaceRequest != null) {
+			rootPlaceRequest.cancel(true);
+			rootPlaceRequest = null;
+		}
 
-		issuesAndTasksRequest.cancel(true);
-		issuesAndTasksRequest = null;
+		if (issuesAndTasksRequest != null) {
+			issuesAndTasksRequest.cancel(true);
+			issuesAndTasksRequest = null;
+		}
 
-		workersRequest.cancel(true);
-		workersRequest = null;
+		if (workersRequest != null) {
+			workersRequest.cancel(true);
+			workersRequest = null;
+		}
 
-		workGroupsRequest.cancel(true);
-		workGroupsRequest = null;
+		if (workGroupsRequest != null) {
+			workGroupsRequest.cancel(true);
+			workGroupsRequest = null;
+		}
 	}
 
 	private void markAsFinished(AsyncHttpRequest asyncHttpRequest) {
@@ -462,7 +470,7 @@ public class VineyardMainActivity extends ActionBarActivity implements
 			workGroupsRequest = null;
 	}
 
-	private boolean allRequestsAreFinished() {
+	private boolean areAllRequestsFinished() {
 		return rootPlaceRequest == null && issuesAndTasksRequest == null
 				&& workersRequest == null && workGroupsRequest == null;
 	}
@@ -505,10 +513,10 @@ public class VineyardMainActivity extends ActionBarActivity implements
 			WorkGroup workGroup = workGroups.valueAt(i);
 
 			ArrayList<Worker> newWorkers = new ArrayList<Worker>();
-			
+
 			for (Worker worker : workGroup.getWorkers())
 				newWorkers.add(workers.get(worker.getId()));
-			
+
 			workGroup.setWorkers(newWorkers);
 		}
 	}
@@ -525,8 +533,8 @@ public class VineyardMainActivity extends ActionBarActivity implements
 
 		public RootPlaceAsyncHttpRequest(String serverUrl) {
 			super(serverUrl + VineyardServer.PLACES_HIERARCHY_API, Type.GET);
-			
-			final String lastModified = cache.getPlacesLastModified(); 
+
+			final String lastModified = cache.getPlacesLastModified();
 			if (lastModified != null)
 				setLastModified(lastModified);
 		}
@@ -619,7 +627,7 @@ public class VineyardMainActivity extends ActionBarActivity implements
 			super(serverUrl + VineyardServer.OPEN_ISSUES_AND_TASKS_API,
 					Type.GET);
 
-			final String lastModified = cache.getIssuesAndTasksLastModified(); 
+			final String lastModified = cache.getIssuesAndTasksLastModified();
 			if (lastModified != null)
 				setLastModified(lastModified);
 		}
@@ -721,7 +729,7 @@ public class VineyardMainActivity extends ActionBarActivity implements
 		public WorkersAsyncHttpRequest(String serverUrl) {
 			super(serverUrl + VineyardServer.WORKERS_API, Type.GET);
 
-			final String lastModified = cache.getWorkersLastModified(); 
+			final String lastModified = cache.getWorkersLastModified();
 			if (lastModified != null)
 				setLastModified(lastModified);
 		}
@@ -808,7 +816,7 @@ public class VineyardMainActivity extends ActionBarActivity implements
 		public WorkGroupsAsyncHttpRequest(String serverUrl) {
 			super(serverUrl + VineyardServer.WORKGROUPS_API, Type.GET);
 
-			final String lastModified = cache.getWorkGroupsLastModified(); 
+			final String lastModified = cache.getWorkGroupsLastModified();
 			if (lastModified != null)
 				setLastModified(lastModified);
 		}

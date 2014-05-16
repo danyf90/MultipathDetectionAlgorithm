@@ -5,7 +5,7 @@
 
     <item
         android:id="@+id/action_issue_view_mode"
-        android:showAsAction="withText"
-        android:title="@string/issue_view_mine"/>
+        android:title="@string/issue_view_mine"
+        app:showAsAction="ifRoom|withText"/>
 
 </menu>
