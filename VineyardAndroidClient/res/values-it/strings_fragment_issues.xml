@@ -18,9 +18,9 @@
     <string name="issue_assigned">Assegnato</string>
     <string name="issues_no_issues">Non ci sono problemi in questo luogo</string>
     <string name="issue_report_error">Si è verificato un errore, il problema non è stato segnalato</string>
-    <string name="issue_report_sending_image">Il caricamento delle immagini continua in background</string>
-    <string name="issue_report_sending_image_complete">Caricamento delle immagini completato</string>
-    <string name="issue_report_sending_image_error">Si è verificato un errore durante il caricamento delle immagini</string>
+    <string name="issue_report_sending_images">Il caricamento delle immagini continua in background</string>
+    <string name="issue_report_sending_images_complete">Caricamento delle immagini completato</string>
+    <string name="issue_report_sending_images_error">Si è verificato un errore durante il caricamento di una o più immagini</string>
     <string name="issue_mark_done_error">Si è verificato un errore, il problema non è stato marcato come risolto</string>
     <string name="issue_view_mine">Miei</string>
     <string name="issue_view_all">Tutti</string>

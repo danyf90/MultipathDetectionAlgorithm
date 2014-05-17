@@ -407,15 +407,16 @@ public class ReportIssueFragment extends Fragment {
 			activity.switchFragment();
 		}
 
-		private void sendImages(int placeId, ArrayList<String> images) {
+		private void sendImages(int issueId, ArrayList<String> images) {
 			Intent intent = new Intent(activity, SendImagesIntent.class);
 			intent.putExtra(SendImagesIntent.SERVER_URL,
 					String.format(vineyardServer.getUrl()
-							+ VineyardServer.PHOTO_SEND_API, placeId));
-			intent.putStringArrayListExtra(SendImagesIntent.IMAGE, images);
+							+ VineyardServer.PHOTO_SEND_API, issueId));
+			intent.putExtra(SendImagesIntent.ISSUE_ID, issueId);
+			intent.putStringArrayListExtra(SendImagesIntent.IMAGES, images);
 			activity.startService(intent);
 			Toast.makeText(activity,
-					activity.getString(R.string.issue_report_sending_image),
+					activity.getString(R.string.issue_report_sending_images),
 					Toast.LENGTH_SHORT).show();
 		}
 
@@ -423,8 +424,6 @@ public class ReportIssueFragment extends Fragment {
 
 	/**
 	 * GooglePlayServicesClient callbacks implementation. Does notihng so far.
-	 * 
-	 * @author Fabio Carrara
 	 */
 	private class LocationClientCallbacks implements
 			GooglePlayServicesClient.ConnectionCallbacks,

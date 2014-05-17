@@ -10,14 +10,18 @@ import org.json.JSONObject;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
@@ -34,6 +38,7 @@ import com.formichelli.vineyard.entities.WorkGroup;
 import com.formichelli.vineyard.entities.Worker;
 import com.formichelli.vineyard.utilities.AsyncHttpRequest;
 import com.formichelli.vineyard.utilities.Cache;
+import com.formichelli.vineyard.utilities.SendImagesIntent;
 import com.formichelli.vineyard.utilities.VineyardServer;
 
 public class VineyardMainActivity extends ActionBarActivity implements
@@ -889,5 +894,39 @@ public class VineyardMainActivity extends ActionBarActivity implements
 			onAsyncHttpRequestFinished(this);
 		}
 	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+
+		LocalBroadcastManager.getInstance(this).registerReceiver(
+				onPhotoUploaded, new IntentFilter(SendImagesIntent.IMAGE_SENT));
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+
+		LocalBroadcastManager.getInstance(this).unregisterReceiver(
+				onPhotoUploaded);
+	}
+
+	private BroadcastReceiver onPhotoUploaded = new BroadcastReceiver() {
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			Log.e("sohail", "photo uploaded");
+
+			int issueId = intent.getExtras().getInt(SendImagesIntent.ISSUE_ID);
+			String photoName = intent.getExtras().getString(
+					SendImagesIntent.PHOTO_NAME);
+
+			Log.e(TAG, "photo uploaded");
+
+			IssueTask issue = issues.get(issueId);
+			if (issue != null)
+				issue.addPhoto(photoName);
+		}
+	};
 
 }

@@ -67,9 +67,16 @@ class Worker extends AbstractORM implements IResource {
 		
         $pdo = DB::getConnection();
         
-         try {
-             $sql = $pdo->prepare("SELECT id FROM `worker` WHERE `email` = ? AND `password` = ?");
-             $sql->execute(array($_POST['email'], $_POST['password']));
+        try {
+            if (array_key_exists('email', $_POST))
+                $idField = 'email';
+            else
+                $idField = 'username';
+            
+            $sql = $pdo->prepare("SELECT id FROM `worker` WHERE `" . $idField . "` = ? AND `password` = ?");
+                $sql->execute(array($_POST[$idField], $_POST['password']));
+             }
+             else
              
              if ($sql->rowCount() > 0)
              {

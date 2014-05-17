@@ -170,19 +170,19 @@ public class AsyncHttpRequest extends
 
 		// sends the request and returns response status code and body
 		try {
-			HttpResponse result = new DefaultHttpClient().execute(request);
+			HttpResponse response = new DefaultHttpClient().execute(request);
 
 			if (type == Type.GET) {
 				// set last modified date
-				Header lastModifiedHeader = result.getFirstHeader("Last-Modified"); 
+				Header lastModifiedHeader = response.getFirstHeader("Last-Modified"); 
 				if (lastModifiedHeader != null)
 					this.setLastModified(lastModifiedHeader.getValue());
 				else
 					this.setLastModified(null);
 			}
 			
-			return new Pair<Integer, String>(result.getStatusLine()
-					.getStatusCode(), getResponseBody(result));
+			return new Pair<Integer, String>(response.getStatusLine()
+					.getStatusCode(), getResponseBody(response));
 		} catch (IOException e) {
 			Log.e(TAG, "Error: " + e.getLocalizedMessage());
 			return new Pair<Integer,String>(-1,null);
