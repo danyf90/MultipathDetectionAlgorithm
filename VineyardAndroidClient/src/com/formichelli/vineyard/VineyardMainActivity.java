@@ -548,9 +548,7 @@ public class VineyardMainActivity extends ActionBarActivity implements
 		public RootPlaceAsyncHttpRequest(String serverUrl) {
 			super(serverUrl + VineyardServer.PLACES_HIERARCHY_API, Type.GET);
 
-			final String lastModified = cache.getPlacesLastModified();
-			if (lastModified != null)
-				setLastModified(lastModified);
+			setLastModified(cache.getPlacesLastModified());
 		}
 
 		@Override
@@ -572,7 +570,7 @@ public class VineyardMainActivity extends ActionBarActivity implements
 				case HttpStatus.SC_OK:
 					// get places hierarchy from server response
 					rootPlaceJSON = response.second;
-					cache.putPlaces(rootPlaceJSON);
+					cache.putPlaces(rootPlaceJSON, getLastModified());
 					break;
 
 				case HttpStatus.SC_NOT_MODIFIED:
@@ -639,9 +637,7 @@ public class VineyardMainActivity extends ActionBarActivity implements
 			super(serverUrl + VineyardServer.OPEN_ISSUES_AND_TASKS_API,
 					Type.GET);
 
-			final String lastModified = cache.getIssuesAndTasksLastModified();
-			if (lastModified != null)
-				setLastModified(lastModified);
+			setLastModified(cache.getIssuesAndTasksLastModified());
 		}
 
 		@Override
@@ -666,7 +662,8 @@ public class VineyardMainActivity extends ActionBarActivity implements
 				case HttpStatus.SC_OK:
 					// get issues and tasks from server response
 					issuesAndTasksJSON = response.second;
-					cache.putIssuesAndTasks(issuesAndTasksJSON);
+					cache.putIssuesAndTasks(issuesAndTasksJSON,
+							getLastModified());
 					break;
 				case HttpStatus.SC_NOT_MODIFIED:
 					// get issues and tasks from shared preferences
@@ -739,9 +736,7 @@ public class VineyardMainActivity extends ActionBarActivity implements
 		public WorkersAsyncHttpRequest(String serverUrl) {
 			super(serverUrl + VineyardServer.WORKERS_API, Type.GET);
 
-			final String lastModified = cache.getWorkersLastModified();
-			if (lastModified != null)
-				setLastModified(lastModified);
+			setLastModified(cache.getWorkersLastModified());
 		}
 
 		@Override
@@ -765,7 +760,7 @@ public class VineyardMainActivity extends ActionBarActivity implements
 				case HttpStatus.SC_OK:
 					// get issues and tasks from server response
 					workersJSON = response.second;
-					cache.putWorkers(workersJSON);
+					cache.putWorkers(workersJSON, getLastModified());
 					break;
 				case HttpStatus.SC_NOT_MODIFIED:
 					// get issues and tasks from shared preferences
@@ -824,9 +819,7 @@ public class VineyardMainActivity extends ActionBarActivity implements
 		public WorkGroupsAsyncHttpRequest(String serverUrl) {
 			super(serverUrl + VineyardServer.WORKGROUPS_API, Type.GET);
 
-			final String lastModified = cache.getWorkGroupsLastModified();
-			if (lastModified != null)
-				setLastModified(lastModified);
+			setLastModified(cache.getWorkGroupsLastModified());
 		}
 
 		@Override
@@ -850,7 +843,7 @@ public class VineyardMainActivity extends ActionBarActivity implements
 				case HttpStatus.SC_OK:
 					// get issues and tasks from server response
 					workGroupsJSON = response.second;
-					cache.putWorkGroups(workGroupsJSON);
+					cache.putWorkGroups(workGroupsJSON, getLastModified());
 					break;
 				case HttpStatus.SC_NOT_MODIFIED:
 					// get issues and tasks from shared preferences

@@ -195,7 +195,7 @@ class Task extends TemporalORM implements IResource {
                 $sql->execute(array($id, $filename));
 
                 http_response_code(201); // Created
-                return; // TODO return URL: /api/task/$id/photo/asdf.jpg
+                return json_encode($filename);
 
             } catch (PDOException $e) {
                 // check which SQL error occured

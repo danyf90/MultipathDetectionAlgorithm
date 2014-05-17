@@ -6,6 +6,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -171,6 +172,15 @@ public class AsyncHttpRequest extends
 		try {
 			HttpResponse result = new DefaultHttpClient().execute(request);
 
+			if (type == Type.GET) {
+				// set last modified date
+				Header lastModifiedHeader = result.getFirstHeader("Last-Modified"); 
+				if (lastModifiedHeader != null)
+					this.setLastModified(lastModifiedHeader.getValue());
+				else
+					this.setLastModified(null);
+			}
+			
 			return new Pair<Integer, String>(result.getStatusLine()
 					.getStatusCode(), getResponseBody(result));
 		} catch (IOException e) {

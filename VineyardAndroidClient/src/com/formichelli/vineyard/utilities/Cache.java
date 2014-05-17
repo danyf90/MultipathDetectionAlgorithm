@@ -1,10 +1,5 @@
 package com.formichelli.vineyard.utilities;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Locale;
-
 import android.content.SharedPreferences;
 
 /**
@@ -23,8 +18,8 @@ public class Cache {
 		this.sp = sp;
 	}
 
-	public void putPlaces(String placesJSON) {
-		put(PLACES, placesJSON);
+	public void putPlaces(String placesJSON, String lastModified) {
+		put(PLACES, placesJSON, lastModified);
 	}
 
 	public String getPlaces() {
@@ -34,8 +29,8 @@ public class Cache {
 		return sp.getString(PLACES + LAST_MODIFIED, null);
 	}
 
-	public void putIssuesAndTasks(String issuesAndTasksJSON) {
-		put(ISSUES_AND_TASKS, issuesAndTasksJSON);
+	public void putIssuesAndTasks(String issuesAndTasksJSON, String lastModified) {
+		put(ISSUES_AND_TASKS, issuesAndTasksJSON, lastModified);
 	}
 
 	public String getIssuesAndTasks() {
@@ -46,8 +41,8 @@ public class Cache {
 		return sp.getString(ISSUES_AND_TASKS + LAST_MODIFIED, null);
 	}
 
-	public void putWorkers(String workersJSON) {
-		put(WORKERS, workersJSON);
+	public void putWorkers(String workersJSON, String lastModified) {
+		put(WORKERS, workersJSON, lastModified);
 	}
 
 	public String getWorkers() {
@@ -58,8 +53,8 @@ public class Cache {
 		return sp.getString(WORKERS + LAST_MODIFIED, null);
 	}
 
-	public void putWorkGroups(String workGroupsJSON) {
-		put(WORK_GROUPS, workGroupsJSON);
+	public void putWorkGroups(String workGroupsJSON, String lastModified) {
+		put(WORK_GROUPS, workGroupsJSON, lastModified);
 	}
 
 	public String getWorkGroups() {
@@ -70,10 +65,7 @@ public class Cache {
 		return sp.getString(WORK_GROUPS + LAST_MODIFIED, null);
 	}
 
-	private void put(String key, String value) {
-		final DateFormat df = new SimpleDateFormat("EEE, dd MMM yyyy, HH:mm", Locale.US);
-		final String currentDate = df.format(Calendar.getInstance().getTime());
-
-		sp.edit().putString(key, value).putString(key + LAST_MODIFIED, currentDate).commit();
+	private void put(String key, String value, String lastModified) {
+		sp.edit().putString(key, value).putString(key + LAST_MODIFIED, lastModified).commit();
 	}
 }

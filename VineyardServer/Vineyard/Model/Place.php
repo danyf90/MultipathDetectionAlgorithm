@@ -306,7 +306,7 @@ class Place extends AbstractORM implements IResource {
                 $sql->execute(array($filename, $id));
 
                 http_response_code(201); // Created
-                return; // TODO return URL: /api/place/$id/photo/<filename>
+                return json_encode($filename);
 
             } catch (PDOException $e) {
                 // check which SQL error occured

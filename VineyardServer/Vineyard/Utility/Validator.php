@@ -49,7 +49,7 @@ class Validator {
     }
 
     /**
-     * Reroute nullSomething() methods to somethign() if needed.
+     * Reroute nullSomething() methods to something() if needed.
      */
 
     public function __call($method, $args) {
