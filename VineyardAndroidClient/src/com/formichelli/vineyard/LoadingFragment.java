@@ -89,7 +89,7 @@ public class LoadingFragment extends Fragment {
 		@Override
 		public void onClick(View v) {
 			setLoading(true);
-			activity.requestData();
+			activity.loadData();
 		}
 	};
 

@@ -166,7 +166,7 @@ public class PlaceViewerFragment extends Fragment {
 			loadPlace(activity.getCurrentPlace().getParent());
 			break;
 		case R.id.action_place_viewer_refresh:
-			activity.requestData();
+			activity.loadData();
 			break;
 		default:
 			return false;

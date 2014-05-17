@@ -107,10 +107,11 @@ public class VineyardMainActivity extends ActionBarActivity implements
 
 	private void serverInit() {
 		vineyardServer = new VineyardServer(serverUrl);
-		requestData();
+		loadData();
 	}
 
-	public void requestData() {
+	public void loadData() {
+		loadingFragment.setLoadingMessage(getString(R.string.loading_places));
 
 		places = null;
 		rootPlaceRequest = new RootPlaceAsyncHttpRequest(
@@ -468,6 +469,19 @@ public class VineyardMainActivity extends ActionBarActivity implements
 			workersRequest = null;
 		else if (asyncHttpRequest == workGroupsRequest)
 			workGroupsRequest = null;
+
+		// set loading message
+		if (rootPlaceRequest == null)
+			if (issuesAndTasksRequest == null)
+				if (workersRequest == null)
+					loadingFragment
+							.setLoadingMessage(getString(R.string.loading_workgroups));
+				else
+					loadingFragment
+							.setLoadingMessage(getString(R.string.loading_workers));
+			else
+				loadingFragment
+						.setLoadingMessage(getString(R.string.loading_issues_and_tasks));
 	}
 
 	private boolean areAllRequestsFinished() {
@@ -541,8 +555,6 @@ public class VineyardMainActivity extends ActionBarActivity implements
 
 		@Override
 		protected void onPreExecute() {
-			loadingFragment
-					.setLoadingMessage(getString(R.string.loading_places));
 			switchFragment(loadingFragment);
 		}
 
@@ -634,8 +646,6 @@ public class VineyardMainActivity extends ActionBarActivity implements
 
 		@Override
 		protected void onPreExecute() {
-			loadingFragment
-					.setLoadingMessage(getString(R.string.loading_issues_and_tasks));
 			switchFragment(loadingFragment);
 		}
 
@@ -736,8 +746,6 @@ public class VineyardMainActivity extends ActionBarActivity implements
 
 		@Override
 		protected void onPreExecute() {
-			loadingFragment
-					.setLoadingMessage(getString(R.string.loading_workers));
 			switchFragment(loadingFragment);
 		}
 
@@ -823,8 +831,6 @@ public class VineyardMainActivity extends ActionBarActivity implements
 
 		@Override
 		protected void onPreExecute() {
-			loadingFragment
-					.setLoadingMessage(getString(R.string.loading_workgroups));
 			switchFragment(loadingFragment);
 		}
 
