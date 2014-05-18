@@ -41,7 +41,7 @@ public class LoadingFragment extends Fragment {
 		if (loadingMessage == null)
 			loadingMessage = getString(R.string.loading_message);
 
-		errorMessageTextView = (TextView) progressView
+		errorMessageTextView = (TextView) errorView
 				.findViewById(R.id.loading_error_message);
 		if (errorMessage == null)
 			errorMessage = getString(R.string.loading_error_message);
