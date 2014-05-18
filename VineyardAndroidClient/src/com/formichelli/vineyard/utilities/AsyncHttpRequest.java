@@ -7,7 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.http.Header;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpDelete;
@@ -172,7 +174,11 @@ public class AsyncHttpRequest extends
 		try {
 			HttpResponse response = new DefaultHttpClient().execute(request);
 
-			if (type == Type.GET) {
+			String body = getResponseBody(response);
+			int statusCode = response.getStatusLine()
+					.getStatusCode();
+			
+			if (type == Type.GET && statusCode == HttpStatus.SC_OK) {
 				// set last modified date
 				Header lastModifiedHeader = response.getFirstHeader("Last-Modified"); 
 				if (lastModifiedHeader != null)
@@ -181,8 +187,7 @@ public class AsyncHttpRequest extends
 					this.setLastModified(null);
 			}
 			
-			return new Pair<Integer, String>(response.getStatusLine()
-					.getStatusCode(), getResponseBody(response));
+			return new Pair<Integer, String>(statusCode, body);
 		} catch (IOException e) {
 			Log.e(TAG, "Error: " + e.getLocalizedMessage());
 			return new Pair<Integer,String>(-1,null);
@@ -194,7 +199,9 @@ public class AsyncHttpRequest extends
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 
 		try {
-			response.getEntity().writeTo(out);
+			HttpEntity entity = response.getEntity();
+			if (entity != null)
+				entity.writeTo(out);
 			out.close();
 		} catch (IOException e) {
 			return null;

@@ -673,7 +673,6 @@ public class VineyardMainActivity extends ActionBarActivity implements
 				case HttpStatus.SC_NOT_MODIFIED:
 					// get issues and tasks from shared preferences
 					issuesAndTasksJSON = cache.getIssuesAndTasks();
-					Log.e(TAG, "not modified");
 					break;
 				}
 
@@ -770,7 +769,6 @@ public class VineyardMainActivity extends ActionBarActivity implements
 				case HttpStatus.SC_NOT_MODIFIED:
 					// get issues and tasks from shared preferences
 					workersJSON = cache.getWorkers();
-					Log.e(TAG, "not modified");
 					break;
 				}
 
@@ -853,7 +851,6 @@ public class VineyardMainActivity extends ActionBarActivity implements
 				case HttpStatus.SC_NOT_MODIFIED:
 					// get issues and tasks from shared preferences
 					workGroupsJSON = cache.getWorkGroups();
-					Log.e(TAG, "not modified");
 					break;
 				}
 
