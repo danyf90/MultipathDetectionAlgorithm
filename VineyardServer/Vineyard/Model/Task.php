@@ -71,31 +71,10 @@ class Task extends TemporalORM implements IResource {
 
     // Override AbstractORM::getById() to include task photos in object instance
     static public function getById($id) {
-        if (!is_numeric($id)) {
-            http_response_code(400);
-            return;
-        }
+        $s = parent::getById($id);
 
-        $s = new static();
-        $s->load($id);
-
-        // add attributes to place instance
-        $pdo = DB::getConnection();
-
-        try {
-            $sql = $pdo->prepare("SELECT `url` FROM `task_photo` WHERE `task` = ?");
-            $sql->execute(array($id));
-            // TODO better empty array if no photos?
-            if ($sql->rowCount() > 0)
-                $s->photos = $sql->fetchAll(PDO::FETCH_COLUMN, 0);
-
-        } catch (PDOException $e) {
-            // check which SQL error occured
-            switch ($e->getCode()) {
-                default:
-                    http_response_code(400); // Bad Request
-            }
-        }
+        // add photos to task instance
+        $s->loadPhotos();
 
         return $s;
     }
@@ -177,6 +156,27 @@ class Task extends TemporalORM implements IResource {
     /**
      * PHOTO MANAGEMENT
      */
+    public function loadPhotos() {
+        if (!isset($this->id))
+            return;
+
+        $pdo = DB::getConnection();
+
+        try {
+            $sql = $pdo->prepare("SELECT `url` FROM `task_photo` WHERE `task` = ?");
+            $sql->execute(array($this->id));
+
+            if ($sql->rowCount() > 0)
+                $this->photos = $sql->fetchAll(PDO::FETCH_COLUMN, 0);
+
+        } catch (PDOException $e) {
+            // check which SQL error occured
+            switch ($e->getCode()) {
+                default:
+                    http_response_code(400); // Bad Request
+            }
+        }
+    }
 
     public static function insertPhoto($id) {
 
@@ -195,6 +195,7 @@ class Task extends TemporalORM implements IResource {
                 $sql->execute(array($id, $filename));
 
                 http_response_code(201); // Created
+                static::updateLastModified();
                 return json_encode($filename);
 
             } catch (PDOException $e) {
@@ -225,8 +226,10 @@ class Task extends TemporalORM implements IResource {
                 $sql = $pdo->prepare("DELETE FROM `task_photo` WHERE `task` = ? AND `url` = ?");
                 $sql->execute(array($id, $filename));
 
-                if ($sql->rowCount() == 1)
+                if ($sql->rowCount() == 1) {
                     http_response_code(202); // Accepted
+                    static::updateLastModified();
+                }
                 else http_response_code(406); // Not Acceptable
 
                 unlink($filepath);
@@ -249,6 +252,11 @@ class Task extends TemporalORM implements IResource {
     public static function handleOpenTasksRequest($method) {
         if ($method != "GET") {
             http_response_code(501); // Not Implemeted
+            return;
+        }
+
+        if (static::isNotModified()) {
+            http_response_code(304); // Not Modified
             return;
         }
 

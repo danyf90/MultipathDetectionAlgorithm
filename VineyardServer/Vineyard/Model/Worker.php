@@ -6,11 +6,11 @@ use \PDO;
 use \PDOException;
 use \Vineyard\Utility\DB;
 use \Vineyard\Utility\IResource;
-use \Vineyard\Utility\AbstractORM;
+use \Vineyard\Utility\TrackedORM;
 use \Vineyard\Utility\TCrudRequestHandlers;
 
-class Worker extends AbstractORM implements IResource {
-    
+class Worker extends TrackedORM implements IResource {
+
     use TCrudRequestHandlers; // introduces handleRequestToBaseUri() and handleRequestToUriWithId()
 
     // TODO check method!
@@ -24,14 +24,14 @@ class Worker extends AbstractORM implements IResource {
                 return static::handleRequestsToBaseUri($method, $requestParameters);
             break;
 
-            case 1: // api/worker/<id> or api/worker/login 
-                
+            case 1: // api/worker/<id> or api/worker/login
+
                 switch ($requestParameters[0]) {
                     case "login":
-						if ($method != "POST") {
-							http_response_code(501); // Not implemented
-						}
-						
+                        if ($method != "POST") {
+                            http_response_code(501); // Not implemented
+                        }
+
                         return static::handleLoginRequest($method);
                     break;
 
@@ -41,11 +41,11 @@ class Worker extends AbstractORM implements IResource {
             break;
 
             case 2: // not implemented yet
-            
+
                 $id = array_shift($requestParameters);
-            
+
                 switch($requestParameters[0]) {
-                    
+
                     default:
                         http_response_code(501); // Not Implemented
                         return;
@@ -58,35 +58,33 @@ class Worker extends AbstractORM implements IResource {
 
         }
     }
-    
+
      /**************************
      * LOGIN HANDLING
      **************************/
-    
+
     public static function handleLoginRequest() {
-		
+
         $pdo = DB::getConnection();
-        
+
         try {
             if (array_key_exists('email', $_POST))
                 $idField = 'email';
             else
                 $idField = 'username';
-            
+
             $sql = $pdo->prepare("SELECT id FROM `worker` WHERE `" . $idField . "` = ? AND `password` = ?");
-                $sql->execute(array($_POST[$idField], $_POST['password']));
-             }
-             else
-             
+            $sql->execute(array($_POST[$idField], $_POST['password']));
+
              if ($sql->rowCount() > 0)
              {
-				 $response = array( 'id' => $sql->fetchColumn(0));
-				 http_response_code(202); // Accepted
-				 return json_encode($response);
-			 }
-			 
-			 http_response_code(401); // Not Authorized
-			 return;
+                 $response = array( 'id' => $sql->fetchColumn(0) );
+                 http_response_code(202); // Accepted
+                 return json_encode($response);
+             }
+
+             http_response_code(401); // Not Authorized
+             return;
         } catch (PDOException $e) {
             // check which SQL error occured
             switch ($e->getCode()) {
@@ -95,7 +93,7 @@ class Worker extends AbstractORM implements IResource {
             }
         }
     }
- 
+
 }
 
 ?>
