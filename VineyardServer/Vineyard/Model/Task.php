@@ -79,6 +79,16 @@ class Task extends TemporalORM implements IResource {
         return $s;
     }
 
+    public function isIssue() {
+        if (!isset($this->id))
+            return;
+        $pdo = DB::getConnection();
+        $sql = $pdo->prepare("SELECT NOT(ISNULL(`issuer`)) FROM `task` WHERE `id` = ? AND `end_time` IS NULL");
+        $sql->execute(array($this->id));
+        return (bool) $sql->fetchColumn(0);
+
+    }
+
     public static function handleRequest($method, array $requestParameters) {
 
         switch (count($requestParameters)) {
@@ -87,8 +97,8 @@ class Task extends TemporalORM implements IResource {
             break;
 
             case 1: // api/task/<id>
-                if ($requestParameters[0] == "open")
-                    return static::handleOpenTasksRequest($method);
+                if (!is_numeric($requestParameters[0]))
+                    return static::handlePerStatusTasksRequest($method, $requestParameters[0]);
 
                 return static::handleRequestsToUriWithId($method, $requestParameters);
             break;
@@ -180,10 +190,20 @@ class Task extends TemporalORM implements IResource {
 
     public static function insertPhoto($id) {
 
+        $t = new static();
+        $t->loadEmpty($id);
+        if (!$t->isIssue()) {
+            http_response_code(403); // Forbidden
+            return;
+        }
+
+        if (!isset($_FILES['photo'])) {
+            http_response_code(400); // Bad Request
+            return;
+        }
+
         // same interface of an upload
-
         $filename = "i" . time() . "_" . $id;
-
         $filepath = Photo::getFullPhotoPath($filename);
 
         if (move_uploaded_file($_FILES['photo']['tmp_name'], $filepath)) {
@@ -246,10 +266,10 @@ class Task extends TemporalORM implements IResource {
     }
 
     /**
-     * OPEN TASK LIST
+     * PER STATUS TASK LIST
      */
 
-    public static function handleOpenTasksRequest($method) {
+    public static function handlePerStatusTasksRequest($method, $status) {
         if ($method != "GET") {
             http_response_code(501); // Not Implemeted
             return;
@@ -262,9 +282,19 @@ class Task extends TemporalORM implements IResource {
 
         $tasks = array();
 
+        switch ($status) {
+            case "open": $where = "`status` <> 'resolved'"; break;
+            case "new": $where = "`status` = 'new'"; break;
+            case "assigned": $where = "`status` = 'assigned'"; break;
+            case "resolved": $where = "`status` = 'resolved'"; break;
+            default:
+                http_response_code(400); // Bad Request
+                return;
+        }
+
         Task::get(function($task) use (&$tasks) {
             $tasks[] = clone $task;
-        }, "`status` <> 'resolved'");
+        }, $where);
 
         return json_encode($tasks);
     }
