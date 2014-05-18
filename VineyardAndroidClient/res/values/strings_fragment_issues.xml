@@ -16,7 +16,7 @@
     <string name="issue_due_time_label">Due Time</string>
     <string name="issue_not_assigned">Not Assigned</string>
     <string name="issue_assigned">Assigned</string>
-    <string name="issues_no_issues">No issues in this place</string>
+    <string name="issues_no_issues">There are no issues</string>
     <string name="issue_report_error">An error occurred, the issues has not been reported</string>
     <string name="issue_report_sending_images">Images uploading continues in background</string>
     <string name="issue_report_sending_images_completed">Images uploading completed</string>

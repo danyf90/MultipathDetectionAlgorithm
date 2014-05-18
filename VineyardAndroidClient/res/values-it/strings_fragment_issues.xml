@@ -16,7 +16,7 @@
     <string name="issue_due_time_label">Scadenza</string>
     <string name="issue_not_assigned">Non Assegnato</string>
     <string name="issue_assigned">Assegnato</string>
-    <string name="issues_no_issues">Non ci sono problemi in questo luogo</string>
+    <string name="issues_no_issues">Nessun problema</string>
     <string name="issue_report_error">Si è verificato un errore, il problema non è stato segnalato</string>
     <string name="issue_report_sending_images">Il caricamento delle immagini continua in background</string>
     <string name="issue_report_sending_images_complete">Caricamento delle immagini completato</string>

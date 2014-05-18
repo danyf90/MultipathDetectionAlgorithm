@@ -102,6 +102,10 @@ public class TasksFragment extends Fragment {
 			showMine = !showMine;
 			showMode.setTitle(showMine ? showAllLabel : showMineLabel);
 			taskAdapter.replaceItems(getTasksOfTheDay(currentDay));
+			if (taskAdapter.getGroupCount() > 0)
+				tasksListView.setVisibility(View.VISIBLE);
+			else
+				tasksListView.setVisibility(View.GONE);
 			return true;
 		}
 
