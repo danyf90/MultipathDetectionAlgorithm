@@ -108,7 +108,7 @@ main {
     margin-right: 5px;
 }
 
-.entity table { border-collapse: collapse; border-spacing: 0; flex 2; width: 100%; }
+.entity table { border-collapse: collapse; border-spacing: 0; flex 2; min-width: 550px; }
 .entity table tbody tr:hover { background-color: rgba(215,215,215,0.5); }
 .entity table th, .entity table td {
     padding-top: 7px;
@@ -179,6 +179,21 @@ main {
 	text-align: left;
 }
 
+.entity-all .children-row {
+	border-bottom: none;
+}
+
+.entity-all .children-row > td {
+	padding: 0;
+	margin: 0;
+	width: 100% !important;
+}
+
+.entity-all .children-row table {
+	margin: 0;
+	width: 100%;
+}
+
 /**
  * PLACE
  */
@@ -226,23 +241,6 @@ main {
     right: 5px;
     background-image:
     url(images/action_delete_dark.png);
-}
-
-#place table { border-collapse: collapse; border-spacing: 0; flex 2; width:auto; min-width: 550px; }
-
-#place-all .children-row {
-	border-bottom: none;
-}
-
-#place-all .children-row > td {
-	padding: 0;
-	margin: 0;
-	width: 100% !important;
-}
-
-#place-all .children-row table {
-	margin: 0;
-	width: 100%;
 }
 
 #place-all .issues, #place-all .tasks {

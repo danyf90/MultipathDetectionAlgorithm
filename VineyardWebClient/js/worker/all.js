@@ -1,11 +1,15 @@
 var insertWorker = function (worker, $container) {
 	var padding = 10;
 	
+    var roles = worker.roles;
+    if (roles == undefined)
+        roles = "Nessuno"
+    
 	var row = '<tr><td class="first-col" style="padding-left: ' + padding + 'px;">' +
 		'<a href="/worker/' + worker.id + '">' + worker.name + '</a></td>' + 
 		'<td>' + worker.username + '</td>' + 
 		'<td>' + worker.email + '</td>' + 
-		'<td>' + worker.roles + '</td></tr>';
+		'<td>' + roles + '</td></tr>';
 	
 	$container.append(row);
 };

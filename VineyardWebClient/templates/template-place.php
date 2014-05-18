@@ -1,4 +1,4 @@
-<form class="content" id="place">
+<form class="content entity" id="place">
 	<input type="hidden" name="id" id="place-id" value="<?php $this->id; ?>"/>
     <table>
         <thead>

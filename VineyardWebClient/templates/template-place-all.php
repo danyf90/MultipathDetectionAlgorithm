@@ -1,4 +1,4 @@
-<form class="content" id="place-all">
+<form class="content entity-all" id="place-all">
     <table>
         <thead>
             <tr><th id="loading"><img src="/images/loading.gif" />Loading...</th><td><h2>Places</h2></td></tr>
