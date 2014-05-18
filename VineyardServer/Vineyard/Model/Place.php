@@ -7,12 +7,12 @@ use \PDOException;
 use \Vineyard\Utility\DB;
 use \Vineyard\Utility\IResource;
 use \Vineyard\Utility\Validator;
-use \Vineyard\Utility\AbstractORM;
+use \Vineyard\Utility\TrackedORM;
 use \Vineyard\Utility\TCrudRequestHandlers;
 
 use \Vineyard\Model\Photo;
 
-class Place extends AbstractORM implements IResource {
+class Place extends TrackedORM implements IResource {
 
     use TCrudRequestHandlers; // introduces handleRequestToBaseUri() and handleRequestToUriWithId()
 
@@ -32,17 +32,12 @@ class Place extends AbstractORM implements IResource {
 
     // Override AbstractORM::getById() to include place attributes in object instance
     static public function getById($id) {
-        if (!is_numeric($id)) {
-            http_response_code(400);
-            return;
-        }
 
-        $s = new static();
-        $s->load($id);
+        $s = parent::getById($id);
 
         // add attributes and stats to place instance
-		$s->loadAttributes();
-		$s->loadStats();
+        $s->loadAttributes();
+        $s->loadStats();
 
         return $s;
     }
@@ -62,10 +57,8 @@ class Place extends AbstractORM implements IResource {
                     break;
 
                     case "hierarchy":
-                        if ($method == 'GET')
-                            return static::getHierarchy();
+                        return static::handleHierarchyRequest($method);
                         http_response_code(501); // Not Implemented
-                        return;
                     break;
 
                     default: // we hope is <id>
@@ -110,25 +103,25 @@ class Place extends AbstractORM implements IResource {
     /**************************
      * ATTRIBUTE HANDLING
      **************************/
-	
-	public function loadAttributes() {
-		if (!isset($this->id))
-			return;
-		
-		$pdo = DB::getConnection();
 
-		$sql = $pdo->prepare("SELECT `key`, `value` FROM `place_attribute` WHERE `place` = ?");
-		$sql->execute(array($id));
-		
-		if ($sql->rowCount() > 0) {
-			$attributes = array();
-			while($row = $sql->fetch(PDO::FETCH_ASSOC))
-				$attributes[$row['key']] = $row['value'];
+    public function loadAttributes() {
+        if (!isset($this->id))
+            return;
 
-			$this->attributes = $attributes;
-		}
-	}
-	
+        $pdo = DB::getConnection();
+
+        $sql = $pdo->prepare("SELECT `key`, `value` FROM `place_attribute` WHERE `place` = ?");
+        $sql->execute(array($this->id));
+
+        if ($sql->rowCount() > 0) {
+            $attributes = array();
+            while($row = $sql->fetch(PDO::FETCH_ASSOC))
+                $attributes[$row['key']] = $row['value'];
+
+            $this->attributes = $attributes;
+        }
+    }
+
 
     public static function handleAttributeRequest($method, $id) {
         switch ($method) {
@@ -164,6 +157,7 @@ class Place extends AbstractORM implements IResource {
             $sql = $pdo->prepare("INSERT INTO `place_attribute` (`place`, `key`, `value`) VALUES (?, ?, ?)");
             $sql->execute(array($id, $_POST['key'], $_POST['value']));
             http_response_code(201); // Created
+            static::updateLastModified();
             return;
         } catch (PDOException $e) {
             // check which SQL error occured
@@ -193,8 +187,10 @@ class Place extends AbstractORM implements IResource {
         try {
             $sql = $pdo->prepare("UPDATE `place_attribute` SET `value` = ? WHERE `place` = ? AND `key` = ?");
             $sql->execute(array($_PUT['value'], $id, $_PUT['key']));
-            if ($sql->rowCount() == 1)
+            if ($sql->rowCount() == 1) {
                 http_response_code(202); // Accepted
+                static::updateLastModified();
+            }
             else http_response_code(406); // Not Acceptable
             return;
         } catch (PDOException $e) {
@@ -220,8 +216,10 @@ class Place extends AbstractORM implements IResource {
         try {
             $sql = $pdo->prepare("DELETE FROM `place_attribute` WHERE `place` = ? AND `key` = ?");
             $sql->execute(array($id, $_DELETE['key']));
-            if ($sql->rowCount() == 1)
+            if ($sql->rowCount() == 1) {
                 http_response_code(202); // Accepted
+                static::updateLastModified();
+            }
             else http_response_code(406); // Not Acceptable
             return;
         } catch (PDOException $e) {
@@ -243,6 +241,11 @@ class Place extends AbstractORM implements IResource {
             return;
         }
 
+        if (static::isNotModified()) {
+            http_response_code(304); // Not Modified
+            return;
+        }
+
         $issues = array();
 
         Task::get(function($issue) use (&$issues) {
@@ -255,6 +258,11 @@ class Place extends AbstractORM implements IResource {
      public static function handleTasksRequest($method, $id) {
         if ($method != "GET") {
             http_response_code(501); // Not Implemented
+            return;
+        }
+
+        if (static::isNotModified()) {
+            http_response_code(304); // Not Modified
             return;
         }
 
@@ -306,7 +314,8 @@ class Place extends AbstractORM implements IResource {
                 $sql->execute(array($filename, $id));
 
                 http_response_code(201); // Created
-                return json_encode($filename);
+                static::updateLastModified();
+                return json_encode(array('url' => $filename));
 
             } catch (PDOException $e) {
                 // check which SQL error occured
@@ -342,7 +351,7 @@ class Place extends AbstractORM implements IResource {
             }
 
             http_response_code(202); // Accepted
-
+            static::updateLastModified();
         } catch (PDOException $e) {
             // check which SQL error occured
             switch ($e->getCode()) {
@@ -355,38 +364,43 @@ class Place extends AbstractORM implements IResource {
      /**************************
      * STATS HANDLING
      **************************/
-	
-	protected function loadStats() {
-		if (!isset($this->id))
-			return;
-		
-		$pdo = DB::getConnection();
+
+    public function loadStats() {
+        if (!isset($this->id))
+            return;
+
+        $pdo = DB::getConnection();
         $tQuery = "SELECT COUNT(*) AS `tasks`
             FROM `task`
             WHERE `end_time` IS NULL
-			AND `issuer` IS NULL
-			AND `place` = ?";
+            AND `issuer` IS NULL
+            AND `place` = ?";
 
        $iQuery = "SELECT COUNT(*) AS `issues`
             FROM `task`
             WHERE `end_time` IS NULL
-			AND `issuer` IS NOT NULL
+            AND `issuer` IS NOT NULL
             AND `place` = ?";
 
-		$tSql = $pdo->prepare($tQuery);
-		$tSql->execute(array($this->id));
+        $tSql = $pdo->prepare($tQuery);
+        $tSql->execute(array($this->id));
 
-		$this->tasks = $tSql->fetchColumn(0);
+        $this->tasks = $tSql->fetchColumn(0);
 
-		$iSql = $pdo->prepare($iQuery);
-		$iSql->execute(array($this->id));
+        $iSql = $pdo->prepare($iQuery);
+        $iSql->execute(array($this->id));
 
-		$this->issues = $iSql->fetchColumn(0);		
-	}
+        $this->issues = $iSql->fetchColumn(0);
+    }
 
     public static function handleStatsRequest($method) {
         if ($method != "GET") {
             http_response_code(501); // Not Implemented
+            return;
+        }
+
+        if (static::isNotModified()) {
+            http_response_code(304); // Not Modified
             return;
         }
 
@@ -467,7 +481,16 @@ class Place extends AbstractORM implements IResource {
         }
     }
 
-    public static function getHierarchy() {
+    public static function handleHierarchyRequest() {
+        if ($method != "GET") {
+            http_response_code(501); // Not Implemented
+            return;
+        }
+
+        if (static::isNotModified()) {
+            http_response_code(304); // Not Modified
+            return;
+        }
 
         $hierarchy = "";
 

@@ -163,7 +163,7 @@ abstract class AbstractORM implements JsonSerializable {
         $this->_data = $sql->fetch(PDO::FETCH_ASSOC);
         $this->touchedFields = array();
     }
-    
+
     /**
      * Loads this instance without data from the entry with id $id.
      */
@@ -177,7 +177,7 @@ abstract class AbstractORM implements JsonSerializable {
 
         if ($sql->rowCount()  == 0)
             throw new ORMException();
-        
+
         $this->_data = array('id' => $id);
         $this->touchedFields = array();
     }
@@ -209,7 +209,7 @@ abstract class AbstractORM implements JsonSerializable {
     /**
      * Makes a simple query and executes $scopedFunc on each result object.
      */
-    static public function get($scopedFunc, $whereClause = "", $whereParams = array()) {
+    public static function get($scopedFunc, $whereClause = "", $whereParams = array()) {
 
         if (!is_callable($scopedFunc))
             throw new \Exception("First argument must be callable.");
@@ -233,7 +233,7 @@ abstract class AbstractORM implements JsonSerializable {
         }
     }
 
-    static public function getById($id) {
+    public static function getById($id) {
         if (!is_numeric($id)) {
             http_response_code(400);
             return;
@@ -245,7 +245,7 @@ abstract class AbstractORM implements JsonSerializable {
         return $s;
     }
 
-    static public function listAll() {
+    public static function listAll() {
 
         $list = array();
 
@@ -256,7 +256,7 @@ abstract class AbstractORM implements JsonSerializable {
         return $list;
     }
 
-    static public function exists($id) {
+    public static function exists($id) {
         $pdo = DB::getConnection();
         $tableName = static::getTableName();
 
@@ -269,7 +269,7 @@ abstract class AbstractORM implements JsonSerializable {
         return false;
     }
 
-    static public function insert() {
+    public static function insert() {
 
         array_walk($_POST, function(&$v){
             $v = trim($v);
@@ -288,7 +288,7 @@ abstract class AbstractORM implements JsonSerializable {
         }
     }
 
-    static public function update($id) {
+    public static function update($id) {
 
         // access PUT variables and put them in $_PUT for omogeinity
         parse_str(file_get_contents("php://input"), $_PUT);
@@ -311,7 +311,7 @@ abstract class AbstractORM implements JsonSerializable {
         }
     }
 
-    static public function delete($id) {
+    public static function delete($id) {
 
         $pdo = DB::getConnection();
         $tableName = static::getTableName();
