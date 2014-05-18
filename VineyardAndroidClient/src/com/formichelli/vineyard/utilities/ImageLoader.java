@@ -91,7 +91,7 @@ public class ImageLoader extends AsyncTask<Void, Void, Bitmap> {
 						.getContent());
 			else
 				imageBitmap = null;
-		} catch (IllegalStateException | IOException e) {
+		} catch (IllegalArgumentException | IllegalStateException | IOException e) {
 			e.printStackTrace();
 			imageBitmap = null;
 		}

@@ -912,13 +912,11 @@ public class VineyardMainActivity extends ActionBarActivity implements
 
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			Log.e("sohail", "photo uploaded");
-
 			int issueId = intent.getExtras().getInt(SendImagesIntent.ISSUE_ID);
 			String photoName = intent.getExtras().getString(
 					SendImagesIntent.PHOTO_NAME);
 
-			Log.e(TAG, "photo uploaded");
+			Log.e(TAG, "photos uploaded");
 
 			IssueTask issue = issues.get(issueId);
 			if (issue != null)

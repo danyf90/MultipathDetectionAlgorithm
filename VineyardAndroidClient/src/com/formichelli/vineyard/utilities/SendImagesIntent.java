@@ -12,14 +12,13 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.impl.client.DefaultHttpClient;
-
-import com.formichelli.vineyard.R;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.app.IntentService;
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
-import android.widget.Toast;
 
 public class SendImagesIntent extends IntentService {
 	private static final String TAG = "SendImageIntent";
@@ -57,9 +56,9 @@ public class SendImagesIntent extends IntentService {
 				HttpResponse response = new DefaultHttpClient().execute(request);
 				if (response.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
 					// Send broadcast to main activity
-					Intent photoUploadedIntent = new Intent("IMAGE_SENT");
+					Intent photoUploadedIntent = new Intent(IMAGE_SENT);
 					photoUploadedIntent.putExtra(ISSUE_ID, issueId);
-					photoUploadedIntent.putExtra(ISSUE_ID, getPhotoName(response));
+					photoUploadedIntent.putExtra(PHOTO_NAME, getPhotoName(response));
 					LocalBroadcastManager.getInstance(this).sendBroadcast(photoUploadedIntent);
 					Log.i(TAG, "image " + path + " sent!");
 				} else {
@@ -80,15 +79,8 @@ public class SendImagesIntent extends IntentService {
 				f.delete();
 		}
 
-		if (!error)
-			Toast.makeText(this,
-					getString(R.string.issue_report_sending_images_completed),
-					Toast.LENGTH_LONG).show();
-		else
-			Toast.makeText(this,
-					getString(R.string.issue_report_sending_images_error),
-					Toast.LENGTH_LONG).show();
-
+		
+		// TODO notify the user in some way
 	}
 	
 	private String getPhotoName(HttpResponse response) {
@@ -101,6 +93,12 @@ public class SendImagesIntent extends IntentService {
 			return null;
 		}
 
-		return out.toString();
+		try {
+			return new JSONObject(out.toString()).getString("url");
+		} catch (JSONException e) {
+			e.printStackTrace();
+			return null;
+		}
+
 	}
 }
