@@ -21,8 +21,6 @@ var insertPlace = function (place, $container, level) {
 		$container.append(childrenHTML);
 		var childrenContainer = $container.find(".inner-table").last();
 		
-		console.log(childrenContainer.toArray());
-		
 		for (var i = 0, l = place.children.length; i < l; i++)
 			insertPlace(place.children[i], childrenContainer, level+1);
 	}
