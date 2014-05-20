@@ -38,6 +38,7 @@ import com.formichelli.vineyard.entities.WorkGroup;
 import com.formichelli.vineyard.entities.Worker;
 import com.formichelli.vineyard.utilities.AsyncHttpRequest;
 import com.formichelli.vineyard.utilities.Cache;
+import com.formichelli.vineyard.utilities.GcmClient;
 import com.formichelli.vineyard.utilities.SendImagesIntent;
 import com.formichelli.vineyard.utilities.VineyardServer;
 
@@ -68,6 +69,7 @@ public class VineyardMainActivity extends ActionBarActivity implements
 	AsyncHttpRequest rootPlaceRequest, issuesAndTasksRequest, workersRequest,
 			workGroupsRequest;
 	int userId;
+	GcmClient gcmClient;
 
 	/**
 	 * Fragment managing the behaviors, interactions and presentation of the
@@ -106,6 +108,15 @@ public class VineyardMainActivity extends ActionBarActivity implements
 				(DrawerLayout) findViewById(R.id.drawer_layout));
 
 		cache = new Cache(sp);
+
+		gcmClient = new GcmClient(this);
+		if (!gcmClient.checkGooglePlayServices()) {
+			Log.e(TAG, "Play services not found");
+			Toast.makeText(this, getString(R.string.no_play_services_error),
+					Toast.LENGTH_LONG).show();
+		} else {
+			Log.i(TAG, "GCM client id: " + gcmClient.getRegId());
+		}
 
 		serverInit();
 	}
@@ -251,7 +262,7 @@ public class VineyardMainActivity extends ActionBarActivity implements
 	 * Sets current place and sets the actionbar title to place name
 	 * 
 	 * @param place
-	 *            place to be setted
+	 *            place to be set
 	 */
 	public void setCurrentPlace(Place place) {
 		if (place == null)

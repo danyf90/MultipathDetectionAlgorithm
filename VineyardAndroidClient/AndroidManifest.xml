@@ -8,12 +8,29 @@
         android:minSdkVersion="9"
         android:targetSdkVersion="19" />
 
+    <!-- Take photos -->
     <uses-feature android:name="android.hardware.camera" />
 
+    <!-- Write/Read photos from disk -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <!-- Client-Server communication -->
     <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- Issues localization -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+    <!-- Push notifications -->
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <permission
+        android:name="com.formichelli.vineyard.permission.C2D_MESSAGE"
+        android:protectionLevel="signature" />
+
+    <uses-permission android:name="com.formichelli.vineyard.permission.C2D_MESSAGE" />
 
     <application
         android:allowBackup="true"
@@ -49,6 +66,17 @@
             android:parentActivityName="com.formichelli.vineyard.VineyardMainActivity" >
         </activity>
 
+        <receiver
+            android:name=".GcmBroadcastReceiver"
+            android:permission="com.google.android.c2dm.permission.SEND" >
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+
+                <category android:name="com.formichelli.vineyard" />
+            </intent-filter>
+        </receiver>
+
+        <service android:name=".GcmIntentService" />
         <service android:name="com.formichelli.vineyard.utilities.SendImagesIntent" />
 
         <provider

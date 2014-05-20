@@ -46,5 +46,6 @@
     <string name="loading">Caricamento&#8230;</string>
     <string name="loading_error">Si è verificato un errore</string>
     <string name="tasks_no_tasks">Nessun lavoro</string>
+    <string name="no_play_services_error">Google Play Services non è presente, quindi non potrai ricevere notifiche</string>
 
 </resources>

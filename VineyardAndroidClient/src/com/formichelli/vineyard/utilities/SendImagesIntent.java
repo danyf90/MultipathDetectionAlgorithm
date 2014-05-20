@@ -38,7 +38,6 @@ public class SendImagesIntent extends IntentService {
 		String serverUrl = intent.getExtras().getString(SERVER_URL);
 		int issueId = intent.getIntExtra(ISSUE_ID, -1);
 		ArrayList<String> images = intent.getExtras().getStringArrayList(IMAGES);
-		boolean error = false;
 
 		for (String path : images) {
 			Log.i(TAG, "Sending image" + path + " to the server...");
@@ -62,16 +61,12 @@ public class SendImagesIntent extends IntentService {
 					LocalBroadcastManager.getInstance(this).sendBroadcast(photoUploadedIntent);
 					Log.i(TAG, "image " + path + " sent!");
 				} else {
-					error = true;
 					Log.e(TAG, "An error occurred while sending the image: "
 							+ response.getStatusLine().getStatusCode());
 				}
 
 			} catch (IOException e) {
-				e.printStackTrace();
 				Log.e(TAG, e.getLocalizedMessage());
-
-				error = true;
 			}
 
 			File f = new File(path);
@@ -79,7 +74,6 @@ public class SendImagesIntent extends IntentService {
 				f.delete();
 		}
 
-		
 		// TODO notify the user in some way
 	}
 	
