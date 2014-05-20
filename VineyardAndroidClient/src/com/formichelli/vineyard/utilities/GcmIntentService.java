@@ -1,8 +1,5 @@
 package com.formichelli.vineyard.utilities;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import com.formichelli.vineyard.R;
 import com.formichelli.vineyard.VineyardMainActivity;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
@@ -35,8 +32,10 @@ public class GcmIntentService extends IntentService {
 
 		if (!extras.isEmpty()) {
 			if (messageType.equals(GoogleCloudMessaging.MESSAGE_TYPE_MESSAGE)) {
-				Log.i(TAG, "Received: " + extras.toString());
-				sendNotification(extras.toString());
+				for (String key : extras.keySet())
+					Log.i(TAG, "Received: " + key);
+				sendNotification(extras.getString(TITLE),
+						extras.getString(DESCRIPTION));
 			}
 		}
 
@@ -44,19 +43,7 @@ public class GcmIntentService extends IntentService {
 		GcmBroadcastReceiver.completeWakefulIntent(intent);
 	}
 
-	private void sendNotification(String msg) {
-		String title, description;
-		JSONObject msgObject;
-
-		try {
-			msgObject = new JSONObject(msg);
-			title = msgObject.getString(TITLE);
-			description = msgObject.getString(DESCRIPTION);
-		} catch (JSONException e) {
-			Log.e(TAG, e.getLocalizedMessage());
-			return;
-		}
-
+	private void sendNotification(String title, String description) {
 		NotificationManager mNotificationManager = (NotificationManager) this
 				.getSystemService(Context.NOTIFICATION_SERVICE);
 
@@ -64,9 +51,13 @@ public class GcmIntentService extends IntentService {
 				new Intent(this, VineyardMainActivity.class), 0);
 
 		NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(
-				this).setSmallIcon(R.drawable.ic_launcher)
+				this)
+				.setAutoCancel(true)
+				.setSmallIcon(R.drawable.notification_icon)
 				.setContentTitle(title)
-				.setStyle(new NotificationCompat.BigTextStyle().bigText(msg))
+				.setStyle(
+						new NotificationCompat.BigTextStyle()
+								.bigText(description))
 				.setContentText(description).setContentIntent(contentIntent);
 
 		mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());
