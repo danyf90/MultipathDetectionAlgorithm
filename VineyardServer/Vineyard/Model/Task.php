@@ -148,6 +148,10 @@ class Task extends TemporalORM implements IResource {
                         return;
                     break;
 
+					case "OPTIONS":
+			     		header("Allow: DELETE,POST");
+					break;
+					
                     // case "PUT": not implemented, delete and recreate it!
                     // case "GET": implemented in "Photo" resource
                     default:

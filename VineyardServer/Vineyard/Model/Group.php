@@ -102,6 +102,10 @@ class Group extends TrackedORM implements IResource {
                 return self::deleteWorkerInGroup($gid, $wid);
             break;
 
+            case "OPTIONS":
+			    header("Allow: DELETE, PUT");
+            break;
+            
             default:
                 http_response_code(501); // Not Implemented
                 return;

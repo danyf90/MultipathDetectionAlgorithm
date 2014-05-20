@@ -29,6 +29,11 @@ class Worker extends TrackedORM implements IResource {
                 switch ($requestParameters[0]) {
                     case "login":
                         if ($method != "POST") {
+            				if ($method == "OPTIONS") {
+			     				header("Allow: GET");
+								return;
+							}
+							
                             http_response_code(501); // Not implemented
                         }
 

@@ -12,7 +12,10 @@ class Photo implements IResource {
     public static function handleRequest($method, array $requestParameters) {
         
         if ( $method != "GET" ) {
-            http_response_code(501); // Not Implemented;
+            if ($method == "OPTIONS")
+			     header("Allow: GET");
+			else
+            	http_response_code(501); // Not Implemented;
             return;
         }
         
