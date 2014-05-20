@@ -6,6 +6,7 @@ use \PDO;
 use \PDOException;
 use \Vineyard\Utility\DB;
 use \Vineyard\Utility\IResource;
+use \Vineyard\Utility\Validator;
 use \Vineyard\Utility\TrackedORM;
 use \Vineyard\Utility\TCrudRequestHandlers;
 
@@ -13,8 +14,15 @@ class Worker extends TrackedORM implements IResource {
 
     use TCrudRequestHandlers; // introduces handleRequestToBaseUri() and handleRequestToUriWithId()
 
-    // TODO check method!
-    public function check() { return array(); }
+    public function check() {
+        $v = new Validator($this);
+
+        $v->nonNull('username');
+        $v->nullEmail('email');
+        $v->notSet('password');
+
+        return $v->getWrongFields();
+    }
     public static function getTableName() { return 'worker'; }
 
     public static function handleRequest($method, array $requestParameters) {

@@ -138,6 +138,9 @@ class Place extends TrackedORM implements IResource {
                 return static::deleteAttribute($id);
             break;
 
+            case "OPTIONS":
+                header("Allow: POST, PUT, DELETE");
+            break;
             // case "GET": not implemented, all attributes are already returned with a place resource
             default:
                 http_response_code(501); // Not Implemented

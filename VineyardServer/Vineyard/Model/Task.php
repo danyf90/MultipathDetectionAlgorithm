@@ -8,6 +8,7 @@ use \Vineyard\Utility\IResource;
 use \Vineyard\Utility\TemporalORM;
 use \Vineyard\Utility\TCrudRequestHandlers;
 use \Vineyard\Utility\Validator;
+use Vineyard\Utility\Notificator;
 
 use \Vineyard\Model\Photo;
 
@@ -45,8 +46,9 @@ class Task extends TemporalORM implements IResource {
         $v->nullId('assigned_group', $modelNamespace . "Group");
         // assigner
         $v->nullId('assigner', $modelNamespace . "Worker");
-	// modifier
-        $v->nullId('modifier', $modelNamespace . "Worker");
+		// modifier
+        $v->id('modifier', $modelNamespace . "Worker");
+		$v->set('modifier');
         // create_time
         $v->timestamp('create_time');
         // status
@@ -69,6 +71,22 @@ class Task extends TemporalORM implements IResource {
             $pdo = DB::getConnection();
             $sql = $pdo->prepare("UPDATE `task` SET `create_time` = `start_time` WHERE `id` = ? AND `end_time` IS NULL");
             $sql->execute(array($this->id));
+            
+            if (!$this->isIssue())
+				return;
+            
+            // Send notifications to all users
+			$n = new Notificator();
+			$message = array('title' => $this->title, 'description' => $this->description);
+			$recipients = array();
+			
+			Worker::get(function ($worker) use (&$recipients) {
+				$recipients[] = $worker->{"notification_id"};
+			}, "`id` <> ? AND `notification_id` IS NOT NULL", array($this->id));
+			
+			$n->setData($message);
+			$n->setRecipients($recipients);
+			$n->send();
     }
 
     // Override AbstractORM::getById() to include task photos in object instance

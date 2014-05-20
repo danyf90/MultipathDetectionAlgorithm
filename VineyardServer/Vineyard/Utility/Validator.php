@@ -113,7 +113,7 @@ class Validator {
     protected function numeric($fieldName) {
         if (!is_numeric($this->object->{$fieldName})) {
             $this->addWrongField($fieldName, self::INVALID_FORMAT);
-            return fase;
+            return false;
         }
 
         return true;
@@ -141,6 +141,30 @@ class Validator {
     public function notSet($fieldName) {
         if (isset($this->object->{$fieldName})) {
             $this->addWrongField($fieldName, self::INVALID_FIELD);
+            return false;
+        }
+
+        return true;
+    }
+    
+    /**
+     * IS-SET VALIDATOR
+     */
+    public function set($fieldName) {
+        if (!isset($this->object->{$fieldName})) {
+            $this->addWrongField($fieldName, self::MANDATORY);
+            return false;
+        }
+
+        return true;
+    }
+    
+     /**
+     * EMAIL VALIDATOR
+     */
+     public function email($fieldName) {
+        if (!filter_var($this->object->{$fieldName}, FILTER_VALIDATE_EMAIL)) {
+            $this->addWrongField($fieldName, self::INVALID_FORMAT);
             return false;
         }
 

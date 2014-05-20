@@ -1,6 +1,6 @@
 <?php
 
-namespace Vineyard/Utility;
+namespace Vineyard\Utility;
 
 class Notificator {
 
@@ -21,8 +21,8 @@ class Notificator {
     //------------------------------
     protected $ids = array(); // array( 'id1' , 'id2' );
 
-    protected const API_KEY = 'AIzaSyCZ9pFQLmaEpTip9y7BCH2wvLgTMKqQS0M';
-    protected const GCM_URL = 'https://android.googleapis.com/gcm/send';
+    const API_KEY = 'AIzaSyCZ9pFQLmaEpTip9y7BCH2wvLgTMKqQS0M';
+    const GCM_URL = 'https://android.googleapis.com/gcm/send';
 
     public function __construct(array $data = null, array $ids = array()) {
         $this->setData($data);
@@ -83,7 +83,7 @@ class Notificator {
         curl_close( $ch );
 
         // Debug GCM response
-        echo $result;
+        // echo $response;
     }
 }
 
