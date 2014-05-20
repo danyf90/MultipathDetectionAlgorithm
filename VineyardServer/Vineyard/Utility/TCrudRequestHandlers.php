@@ -52,6 +52,10 @@ trait TCrudRequestHandlers {
                      http_response_code(400); // Bad Request
                 break;
 
+		case 'OPTIONS':
+			header("Allow: GET, POST");
+		break;
+
                 default:
                     http_response_code(501); // Not Implemented
             }
@@ -99,6 +103,9 @@ trait TCrudRequestHandlers {
                 return $response;
             break;
 
+	    case 'OPTIONS':
+		header("Allow: GET, PUT, DELETE");
+	    break;
             default:
                 http_response_code(501); // Not Implemented
         }

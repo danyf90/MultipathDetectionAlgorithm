@@ -453,12 +453,20 @@ class Place extends TrackedORM implements IResource {
      * HIERARCHY HANDLING
      **************************/
 
-    public function loadOffsprings() {
+    public function loadOffsprings($avoid = null) {
         $pdo = DB::getConnection();
 
          try {
-             $sql = $pdo->prepare("SELECT id FROM `place` WHERE `parent` = ?");
-             $sql->execute(array($this->id));
+	     $query = "SELECT id FROM `place` WHERE `parent` = ?";
+	     $whereParams = array($this->id);
+
+	     if (!is_null($avoid)) {
+		  $query .= " AND `id` <> ?";
+		  $whereParams[] = $avoid;
+	     }
+
+             $sql = $pdo->prepare($query);
+             $sql->execute($whereParams);
 
              $children = array();
 
@@ -481,7 +489,7 @@ class Place extends TrackedORM implements IResource {
         }
     }
 
-    public static function handleHierarchyRequest() {
+    public static function handleHierarchyRequest($method) {
         if ($method != "GET") {
             http_response_code(501); // Not Implemented
             return;
@@ -492,11 +500,15 @@ class Place extends TrackedORM implements IResource {
             return;
         }
 
-        $hierarchy = "";
+	$avoid = ( isset($_GET['avoidOffsprings']) ) ? (int) $_GET['avoidOffsprings'] : null;
 
-        static::get(function($place) use (&$hierarchy) {
-            $place->loadOffsprings();
+        $hierarchy = "{}";
 
+        static::get(function($place) use (&$hierarchy, $avoid) {
+	    if ($avoid == $place->id)
+		return;
+
+            $place->loadOffsprings($avoid);
             $hierarchy = json_encode($place);
 
         }, "`parent` IS NULL");

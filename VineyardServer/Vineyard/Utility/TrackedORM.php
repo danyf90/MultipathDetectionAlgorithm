@@ -46,8 +46,9 @@ abstract class TrackedORM extends AbstractORM {
          if (http_response_code() == 202) // Accepted
              static::updateLastModified();
 
-         return $response();
+         return $response;
      }
 
 }
+
 ?>

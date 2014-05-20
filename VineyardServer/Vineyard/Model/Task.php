@@ -216,7 +216,7 @@ class Task extends TemporalORM implements IResource {
 
                 http_response_code(201); // Created
                 static::updateLastModified();
-                return json_encode($filename);
+                return json_encode(array('url' => $filename));
 
             } catch (PDOException $e) {
                 // check which SQL error occured
