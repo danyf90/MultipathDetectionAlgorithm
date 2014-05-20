@@ -18,6 +18,7 @@ import com.formichelli.vineyard.utilities.VineyardServer;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -208,6 +209,7 @@ public class IssuesFragment extends Fragment {
 	 * wrong the issue will not be removed ad a toast will be displayed
 	 */
 	private class AsyncMarkIssueAsDone extends AsyncHttpRequest {
+		private final static String TAG = "AsyncMarkIssueAsDone";  
 		IssueTask issue;
 
 		public AsyncMarkIssueAsDone(String serverUrl, IssueTask issue) {
@@ -231,12 +233,14 @@ public class IssuesFragment extends Fragment {
 
 		@Override
 		protected void onPostExecute(Pair<Integer, String> response) {
-			if (response != null && response.first == HttpStatus.SC_OK)
+			if (response != null && response.first == HttpStatus.SC_ACCEPTED)
 				issue.getPlace().removeIssue(issue);
-			else
+			else {
+				Log.e(TAG, response.first + ": " + response.second);
 				Toast.makeText(activity,
 						activity.getString(R.string.issue_mark_done_error),
 						Toast.LENGTH_SHORT).show();
+			}
 
 			activity.switchFragment();
 		}

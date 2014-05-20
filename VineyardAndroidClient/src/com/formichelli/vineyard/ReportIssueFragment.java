@@ -368,9 +368,7 @@ public class ReportIssueFragment extends Fragment {
 			}
 			
 			List<NameValuePair> params = issue.getParams();
-			
-			if (editMode)
-				params.add(new BasicNameValuePair(SimpleTask.MODIFIER, String.valueOf(activity.getUserId())));
+			params.add(new BasicNameValuePair(SimpleTask.MODIFIER, String.valueOf(activity.getUserId())));
 
 			setParams(params);
 		}
