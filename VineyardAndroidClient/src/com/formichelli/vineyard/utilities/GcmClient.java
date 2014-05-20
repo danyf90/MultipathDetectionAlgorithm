@@ -21,7 +21,7 @@ import android.util.Log;
 
 public class GcmClient {
 	private static final String TAG = "GCMClient";
-	private static final String SENDER_ID = "AIzaSyCZ9pFQLmaEpTip9y7BCH2wvLgTMKqQS0M";
+	private static final String SENDER_ID = "1088911131042";
 	private static final String PROPERTY_REG_ID = "registration_id";
 	private static final String PROPERTY_APP_VERSION = "appVersion";
 
@@ -41,7 +41,9 @@ public class GcmClient {
 		if (checkGooglePlayServices()) {
 			gcm = GoogleCloudMessaging.getInstance(activity);
 			regId = getRegistrationId(activity);
-			if (regId != null)
+			
+			// regId not stored locally, obtain a new one
+			if (regId == null)
 				registerInBackground();
 		}
 	}
@@ -65,16 +67,17 @@ public class GcmClient {
 			Log.i(TAG, "Registration not found.");
 			return null;
 		}
+		
 		// Check if app was updated; if so, it must clear the registration ID
 		// since the existing regID is not guaranteed to work with the new
 		// app version.
 		int registeredVersion = prefs.getInt(PROPERTY_APP_VERSION,
 				Integer.MIN_VALUE);
-		int currentVersion = getAppVersion(context);
-		if (registeredVersion != currentVersion) {
+		if (registeredVersion != getAppVersion(context)) {
 			Log.i(TAG, "App version changed.");
 			return null;
 		}
+		
 		return registrationId;
 	}
 
