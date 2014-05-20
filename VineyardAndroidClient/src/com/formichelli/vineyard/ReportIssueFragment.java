@@ -5,8 +5,11 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.apache.http.HttpStatus;
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -34,6 +37,7 @@ import android.widget.ToggleButton;
 
 import com.formichelli.vineyard.entities.IssueTask;
 import com.formichelli.vineyard.entities.Place;
+import com.formichelli.vineyard.entities.SimpleTask;
 import com.formichelli.vineyard.entities.Task.Priority;
 import com.formichelli.vineyard.utilities.AsyncHttpRequest;
 import com.formichelli.vineyard.utilities.SendImagesIntent;
@@ -362,8 +366,13 @@ public class ReportIssueFragment extends Fragment {
 						+ issue.getId());
 				setType(Type.PUT);
 			}
+			
+			List<NameValuePair> params = issue.getParams();
+			
+			if (editMode)
+				params.add(new BasicNameValuePair(SimpleTask.MODIFIER, String.valueOf(activity.getUserId())));
 
-			setParams(issue.getParams());
+			setParams(params);
 		}
 
 		@Override
@@ -378,6 +387,9 @@ public class ReportIssueFragment extends Fragment {
 			if (response != null) {
 				if (!editMode && response.first == HttpStatus.SC_CREATED) {
 
+					// set issue modifierId
+					issue.setModifierId(activity.getUserId());
+					
 					// associate issue to place
 					issue.getPlace().addIssue(issue);
 

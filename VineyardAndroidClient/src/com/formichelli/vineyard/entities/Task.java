@@ -71,6 +71,10 @@ public interface Task {
 
 	public void setAssignerId(int assignerId);
 
+	public int getModifierId();
+
+	public void setModifierId(int assignerId);
+
 	public Date getCreateTime();
 
 	public void setCreateTime(Date createTime);

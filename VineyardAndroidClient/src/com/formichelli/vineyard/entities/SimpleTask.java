@@ -35,6 +35,7 @@ public class SimpleTask implements Task, Comparable<SimpleTask> {
 
 	private int id;
 	private int assignerId;
+	private int modifierId;
 	private Date createTime;
 	private Date assignTime;
 	private Date dueTime;
@@ -58,6 +59,9 @@ public class SimpleTask implements Task, Comparable<SimpleTask> {
 
 		if (!jsonObject.isNull(ASSIGNEE))
 			setAssignerId(jsonObject.getInt(ASSIGNEE));
+
+		if (!jsonObject.isNull(MODIFIER))
+			setModifierId(jsonObject.getInt(MODIFIER));
 
 		try {
 			if (!jsonObject.isNull(CREATE_TIME))
@@ -135,6 +139,17 @@ public class SimpleTask implements Task, Comparable<SimpleTask> {
 			throw new IllegalArgumentException("assignerId cannot be negative");
 
 		this.assignerId = assignerId;
+	}
+
+	public int getModifierId() {
+		return modifierId;
+	}
+
+	public void setModifierId(int modifierId) {
+		if (modifierId < 0)
+			throw new IllegalArgumentException("modifierId cannot be negative");
+		
+		this.modifierId = modifierId;
 	}
 
 	@Override
