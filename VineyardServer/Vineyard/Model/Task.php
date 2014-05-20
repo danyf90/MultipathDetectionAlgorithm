@@ -45,6 +45,8 @@ class Task extends TemporalORM implements IResource {
         $v->nullId('assigned_group', $modelNamespace . "Group");
         // assigner
         $v->nullId('assigner', $modelNamespace . "Worker");
+	// modifier
+        $v->nullId('modifier', $modelNamespace . "Worker");
         // create_time
         $v->timestamp('create_time');
         // status
