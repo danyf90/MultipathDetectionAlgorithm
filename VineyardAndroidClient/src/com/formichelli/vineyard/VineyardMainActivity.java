@@ -112,7 +112,7 @@ public class VineyardMainActivity extends ActionBarActivity implements
 		gcmClient = new GcmClient(this);
 		if (!gcmClient.checkGooglePlayServices()) {
 			Log.e(TAG, "Play services not found");
-			Toast.makeText(this, getString(R.string.no_play_services_error),
+			Toast.makeText(this, getString(R.string.gcm_error_no_play_services),
 					Toast.LENGTH_LONG).show();
 		} else {
 			Log.i(TAG, "GCM client id: " + gcmClient.getRegId());

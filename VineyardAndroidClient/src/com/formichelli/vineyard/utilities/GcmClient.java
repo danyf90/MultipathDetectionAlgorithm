@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
+import com.formichelli.vineyard.R;
 import com.formichelli.vineyard.VineyardMainActivity;
 import com.formichelli.vineyard.utilities.AsyncHttpRequest.Type;
 import com.google.android.gms.common.ConnectionResult;
@@ -18,9 +19,10 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.Toast;
 
 public class GcmClient {
-	private static final String TAG = "GCMClient";
+	private static final String TAG = "GcmClient";
 	private static final String SENDER_ID = "1088911131042";
 	private static final String PROPERTY_REG_ID = "registration_id";
 	private static final String PROPERTY_APP_VERSION = "appVersion";
@@ -54,7 +56,6 @@ public class GcmClient {
 
 	/**
 	 * Gets the current registration ID for application on GCM service.
-	 * <p>
 	 * If result is empty, the app needs to register.
 	 * 
 	 * @return registration ID, or empty string if there is no existing
@@ -126,6 +127,7 @@ public class GcmClient {
 					storeRegistrationId(activity, regId);
 					return true;
 				} catch (IOException e) {
+					Toast.makeText(activity, activity.getString(R.string.gcm_error_no_registration_id), Toast.LENGTH_LONG).show();
 					Log.e(TAG, e.getLocalizedMessage());
 				}
 				return false;
@@ -158,7 +160,6 @@ public class GcmClient {
 						.putInt(PROPERTY_APP_VERSION, getAppVersion(context))
 						.apply();
 			}
-
 		}.execute();
 	}
 
