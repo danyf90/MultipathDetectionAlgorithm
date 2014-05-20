@@ -4,9 +4,15 @@
     tools:context="com.formichelli.vit.VineyardMainActivity" >
 
     <item
-        android:id="@+id/action_task_view_mode"
+        android:id="@+id/action_task_view_all_mine"
         android:title="@string/issue_view_mine"
         android:visible="false"
         app:showAsAction="ifRoom|withText"/>
-
+    
+    <item
+        android:id="@+id/action_task_view_mode"
+        android:title="@string/task_view_calendar_list"
+        android:icon="@drawable/action_task_list"
+        app:showAsAction="ifRoom"/>
+    
 </menu>

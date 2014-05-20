@@ -24,6 +24,7 @@
     <string name="issue_mark_done_error">An error occurred, the issues has not been marked as done</string>
     <string name="issue_view_mine">Mine</string>
     <string name="issue_view_all">All</string>
+    <string name="task_view_calendar_list">Calendar/List</string>
     <string name="issue_use_location_label">Use current location</string>
 
     <string-array name="task_priorities">

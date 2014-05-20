@@ -3,10 +3,12 @@ package com.formichelli.vineyard;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
 import android.content.ContentValues;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.format.Time;
@@ -20,7 +22,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ExpandableListView;
 
-import com.formichelli.vineyard.entities.IssueTask;
 import com.formichelli.vineyard.entities.Place;
 import com.formichelli.vineyard.entities.SimpleTask;
 import com.formichelli.vineyard.entities.Worker;
@@ -38,11 +39,13 @@ public class TasksFragment extends Fragment {
 	ExpandableListView tasksListView;
 	TaskExpandableAdapter<SimpleTask> taskAdapter;
 	ExtendedCalendarView calendarView;
-	SparseArray<IssueTask> tasks = new SparseArray<IssueTask>();
-	boolean first, showMine;
-	MenuItem showMode;
+	SparseArray<SimpleTask> tasks = new SparseArray<SimpleTask>();
+	boolean calendarMode, first, showMine;
+	MenuItem showMode, viewMode;
 	String showAllLabel, showMineLabel;
 	Day currentDay;
+	List<SimpleTask> tasksList;
+	Drawable viewModeCalendarIcon, viewModeListIcon;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -58,6 +61,7 @@ public class TasksFragment extends Fragment {
 
 		first = true;
 		showMine = false;
+		calendarMode = true;
 
 		activity = (VineyardMainActivity) getActivity();
 		populateCalendarProvider();
@@ -66,16 +70,23 @@ public class TasksFragment extends Fragment {
 				.findViewById(R.id.tasks_calendar);
 		calendarView.setOnDayClickListener(onDayClickListener);
 
+		tasks = activity.getTasks();
+		tasksList = new ArrayList<SimpleTask>();
+		for (int i = 0, l = tasks.size(); i < l; i++)
+			tasksList.add(tasks.valueAt(i));
 		taskAdapter = new TaskExpandableAdapter<SimpleTask>(activity,
-				R.layout.issues_list_item, R.layout.issue_view, null, false, true,
-				null, null, null);
+				R.layout.issues_list_item, R.layout.issue_view, tasksList,
+				false, true, null, null, null);
 		tasksListView = (ExpandableListView) activity
 				.findViewById(R.id.tasks_list);
 		tasksListView.setAdapter(taskAdapter);
 
 		showAllLabel = getString(R.string.issue_view_all);
 		showMineLabel = getString(R.string.issue_view_mine);
-
+		viewModeCalendarIcon = activity.getResources().getDrawable(
+				R.drawable.action_task_calendar);
+		viewModeListIcon = activity.getResources().getDrawable(
+				R.drawable.action_task_list);
 
 	}
 
@@ -83,10 +94,12 @@ public class TasksFragment extends Fragment {
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		inflater.inflate(R.menu.tasks, menu);
 
-		showMode = menu.findItem(R.id.action_task_view_mode);
+		showMode = menu.findItem(R.id.action_task_view_all_mine);
+		viewMode = menu.findItem(R.id.action_task_view_mode);
 
 		if (first) {
-			// loadData() must be called just once after that both onActivityCreated
+			// loadData() must be called just once after that both
+			// onActivityCreated
 			// and onCreateOptionMenu are called
 			loadData();
 			first = false;
@@ -98,44 +111,91 @@ public class TasksFragment extends Fragment {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 
-		if (item.getItemId() == R.id.action_task_view_mode) {
+		switch (item.getItemId()) {
+		case R.id.action_task_view_all_mine:
 			showMine = !showMine;
 			showMode.setTitle(showMine ? showAllLabel : showMineLabel);
-			taskAdapter.replaceItems(getTasksOfTheDay(currentDay));
-			if (taskAdapter.getGroupCount() > 0)
-				tasksListView.setVisibility(View.VISIBLE);
-			else
-				tasksListView.setVisibility(View.GONE);
-			return true;
-		}
+			break;
 
-		return false;
+		case R.id.action_task_view_mode:
+			calendarMode = !calendarMode;
+			showMode.setVisible(false);
+			showMine = false;
+			currentDay = null;
+			viewMode.setIcon(calendarMode ? viewModeListIcon
+					: viewModeCalendarIcon);
+			break;
+		default:
+			return false;
+		}
+		loadData();
+		return true;
 	}
 
 	public void loadData() {
-
-		showMode.setVisible(false);
-		showMine = false;
-
 		final boolean showAllTasks = selectedPlace == null;
 
 		if (showAllTasks) {
+			viewMode.setVisible(true);
+			// show tasks of all places
 			activity.setTitle(activity
 					.getString(R.string.title_tasks_fragment_all));
-			calendarView.setVisibility(View.VISIBLE);
-			
-			taskAdapter.setShowPlace(true);
-			
-			tasksListView.setVisibility(View.GONE);
+
+			if (calendarMode) {
+				// show calendar
+				showMode.setVisible(false);
+				calendarView.setVisibility(View.VISIBLE);
+				tasksListView.setVisibility(View.GONE);
+			} else {
+				// show tasks for the selected day
+				showMode.setVisible(true);
+				calendarView.setVisibility(View.GONE);
+				tasksListView.setVisibility(View.VISIBLE);
+
+				if (showMine) {
+					int userId = activity.getUserId();
+					if (currentDay != null)
+						// get all my tasks for current day
+						taskAdapter.replaceItems(getTasksOfTheDay(currentDay));
+					else {
+						// get all my tasks
+						List<SimpleTask> myTasksList = new ArrayList<SimpleTask>();
+						for (SimpleTask task : tasksList)
+							if (task.getId() == userId)
+								myTasksList.add(task);
+						taskAdapter.replaceItems(myTasksList);
+					}
+				} else
+					taskAdapter.replaceItems(tasksList);
+
+				taskAdapter.setShowPlace(true);
+				if (taskAdapter.getGroupCount() > 0)
+					tasksListView.setVisibility(View.VISIBLE);
+				else
+					tasksListView.setVisibility(View.GONE);
+			}
 		} else {
+			// show tasks of the selected place only
+			showMode.setVisible(true);
+			viewMode.setVisible(false);
+			taskAdapter.setShowPlace(false);
+
 			activity.setTitle(String.format(
 					activity.getString(R.string.title_tasks_fragment),
 					selectedPlace.getName()));
 			calendarView.setVisibility(View.GONE);
-			
-			taskAdapter.replaceItems(selectedPlace.getTasks());
-			taskAdapter.setShowPlace(false);
-			
+
+			if (showMine) {
+				int userId = activity.getUserId();
+				// get all my tasks
+				List<SimpleTask> myTasksList = new ArrayList<SimpleTask>();
+				for (SimpleTask task : selectedPlace.getTasks())
+					if (task.getId() == userId)
+						myTasksList.add(task);
+				taskAdapter.replaceItems(myTasksList);
+			} else
+				taskAdapter.replaceItems(selectedPlace.getTasks());
+
 			if (taskAdapter.getGroupCount() > 0)
 				tasksListView.setVisibility(View.VISIBLE);
 			else
@@ -233,10 +293,10 @@ public class TasksFragment extends Fragment {
 
 			// change view only if there is at least one task
 			if (tasks.size() != 0) {
-				calendarView.setVisibility(View.GONE);
-				tasksListView.setVisibility(View.VISIBLE);
+				calendarMode = false;
+				viewMode.setIcon(viewModeCalendarIcon);
 				showMode.setVisible(true);
-				taskAdapter.replaceItems(tasks);
+				loadData();
 			}
 		}
 	};
