@@ -35,15 +35,18 @@ import com.formichelli.vineyard.entities.Place;
 import com.formichelli.vineyard.entities.SimpleTask;
 import com.formichelli.vineyard.entities.WorkGroup;
 import com.formichelli.vineyard.entities.Worker;
+import com.formichelli.vineyard.gcm.GcmClient;
 import com.formichelli.vineyard.utilities.AsyncHttpRequest;
 import com.formichelli.vineyard.utilities.Cache;
-import com.formichelli.vineyard.utilities.GcmClient;
 import com.formichelli.vineyard.utilities.SendImagesIntent;
 import com.formichelli.vineyard.utilities.VineyardServer;
 
 public class VineyardMainActivity extends ActionBarActivity implements
 		NavigationDrawerFragment.NavigationDrawerCallbacks {
 	public static final String TAG = "VineyardMainActivity";
+	public static final String PLACE_ID = "com.formichelli.vineyard.placeId";
+	public static final String ISSUE_ID = "com.formichelli.vineyard.issueId";
+	public static final String TASK_ID = "com.formichelli.vineyard.taskId";
 
 	PlaceViewerFragment placeViewerFragment;
 	IssuesFragment issuesFragment;
@@ -119,6 +122,10 @@ public class VineyardMainActivity extends ActionBarActivity implements
 		}
 
 		serverInit();
+
+		if (savedInstanceState != null) {
+
+		}
 	}
 
 	private void serverInit() {
@@ -444,7 +451,41 @@ public class VineyardMainActivity extends ActionBarActivity implements
 		markAsFinished(asyncHttpRequest);
 
 		if (areAllRequestsFinished()) {
+			int id;
 			associateEntities();
+
+			// if the application is starting because of a notification click,
+			// bring the user to the cause of the notification
+			Intent intent = getIntent();
+			if ((id = intent.getIntExtra(PLACE_ID, -1)) != -1) {
+				Place notifiedPlace = places.get(id);
+
+				if (notifiedPlace != null) {
+					if ((id = intent.getIntExtra(ISSUE_ID, -1)) != -1) {
+						IssueTask notifiedIssue = issues.get(id);
+
+						if (notifiedIssue != null) {
+							setCurrentPlace(notifiedPlace);
+							issuesFragment.setSelectedPlace(notifiedPlace);
+							issuesFragment.setSelectedIssue(notifiedIssue);
+							switchFragment(issuesFragment);
+							return;
+						}
+					} else if ((id = intent.getIntExtra(TASK_ID, -1)) != -1) {
+						SimpleTask notifiedTask = tasks.get(id);
+
+						if (notifiedTask != null) {
+							setCurrentPlace(notifiedPlace);
+							tasksFragment.setSelectedPlace(notifiedPlace);
+							tasksFragment.setSelectedTask(notifiedTask);
+							switchFragment(tasksFragment);
+							return;
+						}
+					}
+				}
+			} 
+
+			setCurrentPlace(rootPlace);
 			switchFragment(placeViewerFragment);
 		}
 	}
@@ -611,7 +652,6 @@ public class VineyardMainActivity extends ActionBarActivity implements
 			try {
 
 				rootPlace = new Place(new JSONObject(rootPlaceJSON));
-				setCurrentPlace(rootPlace);
 
 				places = new SparseArray<Place>();
 				addPlaceToHashMap(rootPlace);

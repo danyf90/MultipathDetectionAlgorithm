@@ -1,4 +1,4 @@
-package com.formichelli.vineyard.utilities;
+package com.formichelli.vineyard.gcm;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -8,6 +8,8 @@ import org.apache.http.message.BasicNameValuePair;
 
 import com.formichelli.vineyard.R;
 import com.formichelli.vineyard.VineyardMainActivity;
+import com.formichelli.vineyard.utilities.AsyncHttpRequest;
+import com.formichelli.vineyard.utilities.VineyardServer;
 import com.formichelli.vineyard.utilities.AsyncHttpRequest.Type;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;

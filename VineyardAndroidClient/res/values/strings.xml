@@ -49,6 +49,8 @@
     <string name="loading">Loading&#8230;</string>
     <string name="loading_error">An error occurred</string>
     <string name="tasks_no_tasks">There are no tasks</string>
+    <string name="notification_new_issue">A new issue has been reported</string>
+    <string name="notification_new_task">A new task has been planned</string>
     <string name="gcm_error_no_play_services">No Google Play Services found, you will not receive any notification</string>
     <string name="gcm_error_no_registration_id">Unable to get registration id from Google Play Services, restart the application to try again otherwise you will not receive any notification</string>
 

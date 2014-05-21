@@ -1,4 +1,4 @@
-package com.formichelli.vineyard.utilities;
+package com.formichelli.vineyard.gcm;
 
 import com.formichelli.vineyard.R;
 import com.formichelli.vineyard.VineyardMainActivity;
@@ -11,13 +11,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
-import android.util.Log;
 
 public class GcmIntentService extends IntentService {
-	private static final String TAG = "GcmIntentService";
 	public static final int NOTIFICATION_ID = 1;
 	private static final String TITLE = "title";
 	private static final String DESCRIPTION = "description";
+	private static final String PLACE_ID = "placeId";
+	private static final String TASK_ID = "id";
 
 	public GcmIntentService() {
 		super("GcmIntentService");
@@ -30,26 +30,50 @@ public class GcmIntentService extends IntentService {
 
 		String messageType = gcm.getMessageType(intent);
 
-		if (!extras.isEmpty()) {
-			if (messageType.equals(GoogleCloudMessaging.MESSAGE_TYPE_MESSAGE)) {
-				for (String key : extras.keySet())
-					Log.i(TAG, "Received: " + key);
-				sendNotification(extras.getString(TITLE),
-						extras.getString(DESCRIPTION));
-			}
-		}
+		if (messageType.equals(GoogleCloudMessaging.MESSAGE_TYPE_MESSAGE) && !extras.isEmpty())
+				sendNotification(extras);
 
 		// Release the wake lock provided by the WakefulBroadcastReceiver.
 		GcmBroadcastReceiver.completeWakefulIntent(intent);
-
 	}
 
-	private void sendNotification(String title, String description) {
+	private void sendNotification(Bundle extras) {
+		String title = extras.getString(TITLE);
+		String description = extras.getString(DESCRIPTION);
+		int placeId = Integer.valueOf(extras.getString(PLACE_ID));
+		int taskId = Integer.valueOf(extras.getString(TASK_ID));
+		int issueOrTask;
+
 		NotificationManager mNotificationManager = (NotificationManager) this
 				.getSystemService(Context.NOTIFICATION_SERVICE);
 
+		Intent intent = new Intent(this, VineyardMainActivity.class);
+		intent.putExtra(VineyardMainActivity.PLACE_ID, placeId);
+		
+		if (title.compareTo("issue") == 0)
+			issueOrTask = 0;
+		else if (title.compareTo("task") == 0)
+			issueOrTask = 1;
+		else 
+			issueOrTask = -1;
+		
+		switch (issueOrTask) {
+		case 0:
+			title = getResources().getString(
+					R.string.notification_new_issue);
+			intent.putExtra(VineyardMainActivity.ISSUE_ID, taskId);
+			break;
+		case 1:
+			title = getResources().getString(
+					R.string.notification_new_task);
+			intent.putExtra(VineyardMainActivity.TASK_ID, taskId);
+			break;
+		default:
+			title = "unexpected notification type: " + title;
+		}
+		
 		PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
-				new Intent(this, VineyardMainActivity.class), 0);
+				intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
 		NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(
 				this)

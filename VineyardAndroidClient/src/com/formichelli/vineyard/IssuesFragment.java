@@ -43,9 +43,10 @@ public class IssuesFragment extends Fragment {
 	TextView noIssuesMessage;
 	boolean first, showMine;
 	AsyncHttpRequest asyncTask;
-	Place selectedPlace;
 	MenuItem showMode;
 	String showAllLabel, showMineLabel;
+	IssueTask selectedIssue;
+	Place selectedPlace;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -81,7 +82,8 @@ public class IssuesFragment extends Fragment {
 		showMode = menu.findItem(R.id.action_issue_view_mode);
 
 		if (first) {
-			// loadData() must be called just once after that both onActivityCreated
+			// loadData() must be called just once after that both
+			// onActivityCreated
 			// and onCreateOptionMenu are called
 			loadData();
 			first = false;
@@ -152,6 +154,12 @@ public class IssuesFragment extends Fragment {
 				doneOnClickListener);
 		issuesList.setAdapter(issueAdapter);
 
+		if (selectedIssue != null) {
+			// used in case of notification
+			issuesList.expandGroup(issues.indexOf(selectedIssue) + 1);
+			selectedIssue = null;
+		}
+
 		// show a message if there are no children
 		if (issues.size() != 0)
 			noIssuesMessage.setVisibility(View.GONE);
@@ -202,6 +210,14 @@ public class IssuesFragment extends Fragment {
 		this.selectedPlace = selectedPlace;
 	}
 
+	public IssueTask getSelectedIssue() {
+		return selectedIssue;
+	}
+
+	public void setSelectedIssue(IssueTask selectedIssue) {
+		this.selectedIssue = selectedIssue;
+	}
+
 	/*
 	 * Sends a PUT request to the server to mark an issue as solved. During the
 	 * loading the fragment loadingFragment will be displayed. At the end of the
@@ -209,7 +225,7 @@ public class IssuesFragment extends Fragment {
 	 * wrong the issue will not be removed ad a toast will be displayed
 	 */
 	private class AsyncMarkIssueAsDone extends AsyncHttpRequest {
-		private final static String TAG = "AsyncMarkIssueAsDone";  
+		private final static String TAG = "AsyncMarkIssueAsDone";
 		IssueTask issue;
 
 		public AsyncMarkIssueAsDone(String serverUrl, IssueTask issue) {

@@ -34,7 +34,6 @@ import com.tyczj.extendedcalendarview.ExtendedCalendarView.OnDayClickListener;
 
 public class TasksFragment extends Fragment {
 	VineyardMainActivity activity;
-	Place selectedPlace;
 
 	ExpandableListView tasksListView;
 	TaskExpandableAdapter<SimpleTask> taskAdapter;
@@ -46,7 +45,9 @@ public class TasksFragment extends Fragment {
 	Day currentDay;
 	List<SimpleTask> tasksList;
 	Drawable viewModeCalendarIcon, viewModeListIcon;
-
+	Place selectedPlace;
+	SimpleTask selectedTask;
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -179,7 +180,9 @@ public class TasksFragment extends Fragment {
 			showMode.setVisible(true);
 			viewMode.setVisible(false);
 			taskAdapter.setShowPlace(false);
-
+			
+			List<SimpleTask> myTasksList;
+			
 			activity.setTitle(String.format(
 					activity.getString(R.string.title_tasks_fragment),
 					selectedPlace.getName()));
@@ -188,14 +191,23 @@ public class TasksFragment extends Fragment {
 			if (showMine) {
 				int userId = activity.getUserId();
 				// get all my tasks
-				List<SimpleTask> myTasksList = new ArrayList<SimpleTask>();
+				myTasksList = new ArrayList<SimpleTask>();
 				for (SimpleTask task : selectedPlace.getTasks())
 					if (task.getId() == userId)
 						myTasksList.add(task);
-				taskAdapter.replaceItems(myTasksList);
 			} else
-				taskAdapter.replaceItems(selectedPlace.getTasks());
+				myTasksList = selectedPlace.getTasks();
+			
+			taskAdapter.replaceItems(myTasksList);
 
+
+			if (selectedTask != null) {
+				// used in case of notification
+				tasksListView.expandGroup(myTasksList.indexOf(selectedTask));
+				selectedTask = null;
+			}
+
+			
 			if (taskAdapter.getGroupCount() > 0)
 				tasksListView.setVisibility(View.VISIBLE);
 			else
@@ -281,6 +293,14 @@ public class TasksFragment extends Fragment {
 
 	public void setSelectedPlace(Place selectedPlace) {
 		this.selectedPlace = selectedPlace;
+	}
+
+	public SimpleTask getSelectedTask() {
+		return selectedTask;
+	}
+
+	public void setSelectedTask(SimpleTask selectedTask) {
+		this.selectedTask = selectedTask;
 	}
 
 	private OnDayClickListener onDayClickListener = new OnDayClickListener() {

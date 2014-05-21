@@ -1,4 +1,4 @@
-package com.formichelli.vineyard.utilities;
+package com.formichelli.vineyard.gcm;
 
 import android.app.Activity;
 import android.content.ComponentName;
