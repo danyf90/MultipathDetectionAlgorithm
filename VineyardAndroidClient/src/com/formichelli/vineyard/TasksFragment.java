@@ -7,11 +7,16 @@ import java.util.List;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.http.HttpStatus;
+import org.apache.http.message.BasicNameValuePair;
+
 import android.content.ContentValues;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.format.Time;
+import android.util.Log;
+import android.util.Pair;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -19,13 +24,18 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.ExpandableListView;
+import android.widget.Toast;
 
 import com.formichelli.vineyard.entities.Place;
 import com.formichelli.vineyard.entities.SimpleTask;
+import com.formichelli.vineyard.entities.Task;
 import com.formichelli.vineyard.entities.Worker;
+import com.formichelli.vineyard.utilities.AsyncHttpRequest;
 import com.formichelli.vineyard.utilities.TaskExpandableAdapter;
+import com.formichelli.vineyard.utilities.VineyardServer;
 import com.tyczj.extendedcalendarview.CalendarProvider;
 import com.tyczj.extendedcalendarview.Day;
 import com.tyczj.extendedcalendarview.Event;
@@ -77,7 +87,7 @@ public class TasksFragment extends Fragment {
 			tasksList.add(tasks.valueAt(i));
 		taskAdapter = new TaskExpandableAdapter<SimpleTask>(activity,
 				R.layout.issues_list_item, R.layout.issue_view, tasksList,
-				false, true, null, null, null);
+				false, true, null, null, doneOnClickListener);
 		tasksListView = (ExpandableListView) activity
 				.findViewById(R.id.tasks_list);
 		tasksListView.setAdapter(taskAdapter);
@@ -361,5 +371,58 @@ public class TasksFragment extends Fragment {
 		}
 
 		return false;
+	}
+	
+
+	OnClickListener doneOnClickListener = new OnClickListener() {
+		@Override
+		public void onClick(View v) {
+			new AsyncMarkTaskAsDone(activity.getServer().getUrl(),
+					(SimpleTask) v.getTag()).execute();
+		}
+	};
+
+	/*
+	 * Sends a PUT request to the server to mark a task as solved. During the
+	 * loading the fragment loadingFragment will be displayed. At the end of the
+	 * execution the issue will be removed from the list. If something goes
+	 * wrong the issue will not be removed ad a toast will be displayed
+	 */
+	private class AsyncMarkTaskAsDone extends AsyncHttpRequest {
+		private final static String TAG = "AsyncMarkIssueAsDone";
+		SimpleTask task;
+
+		public AsyncMarkTaskAsDone(String serverUrl, SimpleTask task) {
+			super(serverUrl + VineyardServer.ISSUES_AND_TASKS_API
+					+ task.getId(), AsyncHttpRequest.Type.PUT);
+
+			this.task = task;
+
+			addParam(new BasicNameValuePair(SimpleTask.MODIFIER,
+					String.valueOf(activity.getUserId())));
+			addParam(new BasicNameValuePair(SimpleTask.STATUS,
+					Task.Status.RESOLVED.toString()));
+		}
+
+		@Override
+		protected void onPreExecute() {
+			activity.getLoadingFragment().setLoadingMessage(
+					getString(R.string.loading_sending_request));
+			activity.switchFragment(activity.getLoadingFragment());
+		}
+
+		@Override
+		protected void onPostExecute(Pair<Integer, String> response) {
+			if (response != null && response.first == HttpStatus.SC_ACCEPTED)
+				task.getPlace().removeTask(task);
+			else {
+				Log.e(TAG, response.first + ": " + response.second);
+				Toast.makeText(activity,
+						activity.getString(R.string.issue_mark_done_error),
+						Toast.LENGTH_SHORT).show();
+			}
+
+			activity.switchFragment();
+		}
 	}
 }
