@@ -30,7 +30,7 @@ class Worker extends TrackedORM implements IResource {
     public static function getById($id) {
         $w = parent::getById($id);
         unset($w->password);
-        unset($w->notification_id);
+//        unset($w->notification_id);
 	return $w;
     }
 

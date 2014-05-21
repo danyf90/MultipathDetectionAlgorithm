@@ -285,7 +285,9 @@ abstract class AbstractORM implements JsonSerializable {
         } catch (ORMException $e) {
             http_response_code(400); // Bad Request
             return $e->getWrongFields();
-        }
+        } catch (PDOException $e) {
+	    http_response_code(500);
+	}
     }
 
     public static function update($id) {
@@ -308,6 +310,8 @@ abstract class AbstractORM implements JsonSerializable {
         } catch (ORMException $e) {
             http_response_code(400); // Bad Request
             return $e->getWrongFields();
+        } catch (PDOException $e) {
+            http_response_code(500);
         }
     }
 

@@ -19,15 +19,20 @@ class Task extends TemporalORM implements IResource {
     static $statusEnum = array('new','assigned','resolved');
     static $priorityEnum = array('low','medium','high');
 
-    // TODO check method!
     public function check() {
         $v = new Validator($this);
 
         $modelNamespace = "\\Vineyard\\Model\\";
 
         // title
+        if (!isset($this->id))
+            $v->set('title');
+
         $v->nonNull('title');
         // place
+        if (!isset($this->id))
+            $v->set('place');
+
         $v->nonNull('place');
         $v->id('place', $modelNamespace . "Place");
         // assign_time
@@ -46,9 +51,9 @@ class Task extends TemporalORM implements IResource {
         $v->nullId('assigned_group', $modelNamespace . "Group");
         // assigner
         $v->nullId('assigner', $modelNamespace . "Worker");
-		// modifier
+        // modifier
         $v->id('modifier', $modelNamespace . "Worker");
-		$v->set('modifier');
+        $v->set('modifier');
         // create_time
         $v->timestamp('create_time');
         // status
@@ -71,22 +76,34 @@ class Task extends TemporalORM implements IResource {
             $pdo = DB::getConnection();
             $sql = $pdo->prepare("UPDATE `task` SET `create_time` = `start_time` WHERE `id` = ? AND `end_time` IS NULL");
             $sql->execute(array($this->id));
-            
-            if (!$this->isIssue())
-				return;
-            
+
+
             // Send notifications to all users
-			$n = new Notificator();
-			$message = array('title' => $this->title, 'description' => $this->description);
-			$recipients = array();
-			
-			Worker::get(function ($worker) use (&$recipients) {
-				$recipients[] = $worker->{"notification_id"};
-			}, "`id` <> ? AND `notification_id` IS NOT NULL", array($this->id));
-			
-			$n->setData($message);
-			$n->setRecipients($recipients);
-			$n->send();
+        $n = new Notificator();
+
+        $title = ($this->isIssue()) ? "issue" : "task";
+        $p = Place::getById($this->place);
+
+        $description = $p->name . ": " . $this->title;
+        if (isset($this->description) && strlen($this->description) > 0)
+            $description .= " - " . $this->description;
+
+        $message = array(
+            'id' => $this->id,
+            'title' => $title,
+            'description' => $description,
+            'placeId' => $this->place
+        );
+
+        $recipients = array();
+
+        Worker::get(function ($worker) use (&$recipients) {
+            $recipients[] = $worker->{"notification_id"};
+        }, "`id` <> ? AND `notification_id` IS NOT NULL", array($this->modifier));
+
+        $n->setData($message);
+        $n->setRecipients($recipients);
+        $n->send();
     }
 
     // Override AbstractORM::getById() to include task photos in object instance
@@ -168,10 +185,10 @@ class Task extends TemporalORM implements IResource {
                         return;
                     break;
 
-					case "OPTIONS":
-			     		header("Allow: DELETE,POST");
-					break;
-					
+                    case "OPTIONS":
+                         header("Allow: DELETE,POST");
+                    break;
+
                     // case "PUT": not implemented, delete and recreate it!
                     // case "GET": implemented in "Photo" resource
                     default:
