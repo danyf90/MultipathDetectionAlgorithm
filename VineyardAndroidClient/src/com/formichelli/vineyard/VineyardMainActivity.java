@@ -1,7 +1,6 @@
 package com.formichelli.vineyard;
 
 import java.util.ArrayList;
-import java.util.concurrent.ExecutionException;
 
 import org.apache.http.HttpStatus;
 import org.json.JSONArray;
@@ -112,7 +111,8 @@ public class VineyardMainActivity extends ActionBarActivity implements
 		gcmClient = new GcmClient(this);
 		if (!gcmClient.checkGooglePlayServices()) {
 			Log.e(TAG, "Play services not found");
-			Toast.makeText(this, getString(R.string.gcm_error_no_play_services),
+			Toast.makeText(this,
+					getString(R.string.gcm_error_no_play_services),
 					Toast.LENGTH_LONG).show();
 		} else {
 			Log.i(TAG, "GCM client id: " + gcmClient.getRegId());
@@ -433,15 +433,10 @@ public class VineyardMainActivity extends ActionBarActivity implements
 		workGroups.remove(workGroup.getId());
 	}
 
-	private void onAsyncHttpRequestFinished(AsyncHttpRequest asyncHttpRequest) {
-		try {
-			if (asyncHttpRequest.get() == null) {
-				// one of the requests is failed: cancel requests, the error
-				// message is shown by the failed request
-				cancelRequests();
-				return;
-			}
-		} catch (InterruptedException | ExecutionException e) {
+	private void onAsyncHttpRequestFinished(AsyncHttpRequest asyncHttpRequest,
+			boolean success) {
+		if (!success) {
+			// one of the requests is failed: cancel requests
 			cancelRequests();
 			return;
 		}
@@ -572,10 +567,6 @@ public class VineyardMainActivity extends ActionBarActivity implements
 			switchFragment(loadingFragment);
 		}
 
-		/*
-		 * Writes the received places into rootPlace and sends a GET request for
-		 * issues and tasks
-		 */
 		@Override
 		protected void onPostExecute(Pair<Integer, String> response) {
 			String rootPlaceJSON = null;
@@ -590,6 +581,8 @@ public class VineyardMainActivity extends ActionBarActivity implements
 					break;
 
 				case HttpStatus.SC_NOT_MODIFIED:
+					Log.i(TAG, "NOT_MODIFIED");
+					// get places from shared preferences
 					rootPlaceJSON = cache.getPlaces();
 					break;
 
@@ -605,7 +598,8 @@ public class VineyardMainActivity extends ActionBarActivity implements
 					Log.e(TAG,
 							"places not available neither from server nor from sharedPreference");
 					loadingFragment.setLoading(false);
-					onAsyncHttpRequestFinished(this);
+
+					onAsyncHttpRequestFinished(this, false);
 					return;
 				}
 
@@ -626,9 +620,10 @@ public class VineyardMainActivity extends ActionBarActivity implements
 				// show an error fragment if something is gone wrong
 				Log.e(TAG, e.getLocalizedMessage());
 				loadingFragment.setLoading(false);
+				onAsyncHttpRequestFinished(this, false);
 			}
 
-			onAsyncHttpRequestFinished(this);
+			onAsyncHttpRequestFinished(this, true);
 		}
 
 		private void addPlaceToHashMap(Place place) {
@@ -661,16 +656,9 @@ public class VineyardMainActivity extends ActionBarActivity implements
 			switchFragment(loadingFragment);
 		}
 
-		/*
-		 * Add received issues and places to the respective place.
-		 */
 		@Override
 		protected void onPostExecute(Pair<Integer, String> response) {
-			onAsyncHttpRequestFinished(this);
 			String issuesAndTasksJSON = null;
-
-			if (rootPlace == null)
-				return;
 
 			if (response != null)
 				switch (response.first) {
@@ -682,6 +670,7 @@ public class VineyardMainActivity extends ActionBarActivity implements
 							getLastModified());
 					break;
 				case HttpStatus.SC_NOT_MODIFIED:
+					Log.i(TAG, "NOT_MODIFIED");
 					// get issues and tasks from shared preferences
 					issuesAndTasksJSON = cache.getIssuesAndTasks();
 					break;
@@ -696,7 +685,7 @@ public class VineyardMainActivity extends ActionBarActivity implements
 					Log.e(TAG,
 							"issuesAndTasks not available neither from server nor from sharedPreference");
 					loadingFragment.setLoading(false);
-					onAsyncHttpRequestFinished(this);
+					onAsyncHttpRequestFinished(this, false);
 					return;
 				}
 
@@ -705,7 +694,7 @@ public class VineyardMainActivity extends ActionBarActivity implements
 						.show();
 			}
 
-			// associate issues and tasks to places and viceversa
+			// parse issues and tasks from JSON
 			try {
 				JSONArray issuesAndTasks = new JSONArray(issuesAndTasksJSON);
 
@@ -715,17 +704,10 @@ public class VineyardMainActivity extends ActionBarActivity implements
 				for (int i = 0, l = issuesAndTasks.length(); i < l; i++) {
 					JSONObject object = issuesAndTasks.getJSONObject(i);
 
-					if (!object.isNull(IssueTask.ISSUER)) {
-						IssueTask issue = new IssueTask(object);
-						issue.setPlace(places.get(object
-								.getInt(SimpleTask.PLACE)));
-						addIssue(issue);
-					} else {
-						SimpleTask task = new SimpleTask(object);
-						task.setPlace(places.get(object
-								.getInt(SimpleTask.PLACE)));
-						addTask(task);
-					}
+					if (!object.isNull(IssueTask.ISSUER))
+						addIssue(new IssueTask(object));
+					else
+						addTask(new SimpleTask(object));
 				}
 
 			} catch (JSONException e) {
@@ -733,9 +715,11 @@ public class VineyardMainActivity extends ActionBarActivity implements
 				Log.e(TAG,
 						"Error parsing issues and tasks JSON: "
 								+ e.getLocalizedMessage());
+				loadingFragment.setLoading(false);
+				onAsyncHttpRequestFinished(this, false);
 			}
 
-			onAsyncHttpRequestFinished(this);
+			onAsyncHttpRequestFinished(this, true);
 		}
 	}
 
@@ -759,15 +743,9 @@ public class VineyardMainActivity extends ActionBarActivity implements
 			switchFragment(loadingFragment);
 		}
 
-		/*
-		 * Add received issues and places to the respective place.
-		 */
 		@Override
 		protected void onPostExecute(Pair<Integer, String> response) {
 			String workersJSON = null;
-
-			if (rootPlace == null)
-				return;
 
 			if (response != null)
 				switch (response.first) {
@@ -778,6 +756,7 @@ public class VineyardMainActivity extends ActionBarActivity implements
 					cache.putWorkers(workersJSON, getLastModified());
 					break;
 				case HttpStatus.SC_NOT_MODIFIED:
+					Log.i(TAG, "NOT_MODIFIED");
 					// get issues and tasks from shared preferences
 					workersJSON = cache.getWorkers();
 					break;
@@ -792,7 +771,7 @@ public class VineyardMainActivity extends ActionBarActivity implements
 					Log.e(TAG,
 							"workers not available neither from server nor from sharedPreference");
 					loadingFragment.setLoading(false);
-					onAsyncHttpRequestFinished(this);
+					onAsyncHttpRequestFinished(this, false);
 					return;
 				}
 
@@ -801,7 +780,7 @@ public class VineyardMainActivity extends ActionBarActivity implements
 						.show();
 			}
 
-			// associate issues and tasks to places and viceversa
+			// parse workers from JSON
 			try {
 				JSONArray workersArray = new JSONArray(workersJSON);
 
@@ -815,9 +794,11 @@ public class VineyardMainActivity extends ActionBarActivity implements
 				Log.e(TAG,
 						"Error parsing workers JSON: "
 								+ e.getLocalizedMessage());
+				loadingFragment.setLoading(false);
+				onAsyncHttpRequestFinished(this, false);
 			}
 
-			onAsyncHttpRequestFinished(this);
+			onAsyncHttpRequestFinished(this, true);
 		}
 	}
 
@@ -841,15 +822,9 @@ public class VineyardMainActivity extends ActionBarActivity implements
 			switchFragment(loadingFragment);
 		}
 
-		/*
-		 * Add received issues and places to the respective place.
-		 */
 		@Override
 		protected void onPostExecute(Pair<Integer, String> response) {
 			String workGroupsJSON = null;
-
-			if (rootPlace == null)
-				return;
 
 			if (response != null)
 				switch (response.first) {
@@ -860,6 +835,7 @@ public class VineyardMainActivity extends ActionBarActivity implements
 					cache.putWorkGroups(workGroupsJSON, getLastModified());
 					break;
 				case HttpStatus.SC_NOT_MODIFIED:
+					Log.i(TAG, "NOT_MODIFIED");
 					// get issues and tasks from shared preferences
 					workGroupsJSON = cache.getWorkGroups();
 					break;
@@ -874,7 +850,7 @@ public class VineyardMainActivity extends ActionBarActivity implements
 					Log.e(TAG,
 							"workgroups not available neither from server nor from sharedPreference");
 					loadingFragment.setLoading(false);
-					onAsyncHttpRequestFinished(this);
+					onAsyncHttpRequestFinished(this, false);
 					return;
 				}
 
@@ -883,7 +859,7 @@ public class VineyardMainActivity extends ActionBarActivity implements
 						.show();
 			}
 
-			// associate issues and tasks to places and viceversa
+			// parse workers from JSON
 			try {
 				JSONArray workGroupsArray = new JSONArray(workGroupsJSON);
 
@@ -897,9 +873,11 @@ public class VineyardMainActivity extends ActionBarActivity implements
 				Log.e(TAG,
 						"Error parsing workgroups JSON: "
 								+ e.getLocalizedMessage());
+				loadingFragment.setLoading(false);
+				onAsyncHttpRequestFinished(this, false);
 			}
 
-			onAsyncHttpRequestFinished(this);
+			onAsyncHttpRequestFinished(this, true);
 		}
 	}
 

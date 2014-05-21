@@ -233,7 +233,11 @@ public class NavigationDrawerFragment extends Fragment {
 	}
 
 	private ActionBar getActionBar() {
-		return ((ActionBarActivity) getActivity()).getSupportActionBar();
+		ActionBarActivity activity = (ActionBarActivity) getActivity();
+		if (activity != null)
+			return activity.getSupportActionBar();
+		else
+			return null;
 	}
 
 	/**
@@ -248,7 +252,9 @@ public class NavigationDrawerFragment extends Fragment {
 	}
 
 	public void setLocked(boolean locked) {
-		getActionBar().setDisplayHomeAsUpEnabled(!locked);
+		ActionBar actionBar = getActionBar();
+		if (actionBar != null)
+			actionBar.setDisplayHomeAsUpEnabled(!locked);
 		mDrawerToggle.setDrawerIndicatorEnabled(!locked);
 		mDrawerLayout
 				.setDrawerLockMode(locked ? DrawerLayout.LOCK_MODE_LOCKED_CLOSED

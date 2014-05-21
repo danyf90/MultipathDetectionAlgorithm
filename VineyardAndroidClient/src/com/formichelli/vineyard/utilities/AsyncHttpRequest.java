@@ -126,7 +126,7 @@ public class AsyncHttpRequest extends
 		HttpRequestBase request;
 
 		if (serverUrl == null || type == null)
-			return new Pair<Integer,String>(-1,null);
+			return null;
 
 		Log.i(TAG, "Sending " + type + " request to " + serverUrl);
 		if (type != Type.GET)
@@ -155,7 +155,7 @@ public class AsyncHttpRequest extends
 			break;
 
 		default:
-			return new Pair<Integer,String>(-1,null);
+			return null;
 		}
 
 		// add the parameters for DELETE, POST and PUT requests
@@ -166,7 +166,7 @@ public class AsyncHttpRequest extends
 							.setEntity(new UrlEncodedFormEntity(this.params, "UTF-8"));
 				} catch (UnsupportedEncodingException e) {
 					Log.e(TAG, "Error: " + e.getLocalizedMessage());
-					return new Pair<Integer,String>(-1,null);
+					return null;
 				}
 		}
 
@@ -190,7 +190,7 @@ public class AsyncHttpRequest extends
 			return new Pair<Integer, String>(statusCode, body);
 		} catch (IOException e) {
 			Log.e(TAG, "Error: " + e.getLocalizedMessage());
-			return new Pair<Integer,String>(-1,null);
+			return null;
 		}
 
 	}
