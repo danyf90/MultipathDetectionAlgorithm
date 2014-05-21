@@ -23,7 +23,16 @@ class Worker extends TrackedORM implements IResource {
 
         return $v->getWrongFields();
     }
+
     public static function getTableName() { return 'worker'; }
+
+    // Override of AbstarctORM::getById()
+    public static function getById($id) {
+        $w = parent::getById($id);
+        unset($w->password);
+        unset($w->notification_id);
+	return $w;
+    }
 
     public static function handleRequest($method, array $requestParameters) {
 

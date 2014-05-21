@@ -37,8 +37,8 @@ trait TCrudRequestHandlers {
                         return;
                     }
 
-                    $places = static::listAll();
-                    return json_encode($places);
+                    $resources = static::listAll();
+                    return json_encode($resources);
                 break;
 
                 case 'POST': // create a new resource instance
