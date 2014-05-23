@@ -26,6 +26,12 @@
     <string name="issue_view_all">Tutti</string>
     <string name="issue_use_location_label">Invia posizione</string>
 
+    <string name="issue_add_photo_title">Aggiungi photo</string>
+
+    <string-array name="issue_add_photo_options">
+        <item>Fai una foto</item>
+        <item>Aggiungi dalla galleria</item>
+    </string-array>
     <string-array name="task_priorities">
         <item>--</item>
         <item>Bassa</item>

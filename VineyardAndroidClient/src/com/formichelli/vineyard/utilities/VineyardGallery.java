@@ -1,19 +1,27 @@
 package com.formichelli.vineyard.utilities;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.TypedArray;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
@@ -22,6 +30,7 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.HorizontalScrollView;
@@ -37,9 +46,11 @@ import com.formichelli.vineyard.R;
  * can be added (from camera) or deleted.
  */
 public class VineyardGallery extends HorizontalScrollView {
+	private static final String TAG = "VineyardGallery";
+
 	public static final int REQUEST_TAKE_PHOTO = 1;
-	private static final int addPosition = 1; // add new images near to camera
-												// icon
+	public static final int REQUEST_PICK_PHOTO = 2;
+	private static final int addPosition = 1; // add images near to camera icon
 
 	ImageView addDeletePhoto;
 	LinearLayout gallery;
@@ -49,6 +60,7 @@ public class VineyardGallery extends HorizontalScrollView {
 	HashMap<ImageView, String> imagesFromCamera;
 	Drawable add, delete;
 	Fragment fragment;
+	private String currentPhotoPath;
 
 	public VineyardGallery(Context context) {
 		super(context);
@@ -99,7 +111,8 @@ public class VineyardGallery extends HorizontalScrollView {
 		selectedColor = context.getResources().getColor(R.color.white);
 		notSelectedColor = context.getResources().getColor(R.color.wine_light);
 
-		add = context.getResources().getDrawable(R.drawable.action_camera_dark);
+		add = context.getResources().getDrawable(
+				R.drawable.action_add_photo_dark);
 		delete = context.getResources().getDrawable(
 				R.drawable.action_delete_dark);
 
@@ -290,7 +303,7 @@ public class VineyardGallery extends HorizontalScrollView {
 	}
 
 	/**
-	 * Removes the images that are currently selected
+	 * } Removes the images that are currently selected
 	 */
 	public void removeSelectedImages() {
 		for (ImageView v : selected)
@@ -306,7 +319,7 @@ public class VineyardGallery extends HorizontalScrollView {
 	}
 
 	/*
-	 * Deselect all the images
+	 * Deselect all the images }
 	 */
 	private void deselectAll() {
 		for (ImageView v : selected)
@@ -340,29 +353,72 @@ public class VineyardGallery extends HorizontalScrollView {
 	OnClickListener dispatchTakePictureIntent = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
-			File photoFile;
-			Context context = getContext();
+			new AlertDialog.Builder(getContext())
+					.setTitle(
+							getContext().getResources().getString(
+									R.string.issue_add_photo_title))
+					.setItems(
+							getContext().getResources().getStringArray(
+									R.array.issue_add_photo_options),
+							new DialogInterface.OnClickListener() {
+								@Override
+								public void onClick(DialogInterface dialog,
+										int item) {
+									File photoFile;
+									Context context = getContext();
 
-			Intent takePictureIntent = new Intent(
-					MediaStore.ACTION_IMAGE_CAPTURE);
+									try {
+										photoFile = createImageFile();
+									} catch (IOException e) {
+										Log.e(TAG, "Can't create photo file");
+										return;
+									}
 
-			if (takePictureIntent.resolveActivity(context.getPackageManager()) != null) {
-				try {
-					photoFile = createImageFile();
-				} catch (IOException ex) {
-					return;
-				}
+									switch (item) {
+									case 0: // take photo from camera
 
-				takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,
-						Uri.fromFile(photoFile));
+										Intent takePictureIntent = new Intent(
+												MediaStore.ACTION_IMAGE_CAPTURE);
 
-				if (fragment != null)
-					fragment.startActivityForResult(takePictureIntent,
-							REQUEST_TAKE_PHOTO);
-				else
-					((Activity) context).startActivityForResult(
-							takePictureIntent, REQUEST_TAKE_PHOTO);
-			}
+										// check if camera activity is available
+										if (takePictureIntent
+												.resolveActivity(context
+														.getPackageManager()) == null) {
+											photoFile.delete();
+											return;
+										}
+
+										takePictureIntent.putExtra(
+												MediaStore.EXTRA_OUTPUT,
+												Uri.fromFile(photoFile));
+
+										if (fragment != null)
+											// gallery is in a fragment
+											fragment.startActivityForResult(
+													takePictureIntent,
+													REQUEST_TAKE_PHOTO);
+										else
+											// gallery is in an activity
+											((Activity) context)
+													.startActivityForResult(
+															takePictureIntent,
+															REQUEST_TAKE_PHOTO);
+										break;
+									case 1: // pick photo from gallery
+
+										// Uri tempUri = Uri.fromFile(tempFile);
+										Intent pickCropImageIntent = new Intent(
+												Intent.ACTION_PICK,
+												android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+										pickCropImageIntent.setType("image/*");
+										fragment.startActivityForResult(Intent
+												.createChooser(
+														pickCropImageIntent,
+														"Select Image"),
+												REQUEST_PICK_PHOTO);
+									}
+								}
+							}).show();
 		}
 	};
 
@@ -381,14 +437,11 @@ public class VineyardGallery extends HorizontalScrollView {
 		}
 	};
 
-	private String currentPhotoPath;
-
-	@SuppressLint("SimpleDateFormat")
 	private File createImageFile() throws IOException {
 		// Create an image file name
-		String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss")
+		String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US)
 				.format(new Date());
-		String imageFileName = "issue_" + timeStamp + "";
+		String imageFileName = "issue_" + timeStamp;
 
 		File image = File.createTempFile(imageFileName, /* prefix */
 				".jpg", /* suffix */
@@ -402,8 +455,87 @@ public class VineyardGallery extends HorizontalScrollView {
 	}
 
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (resultCode == Activity.RESULT_OK) {
+		if (resultCode != Activity.RESULT_OK)
+			return;
+
+		switch (requestCode) {
+		case REQUEST_TAKE_PHOTO:
 			addImage(currentPhotoPath, true);
+			break;
+		case REQUEST_PICK_PHOTO:
+			String image = makeCopy(getRealPathFromURI(getContext(),
+					data.getData()));
+			if (image != null)
+				addImage(image, true);
+			break;
 		}
 	}
+
+	public String makeCopy(String src) {
+		InputStream in;
+		OutputStream out;
+		File tempFile;
+
+		try {
+			tempFile = createImageFile();
+		} catch (IOException e) {
+			Log.e(TAG, "Can't create photo file: " + e.getLocalizedMessage());
+			return null;
+		}
+
+		try {
+			in = new FileInputStream(src);
+			out = new FileOutputStream(tempFile);
+		} catch (FileNotFoundException e) {
+			Log.e(TAG, "Can't create photo file: " + e.getLocalizedMessage());
+			return null;
+		}
+
+		try {
+			byte[] buf = new byte[1024];
+			int len;
+			while ((len = in.read(buf)) > 0)
+				out.write(buf, 0, len);
+
+			in.close();
+			out.close();
+		} catch (IOException e) {
+			Log.e(TAG, "Can't write photo file: " + e.getLocalizedMessage());
+			return null;
+		}
+
+		return tempFile.getAbsolutePath();
+	}
+
+	public String getRealPathFromURI(Context context, Uri contentUri) {
+		Cursor cursor = null;
+		try {
+			String[] proj = { MediaStore.Images.Media.DATA };
+			cursor = context.getContentResolver().query(contentUri, proj, null,
+					null, null);
+			int column_index = cursor
+					.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+			cursor.moveToFirst();
+			return cursor.getString(column_index);
+		} finally {
+			if (cursor != null) {
+				cursor.close();
+			}
+		}
+	}
+
+	public void copy(File src, File dst) throws IOException {
+		InputStream in = new FileInputStream(src);
+		OutputStream out = new FileOutputStream(dst);
+
+		// Transfer bytes from in to out
+		byte[] buf = new byte[1024];
+		int len;
+		while ((len = in.read(buf)) > 0) {
+			out.write(buf, 0, len);
+		}
+		in.close();
+		out.close();
+	}
+
 }

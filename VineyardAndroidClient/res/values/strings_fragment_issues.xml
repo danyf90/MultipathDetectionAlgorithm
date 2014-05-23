@@ -26,14 +26,18 @@
     <string name="issue_view_all">All</string>
     <string name="task_view_calendar_list">Calendar/List</string>
     <string name="issue_use_location_label">Use current location</string>
+    <string name="issue_add_photo_title">Add photo</string>
 
+    <string-array name="issue_add_photo_options">
+        <item>Take from camera</item>
+        <item>Pick from gallery</item>
+    </string-array>
     <string-array name="task_priorities">
         <item>--</item>
         <item>Low</item>
         <item>Medium</item>
         <item>High</item>
     </string-array>
-    
     <string-array name="task_status">
         <item>--</item>
         <item>New</item>

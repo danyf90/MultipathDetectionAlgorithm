@@ -15,9 +15,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.location.Location;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.util.Pair;
@@ -52,8 +50,6 @@ import com.google.android.gms.location.LocationClient;
  */
 @SuppressLint("ValidFragment")
 public class ReportIssueFragment extends Fragment {
-	public static final int REQUEST_TAKE_PHOTO = 1;
-	public static final int REQUEST_SELECT_PHOTO = 2;
 	public static final int REQUEST_PLACE = 3;
 
 	VineyardMainActivity activity;
@@ -268,28 +264,6 @@ public class ReportIssueFragment extends Fragment {
 		return true;
 	}
 
-	OnClickListener dispatchTakePictureIntent = new OnClickListener() {
-		@Override
-		public void onClick(View v) {
-			File photoFile;
-
-			Intent takePictureIntent = new Intent(
-					MediaStore.ACTION_IMAGE_CAPTURE);
-
-			if (takePictureIntent.resolveActivity(activity.getPackageManager()) != null) {
-				try {
-					photoFile = createImageFile();
-				} catch (IOException ex) {
-					return;
-				}
-
-				takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,
-						Uri.fromFile(photoFile));
-				startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
-			}
-		}
-	};
-
 	@SuppressLint("SimpleDateFormat")
 	private File createImageFile() throws IOException {
 		// Create an image file name
@@ -311,7 +285,8 @@ public class ReportIssueFragment extends Fragment {
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		switch (requestCode) {
-		case REQUEST_TAKE_PHOTO:
+		case VineyardGallery.REQUEST_TAKE_PHOTO:
+		case VineyardGallery.REQUEST_PICK_PHOTO:
 			gallery.onActivityResult(requestCode, resultCode, data);
 			break;
 		case REQUEST_PLACE:

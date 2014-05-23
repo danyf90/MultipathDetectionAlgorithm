@@ -10,6 +10,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.support.v4.app.NotificationCompat;
 
 public class GcmIntentService extends IntentService {
@@ -30,8 +31,9 @@ public class GcmIntentService extends IntentService {
 
 		String messageType = gcm.getMessageType(intent);
 
-		if (messageType.equals(GoogleCloudMessaging.MESSAGE_TYPE_MESSAGE) && !extras.isEmpty())
-				sendNotification(extras);
+		if (messageType.equals(GoogleCloudMessaging.MESSAGE_TYPE_MESSAGE)
+				&& !extras.isEmpty())
+			sendNotification(extras);
 
 		// Release the wake lock provided by the WakefulBroadcastReceiver.
 		GcmBroadcastReceiver.completeWakefulIntent(intent);
@@ -49,29 +51,27 @@ public class GcmIntentService extends IntentService {
 
 		Intent intent = new Intent(this, VineyardMainActivity.class);
 		intent.putExtra(VineyardMainActivity.PLACE_ID, placeId);
-		
+
 		if (title.compareTo("issue") == 0)
 			issueOrTask = 0;
 		else if (title.compareTo("task") == 0)
 			issueOrTask = 1;
-		else 
+		else
 			issueOrTask = -1;
-		
+
 		switch (issueOrTask) {
 		case 0:
-			title = getResources().getString(
-					R.string.notification_new_issue);
+			title = getResources().getString(R.string.notification_new_issue);
 			intent.putExtra(VineyardMainActivity.ISSUE_ID, taskId);
 			break;
 		case 1:
-			title = getResources().getString(
-					R.string.notification_new_task);
+			title = getResources().getString(R.string.notification_new_task);
 			intent.putExtra(VineyardMainActivity.TASK_ID, taskId);
 			break;
 		default:
 			title = "unexpected notification type: " + title;
 		}
-		
+
 		PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
 				intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
@@ -86,5 +86,11 @@ public class GcmIntentService extends IntentService {
 				.setContentText(description).setContentIntent(contentIntent);
 
 		mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());
+
+		Vibrator v = (Vibrator) getSystemService(VIBRATOR_SERVICE);
+		if (v != null) {
+			final long pattern[] = { 0, 100, 100, 100, 100, 100 };
+			v.vibrate(pattern, -1);
+		}
 	}
 }
