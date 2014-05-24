@@ -21,14 +21,10 @@ var insertGroup = function (group, $container) {
 var loadList = function () {
     
     var requestedUrl = vineyard.config.serverUrl + "group/" ;
-	
     $.getJSON(requestedUrl, function (groups) {
-        
         $.each(groups, function (index, group) {
             insertGroup(group, $("#group-all-table-body"));
         });
-		
-		$("#loading").css("visibility", "hidden"); 
     });
 };
 

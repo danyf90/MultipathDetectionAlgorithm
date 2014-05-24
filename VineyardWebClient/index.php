@@ -2,6 +2,9 @@
     require_once("autoloader.php");
     
     use \Vineyard\Utility\Template;
+	use \Vineyard\Controller\HomeController;
+	use \Vineyard\Controller\ErrorController;
+	use \Vineyard\Controller\SimpleResourceController;
 
     $rootPath = ""; // "/admin";
 
@@ -12,11 +15,16 @@
 
     $t = new Template("templates/template-main.php");
 
-	$requestedClass = "\\Vineyard\\Controller\\HomeController";
-
 	if (strlen($requestParams[0]) > 0) {
 		
-    	$resource = array_shift($requestParams);
+		try {
+			$t = SimpleResourceController::handle($t, $requestParams);
+		} catch (\Exception $e) {
+			http_response_code($e->getCode());
+			$t = ErrorController::handle($t, $requestParams);
+		}
+		
+    	/*$resource = array_shift($requestParams);
     	$requestedClass = "\\Vineyard\\Controller\\" . ucwords($resource) . "Controller";
 		
     	if (!class_exists($requestedClass) || // if class doesn't exist ...
@@ -24,10 +32,9 @@
 
         	$requestedClass = "\\Vineyard\\Controller\\ErrorController";   
         	http_response_code(404);
-    	}
-	}
-
-    $requestedClass::handle($t, $requestParams);
+    	}*/
+	} else 
+		$t = HomeController::handle($t, $requestParams);
     
     $t->render();
 ?>

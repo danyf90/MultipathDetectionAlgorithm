@@ -1,15 +1,15 @@
 var loadWorkGroup = function () {
     // get id from url
-	var id = $("#group-id").attr("value");
+	var id = $("#group-id").val();
     var requestedUrl = vineyard.config.serverUrl + "group/" + id;
 
     $.getJSON(requestedUrl, function (group) {
 
         // Name
-        $("#group-name").attr("value", group.name);
+        $("#group-name").val(group.name);
 
         // Description
-        $("#group-description").attr("value", group.description);
+        $("#group-description").val(group.description);
 
         // Workers
         var workers = "";
@@ -21,9 +21,7 @@ var loadWorkGroup = function () {
         if (workers.length > 0)
             workers = workers.substring(0, workers.length - 2);
 
-        $("#group-workers").attr("value", workers);
-
-        $("#loading").css("visibility", "hidden");
+        $("#group-workers").val(workers);
     });
 }
 

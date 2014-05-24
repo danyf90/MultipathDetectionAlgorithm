@@ -38,8 +38,6 @@ var loadList = function () {
 		});
 		
 		$("#place-all .children-row > td").hide();
-		
-		$("#loading").css("visibility", "hidden"); 
     });
 };
 

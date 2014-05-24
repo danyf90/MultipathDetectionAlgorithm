@@ -10,7 +10,7 @@
     <body>
         <header>
             <h1><a href="/">Vineyard</a></h1>
-			<ul><li id="loading"><span class="login-loading">Logging in...</span></li></ul>
+			<ul><li><span id="loading" class="login-loading">Logging in...</span></li></ul>
         </header>
         <main class="login-contents">
             <form action="/login.php" method="post" id="login-form">

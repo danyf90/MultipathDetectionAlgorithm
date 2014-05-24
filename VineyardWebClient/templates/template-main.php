@@ -4,16 +4,17 @@
         <meta charset="utf-8" />
         <title><?php $this->title = "Vineyard Web Client"; ?></title>
         <link href="/style.css" rel="stylesheet" type="text/css" />
+		<!--<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+		<link rel="icon" href="/favicon.ico" type="image/x-icon">-->
         <script src="/js/jquery.min.js"></script>
         <script src="/js/vineyard.js"></script>
     </head>
     <body>
         <header>
-            <h1><a href="/admin/">Vineyard</a></h1>
+            <h1><a href="/">Vineyard</a></h1>
             <ul>
-                <li>Status Bar</li>
-                <li>Data/Ora</li>
-                <li>Issue/Task indicator</li>
+                <li>Hi, <strong>Fabio Carrara</strong>!</li>
+                <li>Open issues: <a href="/issue/" id="open-issues">4</a></li>
                 <li><a href="#">Logout</a></li>
             </ul>
         </header>

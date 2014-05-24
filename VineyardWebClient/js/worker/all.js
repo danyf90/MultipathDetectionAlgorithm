@@ -19,12 +19,9 @@ var loadList = function () {
     var requestedUrl = vineyard.config.serverUrl + "worker/" ;
 	
     $.getJSON(requestedUrl, function (workers) {
-        
         $.each(workers, function (index, worker) {
             insertWorker(worker, $("#worker-all-table-body"));
         });
-		
-		$("#loading").css("visibility", "hidden"); 
     });
 };
 

@@ -48,7 +48,7 @@ class Template {
     
     public function __construct($file) {
         if (!file_exists($file))
-            throw new Exception("File not found: `" + $file + "`");
+            throw new \Exception("File not found: `" + $file + "`");
         
         $this->templateFile = $file;
         $this->context = new TemplateContext();

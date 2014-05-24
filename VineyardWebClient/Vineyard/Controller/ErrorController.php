@@ -13,6 +13,7 @@ class ErrorController implements IController {
         $errorTemplate->errorCode = http_response_code();
 		
         $t->content = $errorTemplate;
+		return $t;
     }
 }
 

@@ -2,7 +2,7 @@
 	<input type="hidden" name="id" id="group-id" value="<?php $this->id; ?>"/>
     <table>
         <thead>
-            <tr><th id="loading"><img src="/images/loading.gif" />Loading...</th><td><h2><input id="group-name" placeholder="Insert a name..." type="text" /></h2></td></tr>
+            <tr><th id="loading">Loading...</th><td><h2><input id="group-name" placeholder="Insert a name..." type="text" /></h2></td></tr>
         </thead>
         <tbody id="group-table-body">
             <tr><th>Description</th><td><input id="group-description" type="text" placeholder="Insert the description..."/></td></tr>

@@ -1,23 +1,19 @@
 var loadWorker = function () {
     // get id from url
-	var id = $("#worker-id").attr("value");
+	var id = $("#worker-id").val();
     var requestedUrl = vineyard.config.serverUrl + "worker/" + id;
-	
     $.getJSON(requestedUrl, function (worker) {
-        
         // Name
-        $("#worker-name").attr("value", worker.name);
+        $("#worker-name").val(worker.name);
         
         // Description
-        $("#worker-username").attr("value", worker.username);
+        $("#worker-username").val(worker.username);
         
         // Email
-        $("#worker-email").attr("value", worker.email);
+        $("#worker-email").val(worker.email);
         
         // Roles
-        $("#worker-roles").attr("value", worker.roles);
-        
-        $("#loading").css("visibility", "hidden");
+        $("#worker-roles").val(worker.roles);
     });
 }
 
