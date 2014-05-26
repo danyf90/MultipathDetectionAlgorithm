@@ -45,7 +45,7 @@ public class GcmClient {
 		if (checkGooglePlayServices()) {
 			gcm = GoogleCloudMessaging.getInstance(activity);
 			regId = getRegistrationId(activity);
-			
+
 			// regId not stored locally, obtain a new one
 			if (regId == null)
 				registerInBackground();
@@ -57,9 +57,11 @@ public class GcmClient {
 	}
 
 	/**
-	 * Gets the current registration ID for application on GCM service.
-	 * If result is empty, the app needs to register.
+	 * Gets the current registration ID for application on GCM service. If
+	 * result is empty, the application needs to register.
 	 * 
+	 * @param context
+	 *            application context
 	 * @return registration ID, or empty string if there is no existing
 	 *         registration ID.
 	 */
@@ -70,18 +72,30 @@ public class GcmClient {
 			Log.i(TAG, "Registration not found.");
 			return null;
 		}
-		
-		// Check if app was updated; if so, it must clear the registration ID
+
+		// Check if application was updated; if so, it must clear the registration ID
 		// since the existing regID is not guaranteed to work with the new
-		// app version.
+		// application version.
 		int registeredVersion = prefs.getInt(PROPERTY_APP_VERSION,
 				Integer.MIN_VALUE);
 		if (registeredVersion != getAppVersion(context)) {
 			Log.i(TAG, "App version changed.");
 			return null;
 		}
-		
+
 		return registrationId;
+	}
+
+	/**
+	 * Remove the current registration ID from shared preference so next time it
+	 * will be requested from GCM server
+	 * 
+	 * @param context
+	 *            application context
+	 */
+	public void unregister(Context context) {
+		final SharedPreferences prefs = getGCMPreferences(context);
+		prefs.edit().remove(PROPERTY_REG_ID).apply();
 	}
 
 	/**
@@ -129,7 +143,10 @@ public class GcmClient {
 					storeRegistrationId(activity, regId);
 					return true;
 				} catch (IOException e) {
-					Toast.makeText(activity, activity.getString(R.string.gcm_error_no_registration_id), Toast.LENGTH_LONG).show();
+					Toast.makeText(
+							activity,
+							activity.getString(R.string.gcm_error_no_registration_id),
+							Toast.LENGTH_LONG).show();
 					Log.e(TAG, e.getLocalizedMessage());
 				}
 				return false;
@@ -164,5 +181,4 @@ public class GcmClient {
 			}
 		}.execute();
 	}
-
 }

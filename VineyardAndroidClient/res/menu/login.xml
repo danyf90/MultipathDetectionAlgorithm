@@ -2,9 +2,4 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.formichelli.vineyard.LoginActivity" >
 
-    <item
-        android:id="@+id/action_forgot_password"
-        android:showAsAction="never"
-        android:title="@string/action_forgot_password"/>
-
 </menu>

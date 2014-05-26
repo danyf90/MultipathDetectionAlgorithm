@@ -5,7 +5,6 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
@@ -43,14 +42,6 @@ public class SettingsActivity extends PreferenceActivity implements
 		addPreferencesFromResource(R.xml.settings);
 
 		ps = getPreferenceScreen();
-
-		// TODO why doesn't
-		// ps.findPreference(getString(R.string.preference_general_settings))
-		// work instead of ps.getPreference(0)?
-		if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT)
-			((PreferenceCategory) ps.getPreference(0))
-					.removePreference(ps
-							.findPreference(getString(R.string.preference_immersive_mode)));
 
 		initPreferences();
 	}
@@ -142,12 +133,6 @@ public class SettingsActivity extends PreferenceActivity implements
 			etp.getEditText().selectAll();
 		}
 
-		if (p.getKey() == getString(R.string.preference_immersive_mode)) {
-			onWindowFocusChanged(false);
-			onWindowFocusChanged(true);
-			onWindowFocusChanged(false);
-		}
-
 		return true;
 	}
 
@@ -155,7 +140,7 @@ public class SettingsActivity extends PreferenceActivity implements
 	 * Set the preference summary to the preference value
 	 * 
 	 * @param p
-	 *            Preference objet
+	 *            Preference object
 	 */
 	protected void setPreferenceSummary(Preference p) {
 		if (p instanceof EditTextPreference) {
@@ -235,23 +220,29 @@ public class SettingsActivity extends PreferenceActivity implements
 		}
 
 		private void restorePreferences() {
+			setTextPreference(
+					R.string.prefs_request_timeout,
+					getString(R.string.request_timeout_default));
 			setBooleanPreference(
-					R.string.preference_preload_all,
-					Boolean.valueOf(getString(R.string.preference_preload_all_default)));
+					R.string.prefs_issues_notifications,
+					Boolean.valueOf(getString(R.string.issues_notifications_default)));
+			setBooleanPreference(
+					R.string.prefs_tasks_notifications,
+					Boolean.valueOf(getString(R.string.tasks_notifications_default)));
 		}
 
-//		private void setTextPreference(int id, String value) {
-//			Editor e;
-//
-//			((EditTextPreference) ps.findPreference(getString(id)))
-//					.setText(value);
-//
-//			e = ps.getSharedPreferences().edit();
-//			e.putString(getString(id), value);
-//			e.commit();
-//
-//			setPreferenceSummary(findPreference(getString(id)));
-//		}
+		private void setTextPreference(int id, String value) {
+			Editor e;
+
+			((EditTextPreference) ps.findPreference(getString(id)))
+					.setText(value);
+
+			e = ps.getSharedPreferences().edit();
+			e.putString(getString(id), value);
+			e.commit();
+
+			setPreferenceSummary(findPreference(getString(id)));
+		}
 
 		private void setBooleanPreference(int id, Boolean value) {
 			Editor e;

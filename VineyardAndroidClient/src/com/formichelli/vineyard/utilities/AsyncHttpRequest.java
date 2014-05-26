@@ -19,6 +19,9 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.HttpParams;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
 
 import android.os.AsyncTask;
 import android.util.Log;
@@ -39,21 +42,18 @@ public class AsyncHttpRequest extends
 	protected String lastModified;
 	protected List<NameValuePair> params;
 	protected Type type;
+	protected int timeout;
 
 	public AsyncHttpRequest() {
-		this.serverUrl = null;
-		this.type = null;
 		this.params = new ArrayList<NameValuePair>();
 	}
 
 	public AsyncHttpRequest(String serverUrl) {
 		this.serverUrl = serverUrl;
-		this.type = null;
 		this.params = new ArrayList<NameValuePair>();
 	}
 
 	public AsyncHttpRequest(Type type) {
-		this.serverUrl = null;
 		this.type = type;
 		this.params = new ArrayList<NameValuePair>();
 	}
@@ -72,6 +72,19 @@ public class AsyncHttpRequest extends
 			this.params = params;
 		else
 			this.params = new ArrayList<NameValuePair>();
+	}
+
+	public AsyncHttpRequest(String serverUrl, Type type,
+			List<NameValuePair> params, int timeout) {
+		this.serverUrl = serverUrl;
+		this.type = type;
+		if (params != null)
+			this.params = params;
+		else
+			this.params = new ArrayList<NameValuePair>();
+		if (timeout < 0)
+			throw new IllegalArgumentException("timeout cannot be negative");
+		this.timeout = timeout;
 	}
 
 	public String getServerUrl() {
@@ -118,6 +131,17 @@ public class AsyncHttpRequest extends
 		params.remove(param);
 	}
 
+	public int getTimeout() {
+		return timeout;
+	}
+
+	public void setTimeout(int timeout) {
+		if (timeout < 0)
+			throw new IllegalArgumentException("timeout cannot be negative");
+
+		this.timeout = timeout;
+	}
+
 	/**
 	 * Sends a POST request to serverUrl with nameValuePair values
 	 */
@@ -141,7 +165,7 @@ public class AsyncHttpRequest extends
 
 		case GET:
 			request = new HttpGet(serverUrl);
-			
+
 			if (lastModified != null)
 				request.addHeader("If-Modified-Since", lastModified);
 			break;
@@ -163,7 +187,8 @@ public class AsyncHttpRequest extends
 			if (this.params != null)
 				try {
 					((HttpEntityEnclosingRequestBase) request)
-							.setEntity(new UrlEncodedFormEntity(this.params, "UTF-8"));
+							.setEntity(new UrlEncodedFormEntity(this.params,
+									"UTF-8"));
 				} catch (UnsupportedEncodingException e) {
 					Log.e(TAG, "Error: " + e.getLocalizedMessage());
 					return null;
@@ -172,21 +197,30 @@ public class AsyncHttpRequest extends
 
 		// sends the request and returns response status code and body
 		try {
-			HttpResponse response = new DefaultHttpClient().execute(request);
+			DefaultHttpClient httpClient = new DefaultHttpClient();
+			
+			if (timeout != 0) {
+				HttpParams httpParams = new BasicHttpParams();
+				HttpConnectionParams.setConnectionTimeout(httpParams, timeout);
+				HttpConnectionParams.setSoTimeout(httpParams, timeout);
+				httpClient.setParams(httpParams);
+			}
+
+			HttpResponse response = httpClient.execute(request);
 
 			String body = getResponseBody(response);
-			int statusCode = response.getStatusLine()
-					.getStatusCode();
-			
+			int statusCode = response.getStatusLine().getStatusCode();
+
 			if (type == Type.GET && statusCode == HttpStatus.SC_OK) {
 				// set last modified date
-				Header lastModifiedHeader = response.getFirstHeader("Last-Modified"); 
+				Header lastModifiedHeader = response
+						.getFirstHeader("Last-Modified");
 				if (lastModifiedHeader != null)
 					this.setLastModified(lastModifiedHeader.getValue());
 				else
 					this.setLastModified(null);
 			}
-			
+
 			return new Pair<Integer, String>(statusCode, body);
 		} catch (IOException e) {
 			Log.e(TAG, "Error: " + e.getLocalizedMessage());

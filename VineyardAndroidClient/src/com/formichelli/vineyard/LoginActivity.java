@@ -10,6 +10,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -21,8 +22,10 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.formichelli.vineyard.utilities.AsyncHttpRequest;
 import com.formichelli.vineyard.utilities.VineyardServer;
@@ -33,6 +36,7 @@ import com.formichelli.vineyard.utilities.VineyardServer;
  */
 public class LoginActivity extends Activity {
 	public static final String USERID = "id";
+
 	/**
 	 * Keep track of the login task to ensure we can cancel it if requested.
 	 */
@@ -63,16 +67,15 @@ public class LoginActivity extends Activity {
 
 		// Set up the login form.
 		mEmailView = (EditText) findViewById(R.id.email);
-		mEmailView.setText(sp.getString(
-				getString(R.string.preference_user_email), null));
+		mEmailView.setText(sp.getString(getString(R.string.prefs_email), null));
 
 		mPasswordView = (EditText) findViewById(R.id.password);
-		mPasswordView.setText(sp.getString(
-				getString(R.string.preference_user_password), null));
+		mPasswordView.setText(sp.getString(getString(R.string.prefs_password),
+				null));
 
 		mServerUrlView = (EditText) findViewById(R.id.server_url);
 		mServerUrlView.setText(sp.getString(
-				getString(R.string.preference_server_url), null));
+				getString(R.string.prefs_server_url), null));
 		mServerUrlView
 				.setOnEditorActionListener(new TextView.OnEditorActionListener() {
 					@Override
@@ -95,6 +98,7 @@ public class LoginActivity extends Activity {
 				new View.OnClickListener() {
 					@Override
 					public void onClick(View view) {
+						hideKeyboard();
 						attemptLogin();
 					}
 				});
@@ -137,12 +141,10 @@ public class LoginActivity extends Activity {
 		if (!mServerUrl.startsWith("http://"))
 			mServerUrl = "http://" + mServerUrl;
 
-		sp.edit()
-				.putString(getString(R.string.preference_user_email), mEmail)
-				.putString(getString(R.string.preference_user_password),
-						mPassword)
-				.putString(getString(R.string.preference_server_url),
-						mServerUrl).commit();
+		sp.edit().putString(getString(R.string.prefs_email), mEmail)
+				.putString(getString(R.string.prefs_password), mPassword)
+				.putString(getString(R.string.prefs_server_url), mServerUrl)
+				.commit();
 
 		boolean cancel = false;
 		View focusView = null;
@@ -222,7 +224,7 @@ public class LoginActivity extends Activity {
 			mAuthTask = null;
 			showProgress(false);
 
-			if (response.first == HttpStatus.SC_ACCEPTED) {
+			if (response != null && response.first == HttpStatus.SC_ACCEPTED) {
 
 				try {
 					sp.edit()
@@ -231,7 +233,8 @@ public class LoginActivity extends Activity {
 											.getInt(USERID)).commit();
 				} catch (JSONException e) {
 					Log.e(TAG, e.toString());
-					setError();
+					error();
+					return;
 				}
 
 				startActivity(new Intent(LoginActivity.this,
@@ -239,20 +242,27 @@ public class LoginActivity extends Activity {
 				finish();
 
 			} else
-				setError();
+				error();
 		}
 
-		private void setError() {
-			mPasswordView
-					.setError(getString(R.string.error_incorrect_password));
-			mPasswordView.requestFocus();
-
+		private void error() {
+			Toast.makeText(LoginActivity.this, getString(R.string.error_login),
+					Toast.LENGTH_LONG).show();
 		}
 
 		@Override
 		protected void onCancelled() {
 			mAuthTask = null;
 			showProgress(false);
+		}
+	}
+
+	private void hideKeyboard() {
+		if (this.getCurrentFocus() != null) {
+			InputMethodManager inputManager = (InputMethodManager) this
+					.getSystemService(Context.INPUT_METHOD_SERVICE);
+			inputManager.hideSoftInputFromWindow(this.getCurrentFocus()
+					.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
 		}
 	}
 }

@@ -393,7 +393,7 @@ public class TasksFragment extends Fragment {
 		SimpleTask task;
 
 		public AsyncMarkTaskAsDone(String serverUrl, SimpleTask task) {
-			super(serverUrl + VineyardServer.ISSUES_AND_TASKS_API
+			super(serverUrl + VineyardServer.TASKS_API
 					+ task.getId(), AsyncHttpRequest.Type.PUT);
 
 			this.task = task;

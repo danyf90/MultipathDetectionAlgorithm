@@ -333,15 +333,17 @@ public class ReportIssueFragment extends Fragment {
 
 			if (!editMode) {
 				// POST request to add an issue
-				setServerUrl(serverUrl + VineyardServer.ISSUES_AND_TASKS_API);
+				setServerUrl(serverUrl + VineyardServer.ISSUES_API);
 				setType(Type.POST);
 			} else {
 				// PUT request to edit an issue
-				setServerUrl(serverUrl + VineyardServer.ISSUES_AND_TASKS_API
+				setServerUrl(serverUrl + VineyardServer.ISSUES_API
 						+ issue.getId());
 				setType(Type.PUT);
 			}
 			
+			setTimeout(activity.getTimeout());
+
 			List<NameValuePair> params = issue.getParams();
 			params.add(new BasicNameValuePair(SimpleTask.MODIFIER, String.valueOf(activity.getUserId())));
 

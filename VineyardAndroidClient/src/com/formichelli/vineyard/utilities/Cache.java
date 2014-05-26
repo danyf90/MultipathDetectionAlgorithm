@@ -7,7 +7,8 @@ import android.content.SharedPreferences;
  */
 public class Cache {
 	public final static String PLACES = "cache_places";
-	public final static String ISSUES_AND_TASKS = "cache_issuesAndTasks";
+	public final static String ISSUES = "cache_issues";
+	public final static String TASKS = "cache_tasks";
 	public final static String WORKERS = "cache_workers";
 	public final static String WORK_GROUPS = "cache_workGroups";
 	private final static String LAST_MODIFIED = "_last_modified";
@@ -29,16 +30,28 @@ public class Cache {
 		return sp.getString(PLACES + LAST_MODIFIED, null);
 	}
 
-	public void putIssuesAndTasks(String issuesAndTasksJSON, String lastModified) {
-		put(ISSUES_AND_TASKS, issuesAndTasksJSON, lastModified);
+	public void putIssues(String issuesJSON, String lastModified) {
+		put(ISSUES, issuesJSON, lastModified);
 	}
 
-	public String getIssuesAndTasks() {
-		return sp.getString(ISSUES_AND_TASKS, null);
+	public String getIssues() {
+		return sp.getString(ISSUES, null);
 	}
 
-	public String getIssuesAndTasksLastModified() {
-		return sp.getString(ISSUES_AND_TASKS + LAST_MODIFIED, null);
+	public String getIssuesLastModified() {
+		return sp.getString(ISSUES + LAST_MODIFIED, null);
+	}
+
+	public void putTasks(String tasksJSON, String lastModified) {
+		put(TASKS, tasksJSON, lastModified);
+	}
+
+	public String getTasks() {
+		return sp.getString(TASKS, null);
+	}
+
+	public String getTasksLastModified() {
+		return sp.getString(TASKS + LAST_MODIFIED, null);
 	}
 
 	public void putWorkers(String workersJSON, String lastModified) {

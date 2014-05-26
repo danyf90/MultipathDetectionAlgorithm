@@ -31,7 +31,8 @@
     <string name="action_up">Up</string>
     <string name="loading_message">Loading&#8230;</string>
     <string name="loading_places">Loading places&#8230;</string>
-    <string name="loading_issues_and_tasks">Loading issues and tasks&#8230;</string>
+    <string name="loading_issues">Loading issues&#8230;</string>
+    <string name="loading_tasks">Loading tasks&#8230;</string>
     <string name="loading_workers">Loading workers&#8230;</string>
     <string name="loading_workgroups">Loading work groups&#8230;</string>
     <string name="loading_sending_request">Sending request to server&#8230;</string>

@@ -68,9 +68,9 @@ public class VineyardMainActivity extends ActionBarActivity implements
 	SparseArray<SimpleTask> tasks;
 	SparseArray<Worker> workers;
 	SparseArray<WorkGroup> workGroups;
-	AsyncHttpRequest rootPlaceRequest, issuesAndTasksRequest, workersRequest,
-			workGroupsRequest;
-	int userId;
+	AsyncHttpRequest rootPlaceRequest, issuesRequest, tasksRequest,
+			workersRequest, workGroupsRequest;
+	int timeout, userId;
 	GcmClient gcmClient;
 
 	/**
@@ -97,13 +97,15 @@ public class VineyardMainActivity extends ActionBarActivity implements
 
 		// Retrieve values written by LoginActivity
 		userId = sp.getInt(LoginActivity.USERID, -1);
-		serverUrl = sp.getString(getString(R.string.preference_server_url),
+		serverUrl = sp.getString(getString(R.string.prefs_server_url),
 				null);
 		if (userId == -1 || serverUrl == null) {
 			startLoginActivity();
 			return;
 		}
 
+		timeout = sp.getInt(getString(R.string.prefs_request_timeout), 0);
+		
 		mNavigationDrawerFragment = (NavigationDrawerFragment) getSupportFragmentManager()
 				.findFragmentById(R.id.navigation_drawer);
 		mNavigationDrawerFragment.setUp(R.id.navigation_drawer,
@@ -142,10 +144,12 @@ public class VineyardMainActivity extends ActionBarActivity implements
 		rootPlaceRequest.execute();
 
 		issues = null;
+		issuesRequest = new IssuesAsyncHttpRequest(vineyardServer.getUrl());
+		issuesRequest.execute();
+
 		tasks = null;
-		issuesAndTasksRequest = new IssuesAndTasksAsyncHttpRequest(
-				vineyardServer.getUrl());
-		issuesAndTasksRequest.execute();
+		tasksRequest = new TasksAsyncHttpRequest(vineyardServer.getUrl());
+		tasksRequest.execute();
 
 		workers = null;
 		workersRequest = new WorkersAsyncHttpRequest(vineyardServer.getUrl());
@@ -189,18 +193,20 @@ public class VineyardMainActivity extends ActionBarActivity implements
 
 		case 3: // settings
 			startActivity(new Intent(this, SettingsActivity.class));
-			return;
+			break;
 
 		case 4: // logout
 			sp.edit().remove(getString(R.string.preference_user_id)).commit();
-			startLoginActivity();
-			return;
+			break;
+
 		default:
 			return;
 		}
 	}
 
 	private void startLoginActivity() {
+		if (gcmClient != null)
+			gcmClient.unregister(this);
 		startActivity(new Intent(this, LoginActivity.class));
 		finish();
 	}
@@ -336,6 +342,10 @@ public class VineyardMainActivity extends ActionBarActivity implements
 		mNavigationDrawerFragment.setLocked(lock);
 	}
 
+	public int getTimeout() {
+		return timeout;
+	}
+
 	public int getUserId() {
 		return userId;
 	}
@@ -448,9 +458,7 @@ public class VineyardMainActivity extends ActionBarActivity implements
 			return;
 		}
 
-		markAsFinished(asyncHttpRequest);
-
-		if (areAllRequestsFinished()) {
+		if (markAsFinished(asyncHttpRequest)) {
 			int id;
 			associateEntities();
 
@@ -483,7 +491,7 @@ public class VineyardMainActivity extends ActionBarActivity implements
 						}
 					}
 				}
-			} 
+			}
 
 			setCurrentPlace(rootPlace);
 			switchFragment(placeViewerFragment);
@@ -496,9 +504,14 @@ public class VineyardMainActivity extends ActionBarActivity implements
 			rootPlaceRequest = null;
 		}
 
-		if (issuesAndTasksRequest != null) {
-			issuesAndTasksRequest.cancel(true);
-			issuesAndTasksRequest = null;
+		if (issuesRequest != null) {
+			issuesRequest.cancel(true);
+			issuesRequest = null;
+		}
+
+		if (tasksRequest != null) {
+			tasksRequest.cancel(true);
+			tasksRequest = null;
 		}
 
 		if (workersRequest != null) {
@@ -512,11 +525,21 @@ public class VineyardMainActivity extends ActionBarActivity implements
 		}
 	}
 
-	private void markAsFinished(AsyncHttpRequest asyncHttpRequest) {
+	/**
+	 * Called to signal that a task is finished, changes the loading message
+	 * depending on the finished tasks
+	 * 
+	 * @param asyncHttpRequest
+	 *            finished task
+	 * @return true if all tasks are finished, false otherwise
+	 */
+	private boolean markAsFinished(AsyncHttpRequest asyncHttpRequest) {
 		if (asyncHttpRequest == rootPlaceRequest)
 			rootPlaceRequest = null;
-		else if (asyncHttpRequest == issuesAndTasksRequest)
-			issuesAndTasksRequest = null;
+		else if (asyncHttpRequest == issuesRequest)
+			issuesRequest = null;
+		else if (asyncHttpRequest == tasksRequest)
+			tasksRequest = null;
 		else if (asyncHttpRequest == workersRequest)
 			workersRequest = null;
 		else if (asyncHttpRequest == workGroupsRequest)
@@ -524,21 +547,25 @@ public class VineyardMainActivity extends ActionBarActivity implements
 
 		// set loading message
 		if (rootPlaceRequest == null)
-			if (issuesAndTasksRequest == null)
-				if (workersRequest == null)
-					loadingFragment
-							.setLoadingMessage(getString(R.string.loading_workgroups));
+			if (issuesRequest == null)
+				if (tasksRequest == null)
+					if (workersRequest == null)
+						if (workGroupsRequest == null)
+							return true;
+						else
+							loadingFragment
+									.setLoadingMessage(getString(R.string.loading_workgroups));
+					else
+						loadingFragment
+								.setLoadingMessage(getString(R.string.loading_workers));
 				else
 					loadingFragment
-							.setLoadingMessage(getString(R.string.loading_workers));
+							.setLoadingMessage(getString(R.string.loading_tasks));
 			else
 				loadingFragment
-						.setLoadingMessage(getString(R.string.loading_issues_and_tasks));
-	}
+						.setLoadingMessage(getString(R.string.loading_issues));
 
-	private boolean areAllRequestsFinished() {
-		return rootPlaceRequest == null && issuesAndTasksRequest == null
-				&& workersRequest == null && workGroupsRequest == null;
+		return false;
 	}
 
 	private void associateEntities() {
@@ -599,6 +626,8 @@ public class VineyardMainActivity extends ActionBarActivity implements
 
 		public RootPlaceAsyncHttpRequest(String serverUrl) {
 			super(serverUrl + VineyardServer.PLACES_HIERARCHY_API, Type.GET);
+			
+			setTimeout(VineyardMainActivity.this.timeout);
 
 			setLastModified(cache.getPlacesLastModified());
 		}
@@ -681,14 +710,15 @@ public class VineyardMainActivity extends ActionBarActivity implements
 	 * something goes wrong an error message will be displayed in
 	 * loadingFragment.
 	 */
-	private class IssuesAndTasksAsyncHttpRequest extends AsyncHttpRequest {
-		protected final static String TAG = "IssuesAndTasksAsyncHttpRequest";
+	private class IssuesAsyncHttpRequest extends AsyncHttpRequest {
+		protected final static String TAG = "IssuesAsyncHttpRequest";
 
-		public IssuesAndTasksAsyncHttpRequest(String serverUrl) {
-			super(serverUrl + VineyardServer.OPEN_ISSUES_AND_TASKS_API,
-					Type.GET);
+		public IssuesAsyncHttpRequest(String serverUrl) {
+			super(serverUrl + VineyardServer.OPEN_ISSUES_API, Type.GET);
+			
+			setTimeout(VineyardMainActivity.this.timeout);
 
-			setLastModified(cache.getIssuesAndTasksLastModified());
+			setLastModified(cache.getIssuesLastModified());
 		}
 
 		@Override
@@ -698,32 +728,31 @@ public class VineyardMainActivity extends ActionBarActivity implements
 
 		@Override
 		protected void onPostExecute(Pair<Integer, String> response) {
-			String issuesAndTasksJSON = null;
+			String issuesJSON = null;
 
 			if (response != null)
 				switch (response.first) {
 
 				case HttpStatus.SC_OK:
 					// get issues and tasks from server response
-					issuesAndTasksJSON = response.second;
-					cache.putIssuesAndTasks(issuesAndTasksJSON,
-							getLastModified());
+					issuesJSON = response.second;
+					cache.putIssues(issuesJSON, getLastModified());
 					break;
 				case HttpStatus.SC_NOT_MODIFIED:
 					Log.i(TAG, "NOT_MODIFIED");
 					// get issues and tasks from shared preferences
-					issuesAndTasksJSON = cache.getIssuesAndTasks();
+					issuesJSON = cache.getIssues();
 					break;
 				}
 
-			if (issuesAndTasksJSON == null) {
+			if (issuesJSON == null) {
 				// response == null or invalid response code: get issues and
 				// tasks from shared preferences
-				issuesAndTasksJSON = cache.getIssuesAndTasks();
+				issuesJSON = cache.getIssues();
 
-				if (issuesAndTasksJSON == null) {
+				if (issuesJSON == null) {
 					Log.e(TAG,
-							"issuesAndTasks not available neither from server nor from sharedPreference");
+							"issues not available neither from server nor from sharedPreference");
 					loadingFragment.setLoading(false);
 					onAsyncHttpRequestFinished(this, false);
 					return;
@@ -736,25 +765,104 @@ public class VineyardMainActivity extends ActionBarActivity implements
 
 			// parse issues and tasks from JSON
 			try {
-				JSONArray issuesAndTasks = new JSONArray(issuesAndTasksJSON);
+				JSONArray issuesArray = new JSONArray(issuesJSON);
 
 				issues = new SparseArray<IssueTask>();
-				tasks = new SparseArray<SimpleTask>();
 
-				for (int i = 0, l = issuesAndTasks.length(); i < l; i++) {
-					JSONObject object = issuesAndTasks.getJSONObject(i);
+				for (int i = 0, l = issuesArray.length(); i < l; i++) {
+					JSONObject object = issuesArray.getJSONObject(i);
 
-					if (!object.isNull(IssueTask.ISSUER))
-						addIssue(new IssueTask(object));
-					else
-						addTask(new SimpleTask(object));
+					addIssue(new IssueTask(object));
 				}
 
 			} catch (JSONException e) {
 				e.printStackTrace();
 				Log.e(TAG,
-						"Error parsing issues and tasks JSON: "
-								+ e.getLocalizedMessage());
+						"Error parsing issues JSON: " + e.getLocalizedMessage());
+				loadingFragment.setLoading(false);
+				onAsyncHttpRequestFinished(this, false);
+			}
+
+			onAsyncHttpRequestFinished(this, true);
+		}
+	}
+
+	/*
+	 * Sends a GET request to the server to obtain issues and tasks. During the
+	 * loading the fragment loadingFragment will be displayed. At the end of the
+	 * execution issues and tasks will be associated to places and viceversa. If
+	 * something goes wrong an error message will be displayed in
+	 * loadingFragment.
+	 */
+	private class TasksAsyncHttpRequest extends AsyncHttpRequest {
+		protected final static String TAG = "TasksAsyncHttpRequest";
+
+		public TasksAsyncHttpRequest(String serverUrl) {
+			super(serverUrl + VineyardServer.OPEN_TASKS_API, Type.GET);
+			
+			setTimeout(VineyardMainActivity.this.timeout);
+
+			setLastModified(cache.getTasksLastModified());
+		}
+
+		@Override
+		protected void onPreExecute() {
+			switchFragment(loadingFragment);
+		}
+
+		@Override
+		protected void onPostExecute(Pair<Integer, String> response) {
+			String tasksJSON = null;
+
+			if (response != null)
+				switch (response.first) {
+
+				case HttpStatus.SC_OK:
+					// get issues and tasks from server response
+					tasksJSON = response.second;
+					cache.putTasks(tasksJSON, getLastModified());
+					break;
+				case HttpStatus.SC_NOT_MODIFIED:
+					Log.i(TAG, "NOT_MODIFIED");
+					// get issues and tasks from shared preferences
+					tasksJSON = cache.getTasks();
+					break;
+				}
+
+			if (tasksJSON == null) {
+				// response == null or invalid response code: get issues and
+				// tasks from shared preferences
+				tasksJSON = cache.getTasks();
+
+				if (tasksJSON == null) {
+					Log.e(TAG,
+							"tasks not available neither from server nor from sharedPreference");
+					loadingFragment.setLoading(false);
+					onAsyncHttpRequestFinished(this, false);
+					return;
+				}
+
+				Toast.makeText(VineyardMainActivity.this,
+						getString(R.string.cache_data_used), Toast.LENGTH_SHORT)
+						.show();
+			}
+
+			// parse issues and tasks from JSON
+			try {
+				JSONArray tasksArray = new JSONArray(tasksJSON);
+
+				tasks = new SparseArray<SimpleTask>();
+
+				for (int i = 0, l = tasksArray.length(); i < l; i++) {
+					JSONObject object = tasksArray.getJSONObject(i);
+
+					addTask(new SimpleTask(object));
+				}
+
+			} catch (JSONException e) {
+				e.printStackTrace();
+				Log.e(TAG,
+						"Error parsing tasks JSON: " + e.getLocalizedMessage());
 				loadingFragment.setLoading(false);
 				onAsyncHttpRequestFinished(this, false);
 			}
@@ -774,6 +882,8 @@ public class VineyardMainActivity extends ActionBarActivity implements
 
 		public WorkersAsyncHttpRequest(String serverUrl) {
 			super(serverUrl + VineyardServer.WORKERS_API, Type.GET);
+			
+			setTimeout(VineyardMainActivity.this.timeout);
 
 			setLastModified(cache.getWorkersLastModified());
 		}
@@ -853,6 +963,8 @@ public class VineyardMainActivity extends ActionBarActivity implements
 
 		public WorkGroupsAsyncHttpRequest(String serverUrl) {
 			super(serverUrl + VineyardServer.WORKGROUPS_API, Type.GET);
+			
+			setTimeout(VineyardMainActivity.this.timeout);
 
 			setLastModified(cache.getWorkGroupsLastModified());
 		}
@@ -919,6 +1031,20 @@ public class VineyardMainActivity extends ActionBarActivity implements
 
 			onAsyncHttpRequestFinished(this, true);
 		}
+	}
+
+	public class UserLogoutTask extends AsyncHttpRequest {
+
+		public UserLogoutTask(String serverUrl, int userId) {
+			super(serverUrl + String.format(VineyardServer.LOGOUT_API, userId),
+					AsyncHttpRequest.Type.POST);
+		}
+
+		@Override
+		protected void onPostExecute(Pair<Integer, String> response) {
+			startLoginActivity();
+		}
+
 	}
 
 	@Override

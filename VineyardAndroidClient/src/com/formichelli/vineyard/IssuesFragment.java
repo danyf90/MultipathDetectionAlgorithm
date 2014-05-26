@@ -229,7 +229,7 @@ public class IssuesFragment extends Fragment {
 		IssueTask issue;
 
 		public AsyncMarkIssueAsDone(String serverUrl, IssueTask issue) {
-			super(serverUrl + VineyardServer.ISSUES_AND_TASKS_API
+			super(serverUrl + VineyardServer.ISSUES_API
 					+ issue.getId(), AsyncHttpRequest.Type.PUT);
 
 			this.issue = issue;

@@ -7,11 +7,11 @@
     <string name="prompt_password">Password</string>
     <string name="action_sign_in"><b>Accedi</b></string>
     <string name="action_sign_in_short">Accedi</string>
-    <string name="action_forgot_password">Password dimenticata</string>
     <string name="login_progress_signing_in">Accesso in corso&#8230;</string>
     <string name="error_invalid_email">L\'indirizzo email non è valido</string>
     <string name="error_invalid_password">La password è troppo corta</string>
     <string name="error_incorrect_password">La password non è corretta</string>
     <string name="error_field_required">Campo obbligatorio</string>
+    <string name="error_login">Login fallito, controlla che i dati inseriti siano corretti</string>
 
 </resources>
