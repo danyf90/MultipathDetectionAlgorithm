@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Vibrator;
+import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 
 public class GcmIntentService extends IntentService {
@@ -45,6 +46,20 @@ public class GcmIntentService extends IntentService {
 		int placeId = Integer.valueOf(extras.getString(PLACE_ID));
 		int taskId = Integer.valueOf(extras.getString(TASK_ID));
 		int issueOrTask;
+		boolean showIssuesNotifications, showTasksNotifications;
+		Context context = getApplicationContext();
+
+		showIssuesNotifications = PreferenceManager
+				.getDefaultSharedPreferences(context)
+				.getBoolean(
+						context.getString(R.string.prefs_issues_notifications),
+						true);
+		
+		showTasksNotifications = PreferenceManager
+				.getDefaultSharedPreferences(context)
+				.getBoolean(
+						context.getString(R.string.prefs_tasks_notifications),
+						true);
 
 		NotificationManager mNotificationManager = (NotificationManager) this
 				.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -52,11 +67,18 @@ public class GcmIntentService extends IntentService {
 		Intent intent = new Intent(this, VineyardMainActivity.class);
 		intent.putExtra(VineyardMainActivity.PLACE_ID, placeId);
 
-		if (title.compareTo("issue") == 0)
+		if (title.compareTo("issue") == 0) {
+			if (!showIssuesNotifications)
+				return;
+
 			issueOrTask = 0;
-		else if (title.compareTo("task") == 0)
+
+		} else if (title.compareTo("task") == 0) {
+			if (!showTasksNotifications)
+				return;
+
 			issueOrTask = 1;
-		else
+		} else
 			issueOrTask = -1;
 
 		switch (issueOrTask) {
