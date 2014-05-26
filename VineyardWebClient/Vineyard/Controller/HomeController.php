@@ -6,8 +6,10 @@ use \Vineyard\Utility\Template;
 
 class HomeController implements IController {
     public static function handle(Template $t, array $requestParams) {
-        
-		if (false) {
+		
+		static::checkLoginLogout();
+		
+		if (!static::isLoggedIn()) {
 			$t = new Template("templates/template-login.php");
 			return $t;
 		}
@@ -18,6 +20,20 @@ class HomeController implements IController {
 		$t->content .= '</div>';
 		return $t;
     }
+	
+	protected static function checkLoginLogout() {
+		session_start();
+		
+		if (isset($_POST['login']))
+			$_SESSION['logged'] = (int) $_POST['login'];
+		
+		else if (isset($_GET['logout']))
+			unset($_SESSION['logged']);
+	}
+	
+	protected static function isLoggedIn() {
+		return isset($_SESSION['logged']);
+	}
 }
 
 ?>

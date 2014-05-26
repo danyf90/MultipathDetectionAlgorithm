@@ -4,17 +4,8 @@ var insertGroup = function (group, $container) {
 	var row = '<tr><td class="first-col" style="padding-left: ' + padding + 'px;">' +
 		'<a href="/group/' + group.id + '">' + group.name + '</a></td>' + 
 		'<td>' + group.description + '</td>' + 
-		'<td>' + group.email + '</td><td>';
-    
-    $.each(group.workers, function(index, worker) {
-        row += worker + ", ";
-    });
-    
-    if (row.charAt(row.length - 2) === ',')
-        row = row.substring(0, row.length - 2);
-    
-    row += '</td></tr>';
-    
+		'<td>' + group.workers.length + '</td></tr>';
+
     $container.append(row);
 };
 

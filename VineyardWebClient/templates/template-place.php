@@ -9,6 +9,7 @@
             <tr><th>Location</th><td id="place-location-link">
 				<input data-name="latitude" id="place-latitude" type="hidden" />
 				<input data-name="longitude" id="place-longitude" type="hidden" />
+				<span id="hide-location-picker"></span>
 			</td></tr>
 			<tr><th>Parent</th><td id="place-parent"><select data-name="parent"><option>-- Nessuno --</option></select></td></tr>
         </tbody>
@@ -26,7 +27,8 @@
 		<progress></progress>
 		<div id="location-picker"></div>
     </div>
-	<script type="text/javascript" src='http://maps.google.com/maps/api/js?sensor=false&libraries=places'></script>
+	<!-- <script type="text/javascript" src='http://maps.google.com/maps/api/js?sensor=false&libraries=places'></script>
+	-->
 	<script src="/js/locationpicker.jquery.js"></script>
     <script src="/js/place/single.js"></script>
 </form>

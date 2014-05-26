@@ -14,8 +14,8 @@
             <h1><a href="/">Vineyard</a></h1>
             <ul>
                 <li>Hi, <strong>Fabio Carrara</strong>!</li>
-                <li>Open issues: <a href="/issue/" id="open-issues">4</a></li>
-                <li><a href="#">Logout</a></li>
+                <li>Open issues: <a href="/issue/" id="open-issues"> </a></li>
+                <li><a href="/?logout">Logout</a></li>
             </ul>
         </header>
         <main>

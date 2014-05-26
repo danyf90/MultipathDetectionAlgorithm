@@ -126,6 +126,7 @@ nav .current {
 	background-size: contain;
 	background-color: #c7c7c7;
 	cursor: pointer;
+	font-size: 0.9em;
 }
 
 .content input:hover, .content select:hover {
@@ -161,6 +162,7 @@ main #loading:before {
 	background-repeat: no-repeat;
 	background-position: 7px center;
 	padding-left: 27px;
+	visibility: hidden;
 }
 
 #login-form input {
@@ -258,12 +260,11 @@ main #loading:before {
 .entity #control-ok { background-image: url(images/action_done_dark.png); }
 .entity #control-cancel { background-image: url(images/action_cancel_dark.png); }
 
-.entity .delete-row {
+.entity .delete-row, #hide-location-picker {
 	visibility: hidden;
 	width: 30px;
 	height: 35px;
 	margin-left: 10px;
-	background-image: url('images/action_cancel_dark.png');
 	background-size: contain;
 	background-position: center center;
 	background-repeat: no-repeat;
@@ -271,10 +272,8 @@ main #loading:before {
 	cursor: pointer;
 }
 
-/* TODO */
-.entity td /*which contains*/ .delete-row {
-	/*display: flex;*/
-}
+.entity .delete-row { background-image: url('images/action_cancel_dark.png'); }
+#hide-location-picker { background-image: url('images/action_done_dark.png'); }
 
 .entity tr:hover .delete-row {
 	visibility: visible;
@@ -312,6 +311,7 @@ main #loading:before {
 
 #place #place-photo div.hidden {
 	visibility: hidden;
+	width: 5px;
 }
 
 #place #place-photo progress {
@@ -396,13 +396,13 @@ main #loading:before {
 }
 
 /**
- * TASK
+ * TASK & ISSUE
  */
 
-#task-all thead .header div { display: flex; justify-content: space-between; }
-#task-all thead tr:last-child th { cursor: pointer; }
+.taskissue-all thead .header div { display: flex; justify-content: space-between; }
+.taskissue-all thead tr:last-child th { cursor: pointer; }
 
-#task-all-table-body td.status { display: flex; justify-content: space-between; }
+.taskissue-all td.status { display: flex; justify-content: space-between; }
 
 .mark-as-solved {
 	display: inline-block;
@@ -418,7 +418,7 @@ main #loading:before {
 	cursor: pointer;
 }
 
-#task-all-table-body tr:hover .mark-as-solved { visibility: visible; }
+.taskissue-all tbody tr:hover .mark-as-solved { visibility: visible; }
 
 .priority, .status , .time { font-variant: small-caps; }
 .priority.high { color: red; }
@@ -428,6 +428,9 @@ main #loading:before {
 .create.time:before { font-size: 0.8em; content: 'creato: '; line-height: 20px; }
 .due.time:before { font-size: 0.8em; content: 'entro: '; line-height: 20px; }
 .assign.time:before { font-size: 0.8em; content: 'assegnato: '; line-height: 20px; }
+
+#issue-all .time:before { display:block; }
+#issue-all .time { font-size: 0.9em; }
 
 .sorted:after {
 	display: inline-block;
@@ -443,21 +446,28 @@ main #loading:before {
 .sorted.ascending:after {
 	background-image: url(images/action_up_dark.png);
 }
-
-#task #changes td { padding-top:0; padding-bottom:0; font-size: 0.7em; padding-left: 17px; }
-#task h3 { padding: 15px; }
-#task-revisions { max-height: 500px; overflow: auto; }
-#task-revisions li:nth-child(2n+1) { background-color: #ffdcef; }
-#task-revisions li.current {
-	background-color: rgba(215,215,215,0.5);
+.task-issue thead tr:first-child > * { padding-bottom: 0 !important; }
+.task-issue #changes td { padding-top: 0; padding-bottom: 10px; font-size: 0.7em; padding-left: 17px; }
+.task-issue h3 { padding: 15px; }
+#revisions { max-height: 500px; overflow: auto; }
+#revisions li:nth-child(2n+1) { background-color: #ffdcef; }
+#revisions li.current {
+	background-color: #ccc;
     box-shadow: inset 0px 1px 3px #aaa;
 }
-#task-revisions a {
+#revisions a {
 	display: block;
-	padding: 5px 0px 5px 30px;
+	padding: 5px 0px 5px 10px;
+	font-size: 0.8em;	
 }
 
-#task .assign-time { display: block; font-size: 0.7em; }
+.task-issue .assign-time { display: block; font-size: 0.7em; }
+
+/**
+ * GROUPS
+ */
+
+#group-workers tr td { line-height: 35px; }
 
 footer {
     height: 50px;

@@ -1,7 +1,7 @@
 var insertWorker = function (worker, $container) {
 	var padding = 10;
 	
-    var roles = worker.roles;
+    var roles = worker.role.replace(",", ", ");
     if (roles == undefined)
         roles = "Nessuno"
     

@@ -19,7 +19,7 @@ var markTaskAsSolved = function () {
 		type: 'PUT',
 		url: vineyard.config.serverUrl + "task/" + taskId,
 		data: {
-			modifier: 1,
+			modifier: sessionStorage.getItem("workerId"),
 			status: 'resolved'
 		},
 		success: function() {
@@ -37,13 +37,12 @@ var markTaskAsSolved = function () {
 				.end()
 				.remove();
 			}
-			else $this.parent().parent().remove();
+			else $this.parents("tr").remove();
 		}
 	});
 };
 
 var insertTask = function (task, $container) {
-    
 	var row = '<tr data-id="' + task.id + '"><td>' +
 		'<a href="/task/' + task.id + '">' + task.title + '</a></td>' + 
 		'<td><a href="/place/' + task.place + '">' + S.places[task.place].name + '</a></td>' + 
@@ -53,7 +52,7 @@ var insertTask = function (task, $container) {
 		'<td class="priority ' + ((task.priority) ? task.priority : "") + '">' + task.priority + '</td>' + 
 		'<td>' + getTime(task) + '</td></tr>';
 	
-	$row = $(row).find(".mark-as-solved").on("click", markTaskAsSolved);
+	$row = $(row).find(".mark-as-solved").on("click", markTaskAsSolved).end();
 	$container.append($row);
 };
 
@@ -74,10 +73,8 @@ var emptyList = function () { S.taskAllTableBody.empty(); };
 
 var sortListBy = function (index, ascending) {
 	var sorted = S.taskAllTableBody.children().sort(function(a, b){
-		
-		var valA = a.childNodes[index].innerHTML;
-		var valB = b.childNodes[index].innerHTML;
-		
+		var valA = a.childNodes[index].textContent.toLowerCase();
+		var valB = b.childNodes[index].textContent.toLowerCase();	
 		var ret = 0;
 		
 		if (valA > valB)
@@ -97,7 +94,7 @@ var sortListBy = function (index, ascending) {
 
 var loadCompleteList = function () {
 	if (S.allTasks != null) {
-		insertJSONList(S.allTask);
+		insertJSONList(S.allTasks);
 		return;
 	}
 	
@@ -135,9 +132,15 @@ var loadList = function () {
 			$("#toggle-all").on("click", function() {
 				$this = $(this);
 				emptyList();
-				if ($this.hasClass("active"))
+				if (!$this.hasClass("active")) {
+					$this.val("show not resolved only");
 					loadCompleteList();
-				else insertJSONList(S.openTasks);
+				} else {
+					$this.val("show all");
+					insertJSONList(S.openTasks);
+				}
+				
+				$this.toggleClass("active");
 			});
 			
 		});

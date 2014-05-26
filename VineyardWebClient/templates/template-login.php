@@ -13,14 +13,15 @@
 			<ul><li><span id="loading" class="login-loading">Logging in...</span></li></ul>
         </header>
         <main class="login-contents">
-            <form action="/login.php" method="post" id="login-form">
+            <form method="post" id="login-form">
 				<h1>Welcome!</h1>
 				<p>Welcome to Vineyard Web Client login.</p>
 				<p>You can login using either the usename or the email address provided to the system.</p>
-				<input type="text" name="username" placeholder="Username or Email" autofocus="true" />
-				<input type="password" name="password" placeholder="Password" />
-				<input type="text" name="server" placeholder="Vineyard Server Address" value="http://vineyard-server.no-ip.org/"/>
+				<input class="ajax" type="text" name="username" placeholder="Username or Email" autofocus="true" />
+				<input class="ajax" type="password" value="5f4dcc3b5aa765d61d8327deb882cf99" name="password" placeholder="Password" />
+				<input class="ajax" type="text" id="server" placeholder="Vineyard Server Address" value="http://vineyard-server.no-ip.org/"/>
 				<input type="submit" value="Login" />
+				<input type="hidden" id="login-id"/>
 			</form>
         </main>
         <footer>

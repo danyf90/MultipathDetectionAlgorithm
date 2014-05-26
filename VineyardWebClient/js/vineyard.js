@@ -19,4 +19,10 @@ $(function() {
 	}).ajaxStop(function(){
 		$loading.css("visibility", "hidden");
 	});
+	
+	// TODO you can do better than this!
+	var requestedUrl = vineyard.config.serverUrl + "issue/open/" ;
+	$.getJSON(requestedUrl, function (issues) {
+		$("#open-issues").text(issues.length);
+	});
 });

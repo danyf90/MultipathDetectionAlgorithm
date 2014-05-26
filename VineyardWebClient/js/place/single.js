@@ -5,30 +5,38 @@ var S = {};
 /// PLACE INSERTION
 ///////////////////////////////
 
-var insertPlace = function () {};
+var insertPlace = function () {
+	// TODO minimum validation!
+	var requestedUrl = vineyard.config.serverUrl + "place/";
+	$.post(requestedUrl, $("form").serialize(), function (data, xhr) {
+		
+		data = $.parseJSON(data);
+		
+		if (xhr.status != 201) {
+			console.log(data);
+			return;
+		}
+		
+		window.location = "/place/" + data.id;
+	});
+};
 
 var loadPlaceInsertion = function () {
-	var requestedUrl = vineyard.config.serverUrl + "place/";
+	loadParentPlaces();
 	$("#place-id").remove();
 	$("#place-add-attribute").remove();
 	$(".controls").css("visibility", "visible");
-	showLocationPicker();
+	// showLocationPicker();
+	// TODO remove line below
+	$("#place-latitude, #place-longitude").attr("type", "text");
 	
 	$("#control-ok").on("click", insertPlace);
 	$("#control-cancel").on("click", function(){ window.location = "/place"; });
 	$("#place-attributes").append('<tr><th></th><td style="font-size: 0.7em;">NOTE: A photo and attributes can be added once a place has been created.</td></tr>');
 	
-	/*$.post(requestedUrl, {name: "Luogo nuovo"}, function (data, xhr) {
-		if (xhr.status != 201) {
-			console.log("Something went wrong..");
-			return;
-		}
-		
-		data = $.parseJSON(data);
-		$("#place-id").attr('value', data.id);
-		$("#place-name").attr('value', "Luogo nuovo");
-		
-	});*/
+	$("table input, table select").on("change", function () {
+		this.name = this.dataset.name;
+	});
 };
 
 ///////////////////////////////
@@ -51,11 +59,13 @@ var showLocationPicker = function () {
 	
 	$("#place-photo").addClass("show-location");
 	$("#place-latitude, #place-longitude").attr("type", "text");
+	$("#hide-location-picker").show();
 };
 
 var hideLocationPicker = function () {
 	$("#place-photo").removeClass("show-location");
 	$("#place-latitude, #place-longitude").attr("type", "hidden");
+	$("#hide-location-picker").hide();
 };
 
 var showError = function () {
@@ -141,17 +151,21 @@ var resetForm = function () {
 		var $this = $(this);
 		
 		var key = this.value;
-		var value = $this.parent("tr").find(".new-attribute").val();
+		var value = $this.parents("tr").find(".new-attribute").val();
 		
 		addAttributeRow(key, value);
-		$this.parent("tr").remove();
+		$this.parents("tr").remove();
 	});
 };
 
 // loads parent <select></select> with possible values only
 var loadParentPlaces = function (avoidId) {
 	var requestedUrl = vineyard.config.serverUrl + "place/hierarchy/";
-	return $.getJSON(requestedUrl, {avoidOffsprings: avoidId}, function (hierarchy) {
+	
+	var data = {};
+	if (avoidId != null) data = {avoidOffsprings: avoidId};
+	
+	return $.getJSON(requestedUrl, data, function (hierarchy) {
 		var appendPlace = function (place, $container) {
 			$container.append('<option value="' + place.id + '">' + place.name + '</option>');
 			if (place.children)
@@ -166,13 +180,19 @@ var loadParentPlaces = function (avoidId) {
 
 var addAttributeRow = function (key, value) {
 	var input = '<input type="text" data-key="' + key + '" class="attribute" value="' + value + '" />';
-	S.placeAttributes.append('<tr><th>' + key + '</th><td>' + input + '</td></tr>');
+	var $row = $('<tr><th>' + key + '</th><td style="display: flex;">' + input + '</td></tr>');
+	
+	var $deleteSpan = $('<span class="delete-row"></span>');
+	$deleteSpan.on("click", removeAttribute);
+	$row.find("td").append($deleteSpan);
+	
+	S.placeAttributes.append($row);
 };
 
 var addNewAttribute = function () {
 	var input = '<input type="text" class="new-attribute" placeholder="Valore attributo..." />';
-	$row = $('<tr><th><input class="new-attribute-key" placeholder="Nome attributo.." /></th><td style="display: flex;">' + input + '</td></tr>');
-	$deleteSpan = $('<span class="delete-row"></span>');
+	var $row = $('<tr><th><input class="new-attribute-key" placeholder="Nome attributo.." /></th><td style="display: flex;">' + input + '</td></tr>');
+	var $deleteSpan = $('<span class="delete-row"></span>');
 	$deleteSpan.on("click", removeAttribute);
 	$row.find("td").append($deleteSpan);
 	
@@ -202,8 +222,6 @@ var removeAttribute = function () {
 
 var loadPlace = function(id) {
     var requestedUrl = vineyard.config.serverUrl + "place/" + id;
-	// DEBUG, to remove
-	S.placeAddAttribute.on("click", addNewAttribute);
 	
     return $.getJSON(requestedUrl, function (place) {
 		
@@ -278,9 +296,11 @@ var commitPlaceChanges = function () {
 				type: 'POST',
 				data: {
 					key: this.value,
-					value: $(this).parent("tr").find(".new-attribute").val()
+					value: $(this).parents("tr").find(".new-attribute").val()
 				}
 			};
+			
+			console.log(requestOptions);
 			
 			defObjs.push( $.ajax(requestOptions) );
 			
@@ -343,7 +363,7 @@ var init = function() {
 	$("#control-cancel").on("click", function () {
 		window.location = "/place/" + id;
 	});
-	
+
 	if (id == "insert")
 		loadPlaceInsertion();
 	else loadPlaceModification(id);

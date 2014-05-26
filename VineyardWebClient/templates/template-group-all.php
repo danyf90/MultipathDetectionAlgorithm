@@ -2,7 +2,7 @@
     <table>
         <thead>
             <tr><th id="loading">Loading...</th><td><h2>Groups</h2></td></tr>
-			<tr><th>Name</th><th>Description</th><th>Email</th><th>Workers</th></tr>
+			<tr><th>Name</th><th>Description</th><th>Team members</th></tr>
         </thead>
         <tbody id="group-all-table-body">
         </tbody>

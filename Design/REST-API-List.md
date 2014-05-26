@@ -109,63 +109,69 @@ Implemented APIs
 
 ---
 
-### Task
+### Task (Issue)
 
-* Get all Task instances
+* Get all Task(Issue) instances
 
         GET http://vineyard-server.org/task
+        GET http://vineyard-server.org/issue
 
-* Get all Task instances with status not equal to 'done'
-
-        GET http://vineyard-server.org/task/open
-
-* Get the Task instance with specified id:
+* Get the Task(Issue) instance with specified id:
 
         GET http://vineyard-server.org/task/<id>
+        GET http://vineyard-server.org/issue/<id>
 
 
-* Create a new Task:
+* Create a new Task(Issue):
 
         POST http://vineyard-server.org/task/
+        POST http://vineyard-server.org/issue/
 
         POST DATA:
         title=...
         description=...
-        issuer=...
+        issuer=... (only for issues)
         ...
 
-* Update an existant Task with specified id:
+* Update an existant Task(Issue) with specified id:
 
+		PUT	http://vineyard-server.org/task/<id>/
         PUT	http://vineyard-server.org/issue/<id>/
 
         PUT DATA:
         title=...
         description=...
-        issuer=...
+        issuer=... (only for issues)
         ...
 
-* Delete the Task with specified id:
+* Delete the Task(Issue) with specified id:
 
         DELETE http://vineyard-server.org/task/<id>/
+        DELETE http://vineyard-server.org/issue/<id>/
 
 
-* Get Tasks per status
+* Get Task(Issue)s per status
 
         GET http://vineyard-server.org/task/new/
         GET http://vineyard-server.org/task/assigned/
         GET http://vineyard-server.org/task/resolved/
         GET http://vineyard-server.org/task/open/
+        
+        GET http://vineyard-server.org/issue/new/
+        GET http://vineyard-server.org/issue/assigned/
+        GET http://vineyard-server.org/issue/resolved/
+        GET http://vineyard-server.org/issue/open/
 
 #### Issue photo
 
-* Add a photo and associate it to the Task with given <id>
+* Add a photo and associate it to the Issue with given <id>
 
-        POST http://vineyard-server.org/task/<id>/photo
+        POST http://vineyard-server.org/issue/<id>/photo
 
         POST DATA:
         photo=<image data>
 
-* Delete a photo associated to the Task with given id:
+* Delete a photo associated to the Issue with given id:
 
         DELETE http://vineyard-server.org/issue/<id>/photo/<photoUrl>
 

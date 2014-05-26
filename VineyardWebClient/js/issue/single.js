@@ -5,16 +5,16 @@ var S = {};
 /// TASK INSERTION
 ///////////////////////////////
 
-var insertTask = function () {
+var insertIssue = function () {
 	// TODO minimum validation!
-	var requestedUrl = vineyard.config.serverUrl + "task/";
+	var requestedUrl = vineyard.config.serverUrl + "issue/";
 	
-	S.taskDueTime = $("#task-due-time");
-	var origValue = S.taskDueTime.val();
-	var origType = S.taskDueTime.attr("type");
+	S.issueDueTime = $("#issue-due-time");
+	var origValue = S.issueDueTime.val();
+	var origType = S.issueDueTime.attr("type");
 	
-	S.taskDueTime.attr("type", "hidden");
-	S.taskDueTime.val(a + " 00:00:00");
+	S.issueDueTime.attr("type", "hidden");
+	S.issueDueTime.val(a + " 00:00:00");
 	
 	$.post(requestedUrl, $("form").serialize(), function (data, xhr) {
 		
@@ -25,31 +25,31 @@ var insertTask = function () {
 			return;
 		}
 		
-		window.location = "/task/" + data.id;
+		window.location = "/issue/" + data.id;
 	});
 	
-	S.taskDueTime.attr("type", origType)
-	S.taskDueTime.val(origValue);
+	S.issueDueTime.attr("type", origType)
+	S.issueDueTime.val(origValue);
 };
 
-var loadTaskInsertion = function () {
-	var requestedUrl = vineyard.config.serverUrl + "task/";
-	$("#task-id").remove();
-	$("#task-status").parents("tr").remove();
-	$("#task-revisions").remove();
+var loadIssueInsertion = function () {
+	var requestedUrl = vineyard.config.serverUrl + "issue/";
+	$("#issue-id").remove();
+	$("#issue-status").parents("tr").remove();
+	$("#issue-revisions").remove();
 	$("#changes").remove();
 	
-	// TODO lasciare la scelta della location anche per i task?
-	$("#task-location-link").parents("tr").remove();
+	// TODO lasciare la scelta della location anche per i issue?
+	$("#issue-location-link").parents("tr").remove();
 	
 	loadPlaces();
-	$("#task-place").attr("name", "place");
+	$("#issue-place").attr("name", "place");
 	
 	loadWorkers();
 	loadGroups();
 	
 	$("input, select").on("change", function () { this.name = this.dataset.name; });	
-	$("#task-assigned-to").on("change", function () {
+	$("#issue-assigned-to").on("change", function () {
 		if (this.selectedIndex == 0) {
 			this.removeAttribute("name");
 			return;
@@ -57,7 +57,7 @@ var loadTaskInsertion = function () {
 		
 		this.name = this.selectedOptions[0].parentNode.dataset.name;
 	});
-	$("#control-ok").on("click", insertTask);
+	$("#control-ok").on("click", insertIssue);
 };
 
 ///////////////////////////////
@@ -86,7 +86,7 @@ var loadGroups = function () {
 		 $.each(groups, function (index, group) {
         	S.groups[group.id] = group;
 			var option = '<option value="' + group.id + '">' + group.name + '</option>';
-			$("#task-assign-group").append(option);
+			$("#issue-assign-group").append(option);
         });
 	});
 };
@@ -98,7 +98,7 @@ var loadWorkers = function () {
 		 $.each(workers, function (index, worker) {
         	S.workers[worker.id] = worker;
 			var option = '<option value="' + worker.id + '">' + worker.name + '</option>';
-			$("#task-assign-worker").append(option);
+			$("#issue-assign-worker").append(option);
         });
 	});
 };
@@ -110,63 +110,65 @@ var loadPlaces = function () {
         $.each(places, function (index, place) {
         	S.places[place.id] = place;
 			var option = '<option value="' + place.id + '">' + place.name + '</option>';
-			$("#task-place").append(option);
+			$("#issue-place").append(option);
         });
 	});
 };
 
-var loadTask = function(id) {
+var loadIssue = function(id) {
 	
 	var workersRequest = loadWorkers();
 	var groupsRequest = loadGroups();
 	var placesRequest = loadPlaces();
 	
-	requestedUrl = vineyard.config.serverUrl + "task/" + id + window.location.search;
-    return $.getJSON(requestedUrl, function (task) {
-		S.task = task;
+	requestedUrl = vineyard.config.serverUrl + "issue/" + id + window.location.search;
+    return $.getJSON(requestedUrl, function (issue) {
+		S.issue = issue;
         // Name
-        $("#task-title").val(task.title); 
+        $("#issue-title").val(issue.title); 
         // Description
-        $("#task-description").val(task.description);     
+        $("#issue-description").val(issue.description); 
         // Position Link
-        if (task.latitude !== undefined)
-            $("#task-location-link a").text("Mostra mappa").on("click", showMap);
-		
+        if (issue.latitude !== undefined)
+            $("#issue-location-link a").text("Mostra mappa").on("click", showMap);
 		// Status
-		$("#task-status").addClass(task.status).text(task.status);
+		$("#issue-status").addClass(issue.status).text(issue.status);
 		
 		// Priority
-		if (task.priority)
-			$("#task-priority option[value='" + task.priority + "']").attr("selected", "selected")
+		if (issue.priority)
+			$("#issue-priority option[value='" + issue.priority + "']").attr("selected", "selected")
 		
 		// Place
 		$.when( placesRequest ).done(function(){
-			$("#task-place option[value='" + task.place + "']").attr("selected", "selected")
+			$("#issue-place option[value='" + issue.place + "']").attr("selected", "selected")
 		});
 		
 		// Assign time
-		if (task.assign_time != null)
-			$("#task-assign-th").append('<span class="assign-time">' + task.assign_time + '</span>');
+		if (issue.assign_time != null)
+			$("#issue-assign-th").append('<span class="assign-time">' + issue.assign_time + '</span>');
 
 		// Assigned worker
-		if (task.assigned_worker != null)
-			$("#task-assign-worker option[value='" + task.assigned_worker + "']").attr("selected", "selected");
+		if (issue.assigned_worker != null)
+			$("#issue-assign-worker option[value='" + issue.assigned_worker + "']").attr("selected", "selected");
 		// Assigned group
-		else if (task.assigned_group != null)
-			$("#task-assign-group option[value='" + task.assigned_group + "']").attr("selected", "selected");
+		else if (issue.assigned_group != null)
+			$("#issue-assign-group option[value='" + issue.assigned_group + "']").attr("selected", "selected");
 		
 		// Due time
-		if (task.due_time != null)
-			$("#task-due-time").val(task.due_time.substring(0, 10));
+		if (issue.due_time != null)
+			$("#issue-due-time").val(issue.due_time.substring(0, 10));
 		
-		// Revisions & Last changed
-		var requestedUrl = vineyard.config.serverUrl + "task/" + id + "/revs";
+		// Revisions, Issuer, Last changed
+		var requestedUrl = vineyard.config.serverUrl + "issue/" + id + "/revs";
 		$.getJSON(requestedUrl, function(revisions) {
 			
 			$.when( workersRequest ).done(function() {
 				// Last changed
-				$("#change-date").text(task.start_time);
-				$("#modifier").attr("href", "/worker/" + task.modifier).text(S.workers[task.modifier].name);
+				$("#change-date").text(issue.start_time);
+				$("#modifier").attr("href", "/worker/" + issue.modifier).text(S.workers[issue.modifier].name);
+				
+				// Issuer
+				$("#issuer").attr("href", "/worker/" + issue.issuer).text(S.workers[issue.issuer].name);
 				
 				var currentRevision = true;
 				var $revUl = $("#revisions ul");
@@ -179,7 +181,7 @@ var loadTask = function(id) {
 						currentRevision = false;
 						current = ' class="current"';
 					}
-					var li = '<li' + current + '><a href="/task/' + task.id + '/?rev=' + encodeURIComponent(rev.end_time) + '">' +
+					var li = '<li' + current + '><a href="/issue/' + issue.id + '/?rev=' + encodeURIComponent(rev.end_time) + '">' +
 						rev.end_time + ' (' + S.workers[rev.modifier].name + ')</a></li>';
 
 					$revUl.append(li);
@@ -192,56 +194,65 @@ var loadTask = function(id) {
     });
 };
 
-var commitTaskChanges = function () {
+var commitIssueChanges = function () {
 	
-	S.taskDueTime = $("#task-due-time");
-	adjustDueTime = (S.taskDueTime.attr("name") != null);
+	S.issueDueTime = $("#issue-due-time");
+	adjustDueTime = (S.issueDueTime.attr("name") != null);
 	if (adjustDueTime)
 	{
-		var origValue = S.taskDueTime.val();
-		var origType = S.taskDueTime.attr("type");
+		var origValue = S.issueDueTime.val();
+		var origType = S.issueDueTime.attr("type");
 	
-		S.taskDueTime.attr("type", "hidden");
-		S.taskDueTime.val(origValue + " 00:00:00");
+		S.issueDueTime.attr("type", "hidden");
+		S.issueDueTime.val(origValue + " 00:00:00");
 	}
 	
 	var data = $("form").serialize();
 	
 	if (adjustDueTime) {
-		S.taskDueTime.attr("type", origType)
-		S.taskDueTime.val(origValue);
+		S.issueDueTime.attr("type", origType)
+		S.issueDueTime.val(origValue);
 	}
 	
 	if (data != "")
 		$.ajax({
 			type: 'PUT',
-			url: vineyard.config.serverUrl + "task/" + S.task.id,
+			url: vineyard.config.serverUrl + "issue/" + S.issue.id,
 			data: data,
 			success: function() { window.location.reload(); }
 		}).fail(showError);
 };
 
 
-var loadTaskModification = function (id) {
+var loadIssueModification = function (id) {
 	
-	var taskRequest = loadTask(id);
+	var issueRequest = loadIssue(id);
 	
 	S.controls.css("visibility", "hidden");
-	$.when(taskRequest).then(function () {
+	$.when(issueRequest).then(function () {
 		
-		$("#control-ok").on("click", commitTaskChanges);
+		$("#control-ok").on("click", commitIssueChanges);
 		
 		$("input, select").on("change", function () {
 			this.name = this.dataset.name;
 			S.controls.css("visibility", "visible");
-		});		
+		});
+		
+		$("#issue-assigned-to").on("change", function () {
+			if (this.selectedIndex == 0) {
+				this.removeAttribute("name");
+				return;
+			}
+
+			this.name = this.selectedOptions[0].parentNode.dataset.name;
+		});
 	});
 };
 
 var init = function() {
 	// get id from url
-	var id = $("#task-id").val();	
-	$("#task-modifier").val(sessionStorage.getItem("workerId"));
+	var id = $("#issue-id").val();	
+	$("#issue-modifier").val(sessionStorage.getItem("workerId"));
 	
 	S.controls = $(".controls");
 	
@@ -250,8 +261,8 @@ var init = function() {
 	});
 	
 	if (id == "insert")
-		loadTaskInsertion();
-	else loadTaskModification(id);
+		loadIssueInsertion();
+	else loadIssueModification(id);
 };
 
 init();
