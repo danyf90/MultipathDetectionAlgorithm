@@ -20,6 +20,7 @@
 				<input class="ajax" type="text" name="username" placeholder="Username or Email" autofocus="true" />
 				<input class="ajax" type="password" value="5f4dcc3b5aa765d61d8327deb882cf99" name="password" placeholder="Password" />
 				<input class="ajax" type="text" id="server" placeholder="Vineyard Server Address" value="http://vineyard-server.no-ip.org/"/>
+				<input class="ajax" type="hidden" name="role" value="admin"/>
 				<input type="submit" value="Login" />
 				<input type="hidden" id="login-id"/>
 			</form>

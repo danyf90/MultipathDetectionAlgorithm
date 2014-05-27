@@ -12,6 +12,7 @@ import org.json.JSONObject;
 public class Worker {
 	public final static String ID = "id";
 	public final static String USERNAME = "username";
+	public final static String PASSWORD = "password";
 	public final static String NAME = "name";
 	public final static String EMAIL = "email";
 	public final static String ROLES = "role";

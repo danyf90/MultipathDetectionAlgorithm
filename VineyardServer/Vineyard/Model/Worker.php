@@ -34,16 +34,16 @@ class Worker extends TrackedORM implements IResource {
         unset($w->notification_id);
 		return $w;
     }
-    
+
     protected function generatePassword() {
 	    // TODO
     	$this->password = '5f4dcc3b5aa765d61d8327deb882cf99';
     }
-    
+
     protected function sendPasswordByEmail() {
 	    // TODO
     }
-    
+
     // Override AbstractORM::insert()
 	public static function insert() {
 		unset($_POST['password']);
@@ -67,7 +67,7 @@ class Worker extends TrackedORM implements IResource {
 			http_response_code(400);
 			return $e->getMessage();
 		}
-    }    
+    }
 
     public static function handleRequest($method, array $requestParameters) {
 
@@ -85,7 +85,7 @@ class Worker extends TrackedORM implements IResource {
 			     				header("Allow: GET");
 								return;
 							}
-							
+
                             http_response_code(501); // Not implemented
                         }
 
@@ -130,8 +130,8 @@ class Worker extends TrackedORM implements IResource {
             else
                 $idField = 'username';
 
-            $sql = $pdo->prepare("SELECT id FROM `worker` WHERE `" . $idField . "` = ? AND `password` = ?");
-            $sql->execute(array($_POST[$idField], $_POST['password']));
+            $sql = $pdo->prepare("SELECT id FROM `worker` WHERE `" . $idField . "` = ? AND `password` = ? AND FIND_IN_SET(?, `role`) > 0;");
+            $sql->execute(array($_POST[$idField], $_POST['password'], strtolower($_POST['role'])));
 
              if ($sql->rowCount() > 0)
              {

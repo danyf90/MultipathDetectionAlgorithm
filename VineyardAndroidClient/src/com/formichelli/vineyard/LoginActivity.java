@@ -27,6 +27,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.formichelli.vineyard.entities.Worker;
+import com.formichelli.vineyard.entities.Worker.Role;
 import com.formichelli.vineyard.utilities.AsyncHttpRequest;
 import com.formichelli.vineyard.utilities.VineyardServer;
 
@@ -202,17 +204,19 @@ public class LoginActivity extends Activity {
 					AsyncHttpRequest.Type.POST);
 
 			if (mEmail.contains("@"))
-				addParam(new BasicNameValuePair("email", mEmail));
+				addParam(new BasicNameValuePair(Worker.EMAIL, mEmail));
 			else
-				addParam(new BasicNameValuePair("username", mEmail));
+				addParam(new BasicNameValuePair(Worker.USERNAME, mEmail));
 
 			try {
 				String passwordHash = getHexString(MessageDigest.getInstance(
 						"MD5").digest(mPassword.getBytes()));
-				addParam(new BasicNameValuePair("password", passwordHash));
+				addParam(new BasicNameValuePair(Worker.PASSWORD, passwordHash));
 			} catch (NoSuchAlgorithmException e) {
 				cancel(true);
 			}
+			
+			addParam(new BasicNameValuePair(Worker.ROLES, Role.OPERATOR.toString()));
 		}
 
 		private String getHexString(byte[] digest) {
