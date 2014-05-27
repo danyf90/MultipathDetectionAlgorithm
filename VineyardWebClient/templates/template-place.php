@@ -27,8 +27,7 @@
 		<progress></progress>
 		<div id="location-picker"></div>
     </div>
-	<!-- <script type="text/javascript" src='http://maps.google.com/maps/api/js?sensor=false&libraries=places'></script>
-	-->
+	<script type="text/javascript" src='http://maps.google.com/maps/api/js?sensor=false&libraries=places'></script>
 	<script src="/js/locationpicker.jquery.js"></script>
     <script src="/js/place/single.js"></script>
 </form>

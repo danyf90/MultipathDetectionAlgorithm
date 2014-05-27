@@ -1,14 +1,15 @@
 S = {};
 
 var init = function () {
-	
+
 	sessionStorage.removeItem("workerId");
-	
+
 	S.form = $("form");
 	S.form.on("submit", function () {
-		
+
 		var serverUrl = $("#server").val() + "api/worker/login";
-		
+		$("#password").val(CryptoJS.MD5($("#password").val()));
+
 		try {
 			$.post(serverUrl, S.form.serialize(), function (data) {
 				data = $.parseJSON(data);
@@ -18,7 +19,7 @@ var init = function () {
 				S.form.off("submit").submit();
 			});
 		} catch (e) { alert("login error"); }
-		
+
 		return false;
 	});
 };

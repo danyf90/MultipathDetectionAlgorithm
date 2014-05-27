@@ -4,6 +4,7 @@
         <meta charset="utf-8" />
         <title><?php $this->title = "Login - Vineyard Web Client"; ?></title>
         <link href="/style.css" rel="stylesheet" type="text/css" />
+        <script src="/js/md5.js"></script>
         <script src="/js/jquery.min.js"></script>
         <script src="/js/vineyard.js"></script>
     </head>
@@ -18,7 +19,7 @@
 				<p>Welcome to Vineyard Web Client login.</p>
 				<p>You can login using either the usename or the email address provided to the system.</p>
 				<input class="ajax" type="text" name="username" placeholder="Username or Email" autofocus="true" />
-				<input class="ajax" type="password" value="5f4dcc3b5aa765d61d8327deb882cf99" name="password" placeholder="Password" />
+				<input class="ajax" id="password" type="password" value="5f4dcc3b5aa765d61d8327deb882cf99" name="password" placeholder="Password" />
 				<input class="ajax" type="text" id="server" placeholder="Vineyard Server Address" value="http://vineyard-server.no-ip.org/"/>
 				<input class="ajax" type="hidden" name="role" value="admin"/>
 				<input type="submit" value="Login" />

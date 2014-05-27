@@ -9,14 +9,14 @@ var insertPlace = function () {
 	// TODO minimum validation!
 	var requestedUrl = vineyard.config.serverUrl + "place/";
 	$.post(requestedUrl, $("form").serialize(), function (data, xhr) {
-		
+
 		data = $.parseJSON(data);
-		
+
 		if (xhr.status != 201) {
 			console.log(data);
 			return;
 		}
-		
+
 		window.location = "/place/" + data.id;
 	});
 };
@@ -26,14 +26,12 @@ var loadPlaceInsertion = function () {
 	$("#place-id").remove();
 	$("#place-add-attribute").remove();
 	$(".controls").css("visibility", "visible");
-	// showLocationPicker();
-	// TODO remove line below
-	$("#place-latitude, #place-longitude").attr("type", "text");
-	
+	showLocationPicker();
+
 	$("#control-ok").on("click", insertPlace);
 	$("#control-cancel").on("click", function(){ window.location = "/place"; });
 	$("#place-attributes").append('<tr><th></th><td style="font-size: 0.7em;">NOTE: A photo and attributes can be added once a place has been created.</td></tr>');
-	
+
 	$("table input, table select").on("change", function () {
 		this.name = this.dataset.name;
 	});
@@ -44,7 +42,7 @@ var loadPlaceInsertion = function () {
 ///////////////////////////////
 
 var showLocationPicker = function () {
-	
+
 	if (S.locationPickerLoaded == null) {
 		$("#location-picker").locationpicker({
 			radius: 0,
@@ -53,10 +51,10 @@ var showLocationPicker = function () {
 				longitudeInput: $("#place-longitude")
 			}
 		});
-		
+
 		S.locationPickerLoaded = true;
 	}
-	
+
 	$("#place-photo").addClass("show-location");
 	$("#place-latitude, #place-longitude").attr("type", "text");
 	$("#hide-location-picker").show();
@@ -75,21 +73,21 @@ var showError = function () {
 };
 
 var addPhoto = function () {
-	
+
 	S.progress = $('progress');
-	
+
 	S.newPhoto.attr("name", "photo");
 	var imageForm = $("<form></form>").append(S.newPhoto)[0];
 	var formData = new FormData(imageForm);
-	
+
 	var progressHandlingFunction = function (e) {
 		if(e.lengthComputable){
 			S.progress.attr({value:e.loaded,max:e.total});
 		}
 	};
-	
+
 	$.ajax({
-        url: vineyard.config.serverUrl + "place/" + S.place.id + "/photo/", 
+        url: vineyard.config.serverUrl + "place/" + S.place.id + "/photo/",
         type: 'POST',
         xhr: function() {  // Custom XMLHttpRequest
             var myXhr = $.ajaxSettings.xhr();
@@ -110,9 +108,9 @@ var addPhoto = function () {
         cache: false,
         contentType: false,
         processData: false
-    });	
+    });
 };
-			
+
 var setPlacePhoto = function (photoUrl) {
 	$("#place-photo")
 	.css("background-image", "url(" + vineyard.config.serverUrl + "photo/" + photoUrl + ")")
@@ -124,7 +122,7 @@ var setPlacePhoto = function (photoUrl) {
 		.find(".delete")
 		.show();
 };
-	
+
 var deletePhoto = function () {
 	$.ajax({
 		url: vineyard.config.serverUrl + "place/" + S.place.id + "/photo/",
@@ -149,10 +147,10 @@ var resetForm = function () {
 	$("input.attribute").removeClass("changed");
 	$(".new-attribute-key").each(function(){
 		var $this = $(this);
-		
+
 		var key = this.value;
 		var value = $this.parents("tr").find(".new-attribute").val();
-		
+
 		addAttributeRow(key, value);
 		$this.parents("tr").remove();
 	});
@@ -161,10 +159,10 @@ var resetForm = function () {
 // loads parent <select></select> with possible values only
 var loadParentPlaces = function (avoidId) {
 	var requestedUrl = vineyard.config.serverUrl + "place/hierarchy/";
-	
+
 	var data = {};
 	if (avoidId != null) data = {avoidOffsprings: avoidId};
-	
+
 	return $.getJSON(requestedUrl, data, function (hierarchy) {
 		var appendPlace = function (place, $container) {
 			$container.append('<option value="' + place.id + '">' + place.name + '</option>');
@@ -172,7 +170,7 @@ var loadParentPlaces = function (avoidId) {
 				for (var i = 0; i < place.children.length; i++)
 					appendPlace(place.children[i], $container);
 		};
-		
+
 		if (hierarchy.id != null) // if list of parents is not empty
 			appendPlace(hierarchy, $("#place-parent select"));
 	});
@@ -181,11 +179,11 @@ var loadParentPlaces = function (avoidId) {
 var addAttributeRow = function (key, value) {
 	var input = '<input type="text" data-key="' + key + '" class="attribute" value="' + value + '" />';
 	var $row = $('<tr><th>' + key + '</th><td style="display: flex;">' + input + '</td></tr>');
-	
+
 	var $deleteSpan = $('<span class="delete-row"></span>');
 	$deleteSpan.on("click", removeAttribute);
 	$row.find("td").append($deleteSpan);
-	
+
 	S.placeAttributes.append($row);
 };
 
@@ -195,16 +193,16 @@ var addNewAttribute = function () {
 	var $deleteSpan = $('<span class="delete-row"></span>');
 	$deleteSpan.on("click", removeAttribute);
 	$row.find("td").append($deleteSpan);
-	
+
 	S.placeAttributes.append($row);
-	S.controls.css("visibility","visible");	
+	S.controls.css("visibility","visible");
 };
 
 var removeAttribute = function () {
 	// this = clicked span
 	$span = $(this);
 	$inputSibling = $span.siblings("input");
-	
+
 	if ($inputSibling.hasClass("new-attribute")) // remove uncommitted attribute
 		$span.parents("tr").remove();
 	else if ($inputSibling.hasClass("attribute")) { // remove alredy present attribute
@@ -213,7 +211,7 @@ var removeAttribute = function () {
 			type: 'DELETE',
 			data: { key: $inputSibling.data("key") }
 		};
-		
+
 		$.ajax( requestOptions ).done(function () {
 			$span.parents("tr").remove();
 		});
@@ -222,56 +220,56 @@ var removeAttribute = function () {
 
 var loadPlace = function(id) {
     var requestedUrl = vineyard.config.serverUrl + "place/" + id;
-	
+
     return $.getJSON(requestedUrl, function (place) {
-		
+
 		S.place = place;
-		
+
         // Name
-        $("#place-name").val(place.name); 
+        $("#place-name").val(place.name);
         // Description
-        $("#place-description").val(place.description);     
-		
+        $("#place-description").val(place.description);
+
         // Position Link
         if (place.latitude !== undefined) {
             $("#place-location-link a").text("Mostra mappa").on("click", showLocationPicker);
 			$("#place-latitute").val(place.latitude);
 			$("#place-longitude").val(place.longitude);
 		}
-        
+
         // Children
         var $table = $("#place-table-body");
         var numChildren = (place.children != null) ? place.children.length : 0;
-        
+
         if (numChildren > 0) {
             $table.append('<tr><th>Composizione</th><td id="place-first-child"></td></tr>');
             $("#place-first-child").append('<a href="/place/' + place.children[0].id + '">' + place.children[0].name + '</a>');
-            
+
             if (numChildren > 1)
                 for(var i = 1; i < numChildren; i++)
                     $table.append('<tr><th></th><td><a href="/place/' + place.children[i].id + '">' + place.children[i].name + '</a></td></tr>');
         }
-        
+
         // Photo
         if (place.photo !== undefined)
 			setPlacePhoto(place.photo);
-            
+
 		// Attributes
 		if (place.attributes !== undefined)
 			for (var key in place.attributes)
-				addAttributeRow(key, place.attributes[key]);   
-		
+				addAttributeRow(key, place.attributes[key]);
+
 		S.placeAddAttribute.on("click", addNewAttribute);
     });
 };
 
 var commitPlaceChanges = function () {
-	
+
 	var data = $("form").serialize();
-	
+
 	var saveAttributes = function () {
 		var defObjs = [];
-		
+
 		$(".attribute.changed").each(function () {
 			var requestOptions = {
 				url: vineyard.config.serverUrl + "place/" + S.place.id + "/attribute/",
@@ -281,16 +279,16 @@ var commitPlaceChanges = function () {
 					value: this.value
 				}
 			};
-			
+
 			defObjs.push( $.ajax(requestOptions) );
 		});
-		
+
 		$(".new-attribute-key").each(function(){
 			if (this.value == "") {
 				showError();
 				return;
 			}
-			
+
 			var requestOptions = {
 				url: vineyard.config.serverUrl + "place/" + S.place.id + "/attribute/",
 				type: 'POST',
@@ -299,16 +297,16 @@ var commitPlaceChanges = function () {
 					value: $(this).parents("tr").find(".new-attribute").val()
 				}
 			};
-			
+
 			console.log(requestOptions);
-			
+
 			defObjs.push( $.ajax(requestOptions) );
-			
+
 		});
-		
+
 		$.when(defObjs).always(resetForm);
 	};
-	
+
 	if (data != "")
 		$.ajax({
 			type: 'PUT',
@@ -321,45 +319,45 @@ var commitPlaceChanges = function () {
 };
 
 var loadPlaceModification = function (id) {
-	
+
 	var placeRequest = loadPlace(id);
 	var loadParentPlaceRequest = loadParentPlaces(id);
-	
+
 	$.when(placeRequest, loadParentPlaceRequest).then(function () {
-		
+
 		var selectedOpt = $("#place-parent select option[value='" + S.place.parent + "']")[0]
 		if (selectedOpt) selectedOpt.selected = "selected";
-		
+
 		$("#control-ok").on("click", commitPlaceChanges);
 		S.newPhoto = $("#new-photo");
 		S.newPhoto.on("change", addPhoto);
-		
+
 		$("#place-photo .add, #place-photo .modify").on("click", function() { S.newPhoto.click(); });
 		$("#place-photo .delete").on("click", deletePhoto);
-		
+
 		$("input, select").not("#new-photo").on("change", function () {
 			if (!$(this).hasClass("attribute"))
 				this.name = this.dataset.name;
 			S.controls.css("visibility", "visible");
 			S.placeAddAttribute.css("visibility", "hidden");
 		});
-		
+
 		$("input.attribute").on("change", function() {
 			$(this).addClass("changed");
 		});
-		
+
 	});
 };
 
 var init = function() {
 	// get id from url
-	var id = $("#place-id").val();	
-	
+	var id = $("#place-id").val();
+
 	S.controls = $(".controls");
 	S.controls.css("visibility", "hidden");
-	S.placeAddAttribute = $("#place-add-attribute");		
+	S.placeAddAttribute = $("#place-add-attribute");
 	S.placeAttributes = $("#place-attributes");
-	
+
 	$("#control-cancel").on("click", function () {
 		window.location = "/place/" + id;
 	});

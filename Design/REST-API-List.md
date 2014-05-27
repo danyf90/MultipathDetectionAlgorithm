@@ -216,4 +216,3 @@ Implemented APIs
 
         POST http://vineyard-server.org/api/worker/
         PUT/DELETE http://vineyard-server.org/api/worker/87
-        PUT/DELETE http://vineyard-server.org/api/worker/pinco.pallo
