@@ -1,3 +1,6 @@
+if (sessionStorage.getItem("workerId") == null)
+	window.location = "/?logout";
+
 var vineyard = {
     config: {
         serverUrl: "http://vineyard-server.no-ip.org/api/"

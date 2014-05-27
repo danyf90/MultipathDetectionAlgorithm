@@ -1,4 +1,4 @@
-<form class="content entity .task-issue" id="task">
+<form class="content entity task-issue" id="task">
 	<input type="hidden" id="task-id" value="<?php $this->id; ?>"/>
 	<input type="hidden" id="task-modifier" name="modifier"/>
     <table>
@@ -18,7 +18,6 @@
 				<option class="priority high" value="high">high</option>
 			</select></td></tr>
             <tr><th>Place</th><td><select id="task-place" data-name="place"></select></tr>
-			<tr><th>Location</th><td id="task-location-link"><a href="#">Insert a location ...</a></td></tr>
 			<tr><th id="task-assign-th">Assigned to</th><td>
 				<select id="task-assigned-to">
 					<option>-- Nobody --</option>

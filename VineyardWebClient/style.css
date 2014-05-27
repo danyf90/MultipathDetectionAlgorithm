@@ -97,7 +97,7 @@ nav .current {
 .menu-item-worker span { background-image: url(images/action_user_dark.png); }
 .menu-item-group span { background-image: url(images/action_group_dark.png); }
 
-.content { flex: 1;  display: flex; }
+.content { flex: 1;  display: flex; align-items: stretch; align-content: stretch; justify-content: space-between; }
 
 .content a { color: #620042; }
 .content a:hover { text-decoration: underline; }
@@ -208,7 +208,12 @@ main #loading:before {
     margin-right: 5px;
 }
 
-.entity table { border-collapse: collapse; border-spacing: 0; flex 2; width: auto; min-width: 550px; }
+.entity table {
+	border-collapse: collapse;
+	border-spacing: 0;
+	min-width: 550px;
+}
+
 .entity table tbody tr:hover { background-color: rgba(215,215,215,0.5); }
 .entity table th, .entity table td {
     padding-top: 7px;
@@ -262,7 +267,7 @@ main #loading:before {
 
 .entity .delete-row, #hide-location-picker {
 	visibility: hidden;
-	width: 30px;
+	width: 50px;
 	height: 35px;
 	margin-left: 10px;
 	background-size: contain;
@@ -280,7 +285,7 @@ main #loading:before {
 }
 
 .right-side {
-    flex: 2;
+    flex-grow: 2;
     position: relative;
     border-left: 2px solid #620042;
     background-color: #ffd3ed;
@@ -290,7 +295,8 @@ main #loading:before {
  * PLACE
  */
 
-#place-location-link { display:flex; }
+#place-location-link, #issue-location-link { display:flex; }
+#show-location-picker { line-height: 35px; }
 
 #place #place-photo {
     background-position: center center;
@@ -299,8 +305,10 @@ main #loading:before {
 	text-align: center;
 }
 
-#place #place-photo #location-picker { display: none; }
-#place #place-photo.show-location #location-picker {
+#place #place-photo #location-picker, #revisions #location-picker { display: none; }
+
+#place #place-photo.show-location #location-picker,
+#revisions.show-location #location-picker {
 	display: block;
 	width: 100%;
 	height: 100%;
@@ -402,7 +410,7 @@ main #loading:before {
 .taskissue-all thead .header div { display: flex; justify-content: space-between; }
 .taskissue-all thead tr:last-child th { cursor: pointer; }
 
-.taskissue-all td.status { line-height: 35px; display: flex; align-items: center; content: space-between; }
+.taskissue-all td.status { line-height: 35px; display: flex; align-items: center; justify-content: space-around; }
 
 .mark-as-solved {
 	display: inline-block;
@@ -422,8 +430,10 @@ main #loading:before {
 .taskissue-all tbody tr:hover .mark-as-solved { visibility: visible; }
 
 .priority, .status , .time { font-variant: small-caps; }
+.priority, .status { text-align: center !important; }
+
 .priority.high { color: red; }
-.priority.medium { color: yellow; }
+.priority.medium { color: #c79f00; }
 .priority.low { color: green; }
 
 .create.time:before { font-size: 0.8em; content: 'creato: '; line-height: 20px; }

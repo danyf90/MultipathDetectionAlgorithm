@@ -44,26 +44,43 @@ var loadPlaceInsertion = function () {
 var showLocationPicker = function () {
 
 	if (S.locationPickerLoaded == null) {
+		S.latitude = $("#place-latitude");
+		S.longitude = $("#place-longitude");
+
 		$("#location-picker").locationpicker({
+			location: { latitude: S.latitude.val(), longitude: S.longitude.val() },
 			radius: 0,
 			inputBinding: {
-				latitudeInput: $("#place-latitude"),
-				longitudeInput: $("#place-longitude")
+				latitudeInput: S.latitude,
+				longitudeInput: S.longitude
+			},
+		 	onchanged: function () {
+			  	S.controls.css("visibility", "visible");
+				$("#place-latitude, #place-longitude").each(function(){
+					this.name = this.dataset.name;
+				});
 			}
 		});
 
 		S.locationPickerLoaded = true;
+		S.showLocationPicker = $("#show-location-picker");
+		S.hideLocationPicker = $("#hide-location-picker");
+		S.hideLocationPicker.on("click", hideLocationPicker);
+		
 	}
 
 	$("#place-photo").addClass("show-location");
 	$("#place-latitude, #place-longitude").attr("type", "text");
-	$("#hide-location-picker").show();
+	S.hideLocationPicker.css("visibility", "visible");
+  	S.showLocationPicker.hide();
+  
 };
 
 var hideLocationPicker = function () {
 	$("#place-photo").removeClass("show-location");
 	$("#place-latitude, #place-longitude").attr("type", "hidden");
-	$("#hide-location-picker").hide();
+	S.hideLocationPicker.css("visibility", "hidden");
+ 	S.showLocationPicker.show();
 };
 
 var showError = function () {
@@ -232,8 +249,8 @@ var loadPlace = function(id) {
 
         // Position Link
         if (place.latitude !== undefined) {
-            $("#place-location-link a").text("Mostra mappa").on("click", showLocationPicker);
-			$("#place-latitute").val(place.latitude);
+            $("#place-location-link a").text("Show map").on("click", showLocationPicker);
+			$("#place-latitude").val(place.latitude);
 			$("#place-longitude").val(place.longitude);
 		}
 
@@ -252,14 +269,14 @@ var loadPlace = function(id) {
 
         // Photo
         if (place.photo !== undefined)
-			setPlacePhoto(place.photo);
+          setPlacePhoto(place.photo);
 
-		// Attributes
-		if (place.attributes !== undefined)
-			for (var key in place.attributes)
-				addAttributeRow(key, place.attributes[key]);
+        // Attributes
+        if (place.attributes !== undefined)
+          for (var key in place.attributes)
+            addAttributeRow(key, place.attributes[key]);
 
-		S.placeAddAttribute.on("click", addNewAttribute);
+        S.placeAddAttribute.on("click", addNewAttribute);
     });
 };
 

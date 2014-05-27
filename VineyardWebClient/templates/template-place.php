@@ -7,6 +7,7 @@
         <tbody id="place-table-body">
             <tr><th>Description</th><td><input data-name="description" id="place-description" type="text" placeholder="Insert a description..."/></td></tr>
             <tr><th>Location</th><td id="place-location-link">
+				<a href="#" id="show-location-picker">Insert a location...</a>
 				<input data-name="latitude" id="place-latitude" type="hidden" />
 				<input data-name="longitude" id="place-longitude" type="hidden" />
 				<span id="hide-location-picker"></span>

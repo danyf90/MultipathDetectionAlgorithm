@@ -39,9 +39,6 @@ var loadTaskInsertion = function () {
 	$("#task-revisions").remove();
 	$("#changes").remove();
 	
-	// TODO lasciare la scelta della location anche per i task?
-	$("#task-location-link").parents("tr").remove();
-	
 	loadPlaces();
 	$("#task-place").attr("name", "place");
 	
@@ -63,12 +60,6 @@ var loadTaskInsertion = function () {
 ///////////////////////////////
 /// TASK MODIFICATION
 ///////////////////////////////
-
-var showMap = function () {
-    // TODO
-    console.log("showMap NOT IMPLEMENTED");
-};
-
 var showError = function () {
     // TODO
     console.log("Something gone wrong..");

@@ -2,71 +2,49 @@
 var S = {};
 
 ///////////////////////////////
-/// TASK INSERTION
+/// ISSUE MODIFICATION
 ///////////////////////////////
 
-var insertIssue = function () {
-	// TODO minimum validation!
-	var requestedUrl = vineyard.config.serverUrl + "issue/";
-	
-	S.issueDueTime = $("#issue-due-time");
-	var origValue = S.issueDueTime.val();
-	var origType = S.issueDueTime.attr("type");
-	
-	S.issueDueTime.attr("type", "hidden");
-	S.issueDueTime.val(a + " 00:00:00");
-	
-	$.post(requestedUrl, $("form").serialize(), function (data, xhr) {
+var showLocationPicker = function () {
+
+	if (S.locationPickerLoaded == null) {
+		S.latitude = $("#issue-latitude");
+		S.longitude = $("#issue-longitude");
 		
-		data = $.parseJSON(data);
+		$("#location-picker").locationpicker({
+			location: { latitude: S.latitude.val(), longitude: S.longitude.val() },
+			radius: 0,
+			inputBinding: {
+				latitudeInput: S.latitude,
+				longitudeInput: S.longitude
+			},
+		 	onchanged: function () {
+			  	S.controls.css("visibility", "visible");
+				$("#issue-latitude, #issue-longitude").each(function(){
+					this.name = this.dataset.name;
+				});
+			}
+		});
+
+		S.locationPickerLoaded = true;
+		S.showLocationPicker = $("#show-location-picker");
+		S.hideLocationPicker = $("#hide-location-picker");
+		S.hideLocationPicker.on("click", hideLocationPicker);
 		
-		if (xhr.status != 201) {
-			console.log(data);
-			return;
-		}
-		
-		window.location = "/issue/" + data.id;
-	});
-	
-	S.issueDueTime.attr("type", origType)
-	S.issueDueTime.val(origValue);
+	}
+
+	$("#revisions").addClass("show-location");
+	$("#issue-latitude, #issue-longitude").attr("type", "text");
+	S.hideLocationPicker.css("visibility", "visible");
+  	S.showLocationPicker.hide();
+  
 };
 
-var loadIssueInsertion = function () {
-	var requestedUrl = vineyard.config.serverUrl + "issue/";
-	$("#issue-id").remove();
-	$("#issue-status").parents("tr").remove();
-	$("#issue-revisions").remove();
-	$("#changes").remove();
-	
-	// TODO lasciare la scelta della location anche per i issue?
-	$("#issue-location-link").parents("tr").remove();
-	
-	loadPlaces();
-	$("#issue-place").attr("name", "place");
-	
-	loadWorkers();
-	loadGroups();
-	
-	$("input, select").on("change", function () { this.name = this.dataset.name; });	
-	$("#issue-assigned-to").on("change", function () {
-		if (this.selectedIndex == 0) {
-			this.removeAttribute("name");
-			return;
-		}
-		
-		this.name = this.selectedOptions[0].parentNode.dataset.name;
-	});
-	$("#control-ok").on("click", insertIssue);
-};
-
-///////////////////////////////
-/// TASK MODIFICATION
-///////////////////////////////
-
-var showMap = function () {
-    // TODO
-    console.log("showMap NOT IMPLEMENTED");
+var hideLocationPicker = function () {
+	$("#revisions").removeClass("show-location");
+	$("#issue-latitude, #issue-longitude").attr("type", "hidden");
+	S.hideLocationPicker.css("visibility", "hidden");
+ 	S.showLocationPicker.show();
 };
 
 var showError = function () {
@@ -130,7 +108,7 @@ var loadIssue = function(id) {
         $("#issue-description").val(issue.description); 
         // Position Link
         if (issue.latitude !== undefined)
-            $("#issue-location-link a").text("Mostra mappa").on("click", showMap);
+            $("#issue-location-link a").text("Mostra mappa").on("click", showLocationPicker); 
 		// Status
 		$("#issue-status").addClass(issue.status).text(issue.status);
 		

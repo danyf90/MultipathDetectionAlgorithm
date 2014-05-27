@@ -154,7 +154,3 @@ var init = function () {
 };
 
 init();
-
-/* TODO LIST
-	- add action_up_dark and action_down_dark
-*/

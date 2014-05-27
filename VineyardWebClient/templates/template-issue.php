@@ -21,7 +21,12 @@
 				<option class="priority high" value="high">high</option>
 			</select></td></tr>
             <tr><th>Place</th><td><select id="issue-place" data-name="place"></select></tr>
-			<tr><th>Location</th><td id="issue-location-link"><a href="#">Insert a location ...</a></td></tr>
+			<tr><th>Location</th><td id="issue-location-link">
+				<a href="#" id="show-location-picker">Insert a location...</a>
+				<input data-name="latitude" id="issue-latitude" type="hidden" />
+				<input data-name="longitude" id="issue-longitude" type="hidden" />
+				<span id="hide-location-picker"></span>
+			</td></tr>
 			<tr><th id="issue-assign-th">Assigned to</th><td>
 				<select id="issue-assigned-to">
 					<option>-- Nobody --</option>
@@ -41,6 +46,9 @@
 		<ul>
 			<li><a href="/issue/<?php $this->id; ?>">Current Revision</a></li>
 		</ul>
+		<div id="location-picker"></div>
     </div>
+	<script type="text/javascript" src='http://maps.google.com/maps/api/js?sensor=false&libraries=places'></script>
+	<script src="/js/locationpicker.jquery.js"></script>
     <script src="/js/issue/single.js"></script>
 </form>

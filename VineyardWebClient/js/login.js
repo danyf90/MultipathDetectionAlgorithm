@@ -6,7 +6,7 @@ var init = function () {
 
 	S.form = $("form");
 	S.form.on("submit", function () {
-
+		$("#loading").css("visibility", "visible");
 		var serverUrl = $("#server").val() + "api/worker/login";
 		$("#password").val(CryptoJS.MD5($("#password").val()));
 
@@ -18,9 +18,10 @@ var init = function () {
 				$(".ajax").removeAttr("name");
 				$("#login-id").attr("name", "login");
 				S.form.off("submit").submit();
+				$("#loading").css("visibility", "hidden");
 			});
 
-		} catch (e) { alert("login error"); }
+		} catch (e) { alert("login error"); $("#loading").css("visibility", "hidden"); }
 
 		return false;
 	});
