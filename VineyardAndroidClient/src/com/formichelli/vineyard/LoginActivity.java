@@ -237,7 +237,7 @@ public class LoginActivity extends Activity {
 											.getInt(USERID)).commit();
 				} catch (JSONException e) {
 					Log.e(TAG, e.toString());
-					error();
+					error(response);
 					return;
 				}
 
@@ -246,10 +246,15 @@ public class LoginActivity extends Activity {
 				finish();
 
 			} else
-				error();
+				error(response);
 		}
 
-		private void error() {
+		private void error(Pair<Integer, String> response) {
+			if (response != null)
+				Log.e(TAG, response.first + ": " + response.second);
+			else
+				Log.e(TAG, "response is null");
+			
 			Toast.makeText(LoginActivity.this, getString(R.string.error_login),
 					Toast.LENGTH_LONG).show();
 		}
