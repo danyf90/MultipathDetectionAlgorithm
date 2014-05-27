@@ -41,7 +41,7 @@ class Group extends TrackedORM implements IResource {
                     http_response_code(400); // Bad Request
             }
         }
-
+        
         return $s;
     }
 
@@ -67,10 +67,10 @@ class Group extends TrackedORM implements IResource {
             case 3: // api/group/<id>/worker/<wid>
 
                 $id = array_shift($requestParameters);
-                /* "worker" = */ array_shift($requestParameters);
+                $subRequest = array_shift($requestParameters);
                 $wid = array_shift($requestParameters);
 
-                switch($requestParameters[0]) {
+                switch($subRequest) {
                     case "worker":
                         return static::handleWorkerRequest($method, $id, $wid);
                     break;

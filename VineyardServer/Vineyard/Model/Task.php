@@ -10,8 +10,6 @@ use \Vineyard\Utility\TCrudRequestHandlers;
 use \Vineyard\Utility\Validator;
 use Vineyard\Utility\Notificator;
 
-use \Vineyard\Model\Photo;
-
 class Task extends TemporalORM implements IResource {
 
     use TCrudRequestHandlers;
@@ -71,6 +69,18 @@ class Task extends TemporalORM implements IResource {
 
     public static function getTableName() { return 'task'; }
 
+    // Override AbstractORM::listAll()
+    public static function listAll() {
+
+        $list = array();
+
+        static::get(function($obj) use (&$list) {
+            $list[] = clone $obj;
+        }, "`issuer` IS NULL");
+
+        return $list;
+    }
+
     // Override AbstractORM::onPostInsert()
     protected function onPostInsert() {
             $pdo = DB::getConnection();
@@ -81,7 +91,7 @@ class Task extends TemporalORM implements IResource {
             // Send notifications to all users
         $n = new Notificator();
 
-        $title = ($this->isIssue()) ? "issue" : "task";
+        $title = "task";
         $p = Place::getById($this->place);
 
         $description = $p->name . ": " . $this->title;
@@ -106,12 +116,16 @@ class Task extends TemporalORM implements IResource {
         $n->send();
     }
 
-    // Override AbstractORM::getById() to include task photos in object instance
+    // Override AbstractORM::getById() to include task revisions
     static public function getById($id) {
-        $s = parent::getById($id);
 
-        // add photos to task instance
-        $s->loadPhotos();
+        if (!isset($_GET['rev']))
+            $s = parent::getById($id);
+        else
+            $s = static::getByRevision($id, $_GET['rev']);
+            
+        if ($s->isIssue())
+        	return new \stdClass();
 
         return $s;
     }
@@ -140,61 +154,24 @@ class Task extends TemporalORM implements IResource {
                 return static::handleRequestsToUriWithId($method, $requestParameters);
             break;
 
-            case 2: // api/task/<id>/photo
-                if ($requestParameters[1] != "photo") {
-                    http_response_code(400); // Bad Request
-                    return;
-                }
+            case 2: // api/task/<id>/revs/
 
                 $id = array_shift($requestParameters);
+                $service = array_shift($requestParameters);
 
-                switch ($method) {
-                    // the only one implemented
-                    case "POST":
-                        return static::insertPhoto($id);
+                switch ($service) {
+
+                    case "revs":
+                        return static::handleRevisionsRequest($method, $id);
                     break;
 
-                    // case "DELETE": you must give me the url (filename) of the photo to delete
-                    // case "GET": not implemented, all attributes are already returned with a task resource
-                    // case "PUT": not implemented, delete and recreate it
                     default:
-                        http_response_code(501); // Not Implemented
-                        return;
-                }
-
-            break;
-
-            case 3: //api/task/<id>/photo/<filename>
-                if ($requestParameters[1] != "photo") {
-                    http_response_code(400); // Bad Request
-                    return;
-                }
-
-                $id = array_shift($requestParameters);
-                /* "photo" = */ array_shift($requestParameters);
-                $filename = array_shift($requestParameters);
-
-                switch ($method) {
-
-                    case "DELETE":
-                        return static::deletePhoto($id, $filename);
-                    break;
-
-                    case "POST": // cannot create with given filename: bad request
                         http_response_code(400); // Bad Request
-                        return;
-                    break;
-
-                    case "OPTIONS":
-                         header("Allow: DELETE,POST");
-                    break;
-
-                    // case "PUT": not implemented, delete and recreate it!
-                    // case "GET": implemented in "Photo" resource
-                    default:
-                        http_response_code(501); // Not Implemented
-                        return;
                 }
+
+                $id = array_shift($requestParameters);
+
+
             break;
 
             default:
@@ -202,108 +179,6 @@ class Task extends TemporalORM implements IResource {
                 return;
 
         }
-    }
-
-    /**
-     * PHOTO MANAGEMENT
-     */
-    public function loadPhotos() {
-        if (!isset($this->id))
-            return;
-
-        $pdo = DB::getConnection();
-
-        try {
-            $sql = $pdo->prepare("SELECT `url` FROM `task_photo` WHERE `task` = ?");
-            $sql->execute(array($this->id));
-
-            if ($sql->rowCount() > 0)
-                $this->photos = $sql->fetchAll(PDO::FETCH_COLUMN, 0);
-
-        } catch (PDOException $e) {
-            // check which SQL error occured
-            switch ($e->getCode()) {
-                default:
-                    http_response_code(400); // Bad Request
-            }
-        }
-    }
-
-    public static function insertPhoto($id) {
-
-        $t = new static();
-        $t->loadEmpty($id);
-        if (!$t->isIssue()) {
-            http_response_code(403); // Forbidden
-            return;
-        }
-
-        if (!isset($_FILES['photo'])) {
-            http_response_code(400); // Bad Request
-            return;
-        }
-
-        // same interface of an upload
-        $filename = "i" . time() . "_" . $id;
-        $filepath = Photo::getFullPhotoPath($filename);
-
-        if (move_uploaded_file($_FILES['photo']['tmp_name'], $filepath)) {
-
-            $pdo = DB::getConnection();
-            try {
-
-                $sql = $pdo->prepare("INSERT INTO `task_photo` (`task`, `url`) VALUES (?, ?)");
-                $sql->execute(array($id, $filename));
-
-                http_response_code(201); // Created
-                static::updateLastModified();
-                return json_encode(array('url' => $filename));
-
-            } catch (PDOException $e) {
-                // check which SQL error occured
-                switch ($e->getCode()) {
-                    default:
-                        http_response_code(400); // Bad Request
-                }
-
-                unlink($filepath);
-            }
-        } else {
-            http_response_code(500); // Internal Server Error
-            return;
-        }
-
-    }
-
-    public static function deletePhoto($id, $filename) {
-
-        $filepath = Photo::getFullPhotoPath($filename);
-
-        if (file_exists($filepath)) {
-
-            $pdo = DB::getConnection();
-
-            try {
-                $sql = $pdo->prepare("DELETE FROM `task_photo` WHERE `task` = ? AND `url` = ?");
-                $sql->execute(array($id, $filename));
-
-                if ($sql->rowCount() == 1) {
-                    http_response_code(202); // Accepted
-                    static::updateLastModified();
-                }
-                else http_response_code(406); // Not Acceptable
-
-                unlink($filepath);
-                return;
-            } catch (PDOException $e) {
-                // check which SQL error occured
-                switch ($e->getCode()) {
-                    default:
-                    http_response_code(400); // Bad Request
-                }
-            }
-        } else
-            http_response_code(400); // Bad Request
     }
 
     /**
@@ -333,11 +208,41 @@ class Task extends TemporalORM implements IResource {
                 return;
         }
 
-        Task::get(function($task) use (&$tasks) {
+        static::get(function($task) use (&$tasks) {
             $tasks[] = clone $task;
-        }, $where);
+        }, $where . " AND `issuer` IS NULL");
 
         return json_encode($tasks);
+    }
+
+    /**
+     * TASK REVISIONS
+     */
+
+    public static function handleRevisionsRequest($method, $id) {
+        if ($method != "GET") {
+            http_response_code(501); // Not Implemented
+            return;
+        }
+
+        $pdo = DB::getConnection();
+        try {
+            $sql = $pdo->prepare("SELECT `end_time`, `modifier` FROM `" . static::getTableName() . "` WHERE `id` = ? AND `issuer` IS NULL ORDER BY `end_time` DESC");
+            $sql->execute(array($id));
+            
+            if ($sql->rowCount() > 0)
+				return json_encode($sql->fetchAll(PDO::FETCH_ASSOC));
+				
+			http_response_code(404);
+			return;
+
+        } catch (PDOException $e) {
+            // check which SQL error occured
+            switch ($e->getCode()) {
+                default:
+                    http_response_code(400); // Bad Request
+            }
+        }
     }
 }
 

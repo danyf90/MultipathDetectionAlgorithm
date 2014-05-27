@@ -25,9 +25,12 @@ abstract class TemporalORM extends TrackedORM {
     /**
      * Updates the entry correspondent to this instance in the db.
      */
-    private function _update() {
+    protected function _update() {
 
         $this->_finalizeSnapshot();
+
+        $pdo = DB::getConnection();
+        $tableName = static::getTableName();
 
         $query = "INSERT INTO `" . $tableName . "` (`id`,";
         $query2 = ") VALUES (:id, ";
@@ -50,16 +53,34 @@ abstract class TemporalORM extends TrackedORM {
     /**
      * Loads this instance with data from the entry with id $id.
      */
-    public function load($id) {
+    public function load($id, $rev = "") {
         $pdo = DB::getConnection();
         $tableName = static::getTableName();
 
-        $sql = $pdo->prepare("SELECT * FROM `" . $tableName . "` WHERE `id` = ? AND `end_time` IS NULL");
         $id = (int) $id;
-        $sql->execute(array($id));
+        $whereParams = array($id);
+        $query = "SELECT * FROM `" . $tableName . "` WHERE `id` = ? AND `end_time` ";
+
+        if ($rev == "")
+            $query .= "IS NULL";
+        else {
+            $query .= "= ?";
+            $whereParams[] = $rev;
+        }
+
+        $sql = $pdo->prepare($query);
+        $sql->execute($whereParams);
 
         $this->_data = $sql->fetch(PDO::FETCH_ASSOC);
         $this->touchedFields = array();
+    }
+    
+    public function populate(array $data) {
+        if (isset($data['id']))
+            unset($data['id']);
+
+        $this->_data = array_merge($this->_data, $data);
+        $this->touchedFields = array_diff( array_keys($this->_data), array("id") );
     }
 
     /**************************************
@@ -107,6 +128,48 @@ abstract class TemporalORM extends TrackedORM {
         }
     }
 
+    public static function getByRevision($id, $rev) {
+        // TODO check $rev
+        if (!is_numeric($id)) {
+            http_response_code(400);
+            return;
+        }
+
+        $s = new static();
+        $s->load($id, $rev);
+
+        return $s;
+    }
+
+
+	public static function update($id) {
+
+        // access PUT variables and put them in $_PUT for omogeinity
+        parse_str(file_get_contents("php://input"), $_PUT);
+
+        array_walk($_PUT, function(&$v){
+            $v = trim($v);
+        });
+
+        $s = new static();
+        $s->load($id);
+		unset($s->start_time);
+		unset($s->end_time);
+        $s->populate($_PUT);
+
+        try {
+            $s->save();
+            http_response_code(202); // Accepted
+            return ''; // Empty response body
+        } catch (ORMException $e) {
+            http_response_code(400); // Bad Request
+            return $e->getWrongFields();
+        } catch (PDOException $e) {
+            http_response_code(500);
+	    	return $e->getMessage();
+        }
+    }
+    
     // TODO: delete issues? mark as duplicate but maintained?
     /*static public function delete($id) {
 

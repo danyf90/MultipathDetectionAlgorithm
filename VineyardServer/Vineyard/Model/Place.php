@@ -19,6 +19,9 @@ class Place extends TrackedORM implements IResource {
     public function check() {
         $v = new Validator($this);
 
+	if (!isset($this->id))
+		$v->setCheckNotSetFields(true);
+
         $v->nonNull('name');
         $v->nullId('parent', get_class($this));
         $v->notSet('photo');
@@ -286,12 +289,16 @@ class Place extends TrackedORM implements IResource {
         switch ($method) {
             // creates or replaces the photo
             case "POST":
-                static::insertPhoto($id);
+                return static::insertPhoto($id);
             break;
             // delete the photo
             case "DELETE":
-                static::deletePhoto($id);
+                return static::deletePhoto($id);
             break;
+
+	    case "OPTIONS":
+		header("Allow: POST, DELETE");
+	    break;
 
             // case "GET": already returned in object instance!
             // case "PUT": use POST, it does the same thing

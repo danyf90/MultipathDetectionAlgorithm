@@ -15,6 +15,7 @@ class Validator {
 
     protected $_wrongFields = array();
     protected $object;
+    protected $checkNotSetFields;
 
     public function __construct(AbstractORM $o, $checkNotSetFields = false) {
         $this->object = $o;
@@ -60,7 +61,7 @@ class Validator {
 
         // if fieldname can be null and actually is null, return true
         if (substr($method, 0, 4) === "null") {
-            if (!$this->nonNull($fieldName))
+	    if (strlen($this->object->{$fieldName}) == 0)
                 return true;
 
             $validatorMethod = strtolower(substr($method, 4));

@@ -93,7 +93,7 @@ abstract class AbstractORM implements JsonSerializable {
     /**
      * Inserts a new entry corresponding to this instance in the db.
      */
-    private function _insert() {
+    protected function _insert() {
 
         $this->onPreInsert();
 
@@ -129,7 +129,7 @@ abstract class AbstractORM implements JsonSerializable {
     /**
      * Updates the entry correspondent to this instance in the db.
      */
-    private function _update() {
+    protected function _update() {
 
         $pdo = DB::getConnection();
         $tableName = static::getTableName();
@@ -286,8 +286,9 @@ abstract class AbstractORM implements JsonSerializable {
             http_response_code(400); // Bad Request
             return $e->getWrongFields();
         } catch (PDOException $e) {
-	    http_response_code(500);
-	}
+			http_response_code(400);
+			return $e->getMessage();
+		}
     }
 
     public static function update($id) {
@@ -311,7 +312,8 @@ abstract class AbstractORM implements JsonSerializable {
             http_response_code(400); // Bad Request
             return $e->getWrongFields();
         } catch (PDOException $e) {
-            http_response_code(500);
+            http_response_code(400);
+	    	return $e->getMessage();
         }
     }
 
@@ -329,7 +331,7 @@ abstract class AbstractORM implements JsonSerializable {
             return ''; // Empty response body
         } catch (PDOException $e) {
             http_response_code(400); // Bad Request
-            return $e->getWrongFields();
+            return $e->getMessage();
         }
     }
 }

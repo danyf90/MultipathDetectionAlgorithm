@@ -7,6 +7,7 @@ use \PDOException;
 use \Vineyard\Utility\DB;
 use \Vineyard\Utility\IResource;
 use \Vineyard\Utility\Validator;
+use \Vineyard\Utility\ORMException;
 use \Vineyard\Utility\TrackedORM;
 use \Vineyard\Utility\TCrudRequestHandlers;
 
@@ -15,11 +16,11 @@ class Worker extends TrackedORM implements IResource {
     use TCrudRequestHandlers; // introduces handleRequestToBaseUri() and handleRequestToUriWithId()
 
     public function check() {
-        $v = new Validator($this);
+        $v = new Validator($this, !isset($this->id));
 
         $v->nonNull('username');
         $v->nullEmail('email');
-        $v->notSet('password');
+        // $v->notSet('password');
 
         return $v->getWrongFields();
     }
@@ -30,9 +31,43 @@ class Worker extends TrackedORM implements IResource {
     public static function getById($id) {
         $w = parent::getById($id);
         unset($w->password);
-//        unset($w->notification_id);
-	return $w;
+        unset($w->notification_id);
+		return $w;
     }
+    
+    protected function generatePassword() {
+	    // TODO
+    	$this->password = '5f4dcc3b5aa765d61d8327deb882cf99';
+    }
+    
+    protected function sendPasswordByEmail() {
+	    // TODO
+    }
+    
+    // Override AbstractORM::insert()
+	public static function insert() {
+		unset($_POST['password']);
+        array_walk($_POST, function(&$v){
+            $v = trim($v);
+        });
+
+        $s = new static();
+        $s->populate($_POST);
+        $s->generatePassword();
+
+        try {
+            $s->save();
+            http_response_code(201); // Created
+            $s->sendPasswordByEmail();
+            return array( 'id' => $s->id );
+        } catch (ORMException $e) {
+            http_response_code(400); // Bad Request
+            return $e->getWrongFields();
+        } catch (PDOException $e) {
+			http_response_code(400);
+			return $e->getMessage();
+		}
+    }    
 
     public static function handleRequest($method, array $requestParameters) {
 
