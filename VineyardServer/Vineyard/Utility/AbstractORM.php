@@ -220,12 +220,12 @@ abstract class AbstractORM implements JsonSerializable {
          if($whereClause != "")
             $whereClause = " WHERE " . $whereClause;
 
-        $query = "SELECT id FROM `" . $tableName . "` " . $whereClause;
+        $query = "SELECT `id` FROM `" . $tableName . "`" . $whereClause;
 
         $sql = $pdo->prepare($query);
         $sql->execute($whereParams);
 
-        while($id = $sql->fetchColumn()) {
+        while(($id = $sql->fetchColumn(0)) !== FALSE) {
             // TODO check memory alloc/dealloc performances vs memory allocation size
             $s = static::getById($id);
             $scopedFunc($s);

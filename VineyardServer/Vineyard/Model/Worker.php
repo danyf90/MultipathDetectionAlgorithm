@@ -130,12 +130,12 @@ class Worker extends TrackedORM implements IResource {
             else
                 $idField = 'username';
 
-            $sql = $pdo->prepare("SELECT id FROM `worker` WHERE `" . $idField . "` = ? AND `password` = ? AND FIND_IN_SET(?, `role`) > 0;");
+            $sql = $pdo->prepare("SELECT `id`, `name` FROM `worker` WHERE `" . $idField . "` = ? AND `password` = ? AND FIND_IN_SET(?, `role`) > 0;");
             $sql->execute(array($_POST[$idField], $_POST['password'], strtolower($_POST['role'])));
 
              if ($sql->rowCount() > 0)
              {
-                 $response = array( 'id' => $sql->fetchColumn(0) );
+                 $response = $sql->fetch(PDO::FETCH_ASSOC);
                  http_response_code(202); // Accepted
                  return json_encode($response);
              }
