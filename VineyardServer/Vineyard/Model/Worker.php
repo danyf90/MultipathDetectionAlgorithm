@@ -80,15 +80,6 @@ class Worker extends TrackedORM implements IResource {
 
                 switch ($requestParameters[0]) {
                     case "login":
-                        if ($method != "POST") {
-            				if ($method == "OPTIONS") {
-			     				header("Allow: GET");
-								return;
-							}
-
-                            http_response_code(501); // Not implemented
-                        }
-
                         return static::handleLoginRequest($method);
                     break;
 
@@ -97,11 +88,14 @@ class Worker extends TrackedORM implements IResource {
                 }
             break;
 
-            case 2: // not implemented yet
+            case 2: // api/worker/<id>/logout
 
                 $id = array_shift($requestParameters);
 
                 switch($requestParameters[0]) {
+		    case "logout":
+			return static::handleLogoutRequest($method, $id);
+		    break;
 
                     default:
                         http_response_code(501); // Not Implemented
@@ -121,6 +115,15 @@ class Worker extends TrackedORM implements IResource {
      **************************/
 
     public static function handleLoginRequest() {
+	if ($method == "OPTIONS") {
+        	header("Allow: POST");
+		return;
+ 	}
+
+	if ($method != "POST") {
+		http_response_code(501); // Not implemented
+		return;
+        }
 
         $pdo = DB::getConnection();
 
@@ -149,6 +152,27 @@ class Worker extends TrackedORM implements IResource {
                     http_response_code(400); // Bad Request
             }
         }
+    }
+
+    public static function handleLogoutRequest($method, $id) {
+	if ($method == "OPTIONS") {
+	    header("Allow: POST");
+	    return;
+	}
+
+	if ($method != "POST") {
+	    http_response_code(501); // Not Implemented
+	    return;
+	}
+
+	$w = static::getById($id);
+	if ($w == null) {
+	    http_response_code(400); // Bad Request
+	    return;
+	}
+
+	$w->notification_id = null;
+	$w->save();
     }
 
 }
