@@ -97,15 +97,14 @@ public class VineyardMainActivity extends ActionBarActivity implements
 
 		// Retrieve values written by LoginActivity
 		userId = sp.getInt(LoginActivity.USERID, -1);
-		serverUrl = sp.getString(getString(R.string.prefs_server_url),
-				null);
+		serverUrl = sp.getString(getString(R.string.prefs_server_url), null);
 		if (userId == -1 || serverUrl == null) {
 			startLoginActivity();
 			return;
 		}
 
-		timeout = sp.getInt(getString(R.string.prefs_request_timeout), 0);
-		
+		timeout = Integer.valueOf(sp.getString(getString(R.string.prefs_request_timeout), null));
+
 		mNavigationDrawerFragment = (NavigationDrawerFragment) getSupportFragmentManager()
 				.findFragmentById(R.id.navigation_drawer);
 		mNavigationDrawerFragment.setUp(R.id.navigation_drawer,
@@ -293,9 +292,11 @@ public class VineyardMainActivity extends ActionBarActivity implements
 		lastFragment = currentFragment;
 		currentFragment = nextFragment;
 
-		// commitAllowingStateLoss avoid crashes when the activity is no more in foreground
+		// commitAllowingStateLoss avoid crashes when the activity is no more in
+		// foreground
 		getSupportFragmentManager().beginTransaction()
-				.replace(R.id.container, currentFragment).commitAllowingStateLoss();
+				.replace(R.id.container, currentFragment)
+				.commitAllowingStateLoss();
 	}
 
 	/**
@@ -623,7 +624,7 @@ public class VineyardMainActivity extends ActionBarActivity implements
 
 		public RootPlaceAsyncHttpRequest(String serverUrl) {
 			super(serverUrl + VineyardServer.PLACES_HIERARCHY_API, Type.GET);
-			
+
 			setTimeout(VineyardMainActivity.this.timeout);
 
 			setLastModified(cache.getPlacesLastModified());
@@ -712,7 +713,7 @@ public class VineyardMainActivity extends ActionBarActivity implements
 
 		public IssuesAsyncHttpRequest(String serverUrl) {
 			super(serverUrl + VineyardServer.OPEN_ISSUES_API, Type.GET);
-			
+
 			setTimeout(VineyardMainActivity.this.timeout);
 
 			setLastModified(cache.getIssuesLastModified());
@@ -796,7 +797,7 @@ public class VineyardMainActivity extends ActionBarActivity implements
 
 		public TasksAsyncHttpRequest(String serverUrl) {
 			super(serverUrl + VineyardServer.OPEN_TASKS_API, Type.GET);
-			
+
 			setTimeout(VineyardMainActivity.this.timeout);
 
 			setLastModified(cache.getTasksLastModified());
@@ -879,7 +880,7 @@ public class VineyardMainActivity extends ActionBarActivity implements
 
 		public WorkersAsyncHttpRequest(String serverUrl) {
 			super(serverUrl + VineyardServer.WORKERS_API, Type.GET);
-			
+
 			setTimeout(VineyardMainActivity.this.timeout);
 
 			setLastModified(cache.getWorkersLastModified());
@@ -960,7 +961,7 @@ public class VineyardMainActivity extends ActionBarActivity implements
 
 		public WorkGroupsAsyncHttpRequest(String serverUrl) {
 			super(serverUrl + VineyardServer.WORKGROUPS_API, Type.GET);
-			
+
 			setTimeout(VineyardMainActivity.this.timeout);
 
 			setLastModified(cache.getWorkGroupsLastModified());

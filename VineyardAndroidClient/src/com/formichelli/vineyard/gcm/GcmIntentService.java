@@ -13,8 +13,11 @@ import android.os.Bundle;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 
 public class GcmIntentService extends IntentService {
+	private static final String TAG = "GcmIntentService";
+	
 	public static final int NOTIFICATION_ID = 1;
 	private static final String TITLE = "title";
 	private static final String DESCRIPTION = "description";
@@ -31,6 +34,9 @@ public class GcmIntentService extends IntentService {
 		GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(this);
 
 		String messageType = gcm.getMessageType(intent);
+		
+
+		Log.i(TAG, "GCM message received: " + extras.toString());
 
 		if (messageType.equals(GoogleCloudMessaging.MESSAGE_TYPE_MESSAGE)
 				&& !extras.isEmpty())
