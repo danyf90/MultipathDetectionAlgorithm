@@ -36,13 +36,33 @@ class Worker extends TrackedORM implements IResource {
     }
 
     protected function generatePassword() {
-	    // TODO
-    	$this->password = '5f4dcc3b5aa765d61d8327deb882cf99';
+		/*
+		$characters = 'abcdefghijklmnopqrstuvwxyz0123456789_.';
+		$password_length = 10;
+		$password = '';
+
+		for ($i = 0; $i < $password_length; $i++)
+			$password .= $characters[rand(0, strlen($characters) - 1)];
+		*/
+		// TODO
+    	$password = 'password';
+		
+		$this->password = md5($password);
+		return $password;
     }
 
-    protected function sendPasswordByEmail() {
-	    // TODO
+    protected function sendPasswordByEmail($password) {
+		/*
+		$to = $this->email;
+		$subject = "Welcome to Vineyard!";
+		$message = "These are your credential to access Vineyard:\nUsername: " . $this->username . "\nPassword: " . $password . "\n";
+
+		mail($to, $subject, $message);
+		*/
+		
+		// TODO
     }
+
 
     // Override AbstractORM::insert()
 	public static function insert() {
@@ -53,12 +73,12 @@ class Worker extends TrackedORM implements IResource {
 
         $s = new static();
         $s->populate($_POST);
-        $s->generatePassword();
+        $password = $s->generatePassword();
 
         try {
             $s->save();
             http_response_code(201); // Created
-            $s->sendPasswordByEmail();
+            $s->sendPasswordByEmail($password);
             return array( 'id' => $s->id );
         } catch (ORMException $e) {
             http_response_code(400); // Bad Request
