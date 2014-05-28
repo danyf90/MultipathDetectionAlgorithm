@@ -114,7 +114,7 @@ class Worker extends TrackedORM implements IResource {
      * LOGIN HANDLING
      **************************/
 
-    public static function handleLoginRequest() {
+    public static function handleLoginRequest($method) {
 	if ($method == "OPTIONS") {
         	header("Allow: POST");
 		return;
@@ -133,6 +133,9 @@ class Worker extends TrackedORM implements IResource {
             else
                 $idField = 'username';
 
+	    if (!isset($_POST[$idField]) || !isset($_POST['password']) || !isset($_POST['role']))
+		throw new \Exception();
+
             $sql = $pdo->prepare("SELECT `id`, `name` FROM `worker` WHERE `" . $idField . "` = ? AND `password` = ? AND FIND_IN_SET(?, `role`) > 0;");
             $sql->execute(array($_POST[$idField], $_POST['password'], strtolower($_POST['role'])));
 
@@ -145,7 +148,7 @@ class Worker extends TrackedORM implements IResource {
 
              http_response_code(401); // Not Authorized
              return;
-        } catch (PDOException $e) {
+        } catch (\Exception $e) {
             // check which SQL error occured
             switch ($e->getCode()) {
                 default:
