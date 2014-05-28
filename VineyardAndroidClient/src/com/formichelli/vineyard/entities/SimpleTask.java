@@ -44,8 +44,8 @@ public class SimpleTask implements Task, Comparable<SimpleTask> {
 	private Place place;
 	private String title;
 	private String description;
-	private double latitude;
-	private double longitude;
+	private Double latitude;
+	private Double longitude;
 	private Worker assignedWorker;
 	private WorkGroup assignedGroup;
 
@@ -101,8 +101,8 @@ public class SimpleTask implements Task, Comparable<SimpleTask> {
 			setLatitude(jsonObject.getDouble(LATITUDE));
 			setLongitude(jsonObject.getDouble(LONGITUDE));
 		} else {
-			setLatitude(-1);
-			setLongitude(-1);
+			setLatitude(null);
+			setLongitude(null);
 		}
 
 		if (!jsonObject.isNull(ASSIGNED_WORKER)) {
@@ -148,7 +148,7 @@ public class SimpleTask implements Task, Comparable<SimpleTask> {
 	public void setModifierId(int modifierId) {
 		if (modifierId < 0)
 			throw new IllegalArgumentException("modifierId cannot be negative");
-		
+
 		this.modifierId = modifierId;
 	}
 
@@ -191,7 +191,7 @@ public class SimpleTask implements Task, Comparable<SimpleTask> {
 	public void setStatus(Status status) {
 		if (status == null)
 			throw new IllegalArgumentException("status cannot be null");
-		
+
 		this.status = status;
 	}
 
@@ -231,8 +231,9 @@ public class SimpleTask implements Task, Comparable<SimpleTask> {
 	@Override
 	public void setTitle(String title) {
 		if (title == null || title.compareTo("") == 0)
-			throw new IllegalArgumentException("title cannot be neither null nor empty");
-		
+			throw new IllegalArgumentException(
+					"title cannot be neither null nor empty");
+
 		this.title = title;
 	}
 
@@ -246,19 +247,19 @@ public class SimpleTask implements Task, Comparable<SimpleTask> {
 		this.description = description;
 	}
 
-	public double getLatitude() {
+	public Double getLatitude() {
 		return latitude;
 	}
 
-	public void setLatitude(double latitude) {
+	public void setLatitude(Double latitude) {
 		this.latitude = latitude;
 	};
 
-	public double getLongitude() {
+	public Double getLongitude() {
 		return longitude;
 	}
 
-	public void setLongitude(double longitude) {
+	public void setLongitude(Double longitude) {
 		this.longitude = longitude;
 	}
 
@@ -291,22 +292,27 @@ public class SimpleTask implements Task, Comparable<SimpleTask> {
 		List<NameValuePair> params = new ArrayList<NameValuePair>();
 
 		if (getPriority() != null)
-			params.add(new BasicNameValuePair(PRIORITY, getPriority()
-					.toString()));
+			params.add(new BasicNameValuePair(PRIORITY, getPriority().toString()));
+		else
+			params.add(new BasicNameValuePair(PRIORITY, "null"));
 
 		params.add(new BasicNameValuePair(PLACE, String.valueOf(getPlace()
 				.getId())));
 
 		params.add(new BasicNameValuePair(TITLE, title));
 
-		if (description != null && description.compareTo("") != 0)
-			params.add(new BasicNameValuePair(DESCRIPTION, description));
+		params.add(new BasicNameValuePair(DESCRIPTION, description));
 
-		if (getLatitude() != -1 && getLongitude() != -1) {
+		if (getLatitude() != null && getLongitude() != null) {
 			params.add(new BasicNameValuePair(LATITUDE, String
 					.valueOf(getLatitude())));
+
 			params.add(new BasicNameValuePair(LONGITUDE, String
 					.valueOf(getLongitude())));
+		} else {
+			params.add(new BasicNameValuePair(LATITUDE, "null"));
+
+			params.add(new BasicNameValuePair(LONGITUDE, "null"));
 		}
 
 		return params;

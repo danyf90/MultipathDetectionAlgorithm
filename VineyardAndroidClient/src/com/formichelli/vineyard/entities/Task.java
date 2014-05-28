@@ -109,13 +109,13 @@ public interface Task {
 
 	public void setTitle(String title);
 
-	public double getLatitude();
+	public Double getLatitude();
 
-	public void setLatitude(double latitude);
+	public void setLatitude(Double latitude);
 
-	public double getLongitude();
+	public Double getLongitude();
 
-	public void setLongitude(double longitude);
+	public void setLongitude(Double longitude);
 
 	public Worker getAssignedWorker();
 

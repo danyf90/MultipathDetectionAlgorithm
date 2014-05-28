@@ -14,6 +14,8 @@
     <string name="issue_assigned_worker_label">Worker</string>
     <string name="issue_assigned_group_label">Work Group</string>
     <string name="issue_due_time_label">Due Time</string>
+    <string name="issue_location_label">Location:</string>
+    <string name="issue_location_show_on_map"><u>Show on map</u></string>
     <string name="issue_not_assigned">Not Assigned</string>
     <string name="issue_assigned">Assigned</string>
     <string name="issues_no_issues">There are no issues</string>

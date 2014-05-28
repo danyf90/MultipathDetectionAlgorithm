@@ -24,6 +24,7 @@ import android.content.res.TypedArray;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.ThumbnailUtils;
 import android.net.Uri;
@@ -265,7 +266,7 @@ public class VineyardGallery extends HorizontalScrollView {
 		}
 
 		@Override
-		protected void onPostExecute(Bitmap photo) {
+		protected void onPostExecute(BitmapDrawable photo) {
 			if (progress != null)
 				progress.setVisibility(View.GONE);
 			gallery.removeView(container);
@@ -274,9 +275,7 @@ public class VineyardGallery extends HorizontalScrollView {
 				addImage(BitmapFactory.decodeResource(context.getResources(),
 						R.drawable.action_issue_dark));
 			else
-				saveBitmap(photo, localName);
-
-			addImage(photo);
+				addImage(photo.getBitmap());
 		}
 	}
 

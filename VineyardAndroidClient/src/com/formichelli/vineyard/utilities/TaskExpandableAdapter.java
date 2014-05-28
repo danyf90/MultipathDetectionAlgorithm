@@ -14,7 +14,9 @@ import com.formichelli.vineyard.entities.Task.Status;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -203,6 +205,20 @@ public class TaskExpandableAdapter<T extends Task> extends
 					DateFormat.getDateInstance(DateFormat.SHORT,
 							Locale.getDefault()).format(object.getDueTime()));
 
+		// show map
+		TextView locationLabel = (TextView) childView
+				.findViewById(R.id.issue_view_attributes_location_label);
+		TextView locationShow = (TextView) childView
+				.findViewById(R.id.issue_view_attributes_location_show);
+		if (object.getLatitude() != null && object.getLongitude() != null) {
+			locationShow.setTag(object);
+			setLatitudeLink(locationShow);
+		} else {
+			locationLabel.setVisibility(View.GONE);
+			locationShow.setVisibility(View.GONE);
+		}
+
+		// set photos if the object is an issue
 		VineyardGallery gallery = (VineyardGallery) childView
 				.findViewById(R.id.issue_view_gallery);
 
@@ -233,6 +249,22 @@ public class TaskExpandableAdapter<T extends Task> extends
 				doneOnClickListener);
 
 		return childView;
+	}
+
+	private void setLatitudeLink(TextView locationShow) {
+		locationShow.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				final double latitude = ((Task) v.getTag()).getLatitude();
+				final double longitude = ((Task) v.getTag()).getLongitude();
+				final String label = ((Task) v.getTag()).getTitle();
+				final String uri = "geo:" + latitude + "," + longitude + "?q="
+						+ latitude + "," + longitude + "(" + label + ")";
+
+				context.startActivity(new Intent(Intent.ACTION_VIEW, Uri
+						.parse(uri)));
+			}
+		});
 	}
 
 	@Override

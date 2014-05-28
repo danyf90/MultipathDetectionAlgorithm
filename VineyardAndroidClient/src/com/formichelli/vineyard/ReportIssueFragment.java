@@ -257,8 +257,11 @@ public class ReportIssueFragment extends Fragment {
 				issue.setLatitude(loc.getLatitude());
 				issue.setLongitude(loc.getLongitude());
 			} else {
-				Log.i("ReportIssue", "No location info available.. sure?");
+				Log.i("ReportIssue", "No location info available");
 			}
+		} else {
+			issue.setLatitude(null);
+			issue.setLongitude(null);
 		}
 
 		return true;
@@ -341,11 +344,12 @@ public class ReportIssueFragment extends Fragment {
 						+ issue.getId());
 				setType(Type.PUT);
 			}
-			
+
 			setTimeout(activity.getTimeout());
 
 			List<NameValuePair> params = issue.getParams();
-			params.add(new BasicNameValuePair(SimpleTask.MODIFIER, String.valueOf(activity.getUserId())));
+			params.add(new BasicNameValuePair(SimpleTask.MODIFIER, String
+					.valueOf(activity.getUserId())));
 
 			setParams(params);
 		}
@@ -364,7 +368,7 @@ public class ReportIssueFragment extends Fragment {
 
 					// set issue modifierId
 					issue.setModifierId(activity.getUserId());
-					
+
 					// associate issue to place
 					issue.getPlace().addIssue(issue);
 
@@ -396,7 +400,8 @@ public class ReportIssueFragment extends Fragment {
 
 		private void sendImages(int issueId, ArrayList<String> images) {
 			Intent intent = new Intent(activity, SendImagesIntent.class);
-			intent.putExtra(SendImagesIntent.SERVER_URL,
+			intent.putExtra(
+					SendImagesIntent.SERVER_URL,
 					String.format(vineyardServer.getUrl()
 							+ VineyardServer.PHOTO_SEND_API, issueId));
 			intent.putExtra(SendImagesIntent.ISSUE_ID, issueId);
@@ -415,20 +420,21 @@ public class ReportIssueFragment extends Fragment {
 	private class LocationClientCallbacks implements
 			GooglePlayServicesClient.ConnectionCallbacks,
 			GooglePlayServicesClient.OnConnectionFailedListener {
+
 		@Override
 		public void onConnectionFailed(ConnectionResult arg0) {
+			locationButton.setEnabled(false);
 			Log.i("ReportIssue", "Connection to Google Play Services failed..");
 		}
 
 		@Override
 		public void onConnected(Bundle arg0) {
-			Log.i("ReportIssue", "Connected to Google Play Services");
 			locationButton.setEnabled(true);
-			locationButton.setChecked(true);
 		}
 
 		@Override
 		public void onDisconnected() {
+			locationButton.setEnabled(false);
 		}
 
 	}

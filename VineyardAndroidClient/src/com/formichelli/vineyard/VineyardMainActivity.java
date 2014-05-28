@@ -119,15 +119,10 @@ public class VineyardMainActivity extends ActionBarActivity implements
 			Toast.makeText(this,
 					getString(R.string.gcm_error_no_play_services),
 					Toast.LENGTH_LONG).show();
-		} else {
+		} else
 			Log.i(TAG, "GCM client id: " + gcmClient.getRegId());
-		}
 
 		serverInit();
-
-		if (savedInstanceState != null) {
-
-		}
 	}
 
 	private void serverInit() {
@@ -197,6 +192,7 @@ public class VineyardMainActivity extends ActionBarActivity implements
 
 		case 4: // logout
 			sp.edit().remove(getString(R.string.preference_user_id)).commit();
+			startLoginActivity();
 			break;
 
 		default:
@@ -297,8 +293,9 @@ public class VineyardMainActivity extends ActionBarActivity implements
 		lastFragment = currentFragment;
 		currentFragment = nextFragment;
 
+		// commitAllowingStateLoss avoid crashes when the activity is no more in foreground
 		getSupportFragmentManager().beginTransaction()
-				.replace(R.id.container, currentFragment).commit();
+				.replace(R.id.container, currentFragment).commitAllowingStateLoss();
 	}
 
 	/**

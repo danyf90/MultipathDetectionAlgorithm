@@ -26,7 +26,7 @@ import android.widget.ProgressBar;
  * Class which allows to retrieve an image from a server.
  * 
  */
-public class ImageLoader extends AsyncTask<Void, Void, Bitmap> {
+public class ImageLoader extends AsyncTask<Void, Void, BitmapDrawable> {
 	private static final String TAG = "ImageLoader";
 	Context context;
 	ViewGroup container;
@@ -34,8 +34,9 @@ public class ImageLoader extends AsyncTask<Void, Void, Bitmap> {
 	String imageUrl;
 	String localName;
 
-	protected ImageLoader() {}
-	
+	protected ImageLoader() {
+	}
+
 	/**
 	 * @param context
 	 * @param container
@@ -61,7 +62,7 @@ public class ImageLoader extends AsyncTask<Void, Void, Bitmap> {
 	 * Sends an HTTP GET request and returns the image bitmap
 	 */
 	@Override
-	protected Bitmap doInBackground(Void... params) {
+	protected BitmapDrawable doInBackground(Void... params) {
 		if (context == null || container == null || imageUrl == null)
 			return null;
 
@@ -76,11 +77,12 @@ public class ImageLoader extends AsyncTask<Void, Void, Bitmap> {
 			// the image is already present locally
 			imageBitmap = BitmapFactory.decodeFile(localName);
 			if (imageBitmap != null)
-				return imageBitmap;
+				return new BitmapDrawable(context.getResources(), imageBitmap);
 
-			Log.e(TAG, localName + " is not valid, downloading it from server...");
+			Log.e(TAG, localName
+					+ " is not valid, downloading it from server...");
 		}
-		
+
 		// the image must be retrieved from the server
 		try {
 			HttpResponse response = new DefaultHttpClient()
@@ -96,7 +98,12 @@ public class ImageLoader extends AsyncTask<Void, Void, Bitmap> {
 			imageBitmap = null;
 		}
 
-		return imageBitmap;
+		if (imageBitmap != null) {
+			saveBitmap(imageBitmap, localName);
+			return new BitmapDrawable(context.getResources(), imageBitmap);
+		}
+
+		return null;
 	}
 
 	/*
@@ -105,18 +112,15 @@ public class ImageLoader extends AsyncTask<Void, Void, Bitmap> {
 	 */
 	@SuppressWarnings("deprecation")
 	@Override
-	protected void onPostExecute(Bitmap photo) {
+	protected void onPostExecute(BitmapDrawable photo) {
 		if (progress != null)
 			progress.setVisibility(View.GONE);
-
-		if (photo == null) {
+		
+		if (photo == null)
 			container.setBackgroundDrawable(context.getResources().getDrawable(
 					R.drawable.action_issue_dark));
-			return;
-		}
-
-		saveBitmap(photo, localName);
-		container.setBackgroundDrawable(new BitmapDrawable(photo));
+		else
+			container.setBackgroundDrawable(photo);
 	}
 
 	protected void saveBitmap(Bitmap b, String filename) {
