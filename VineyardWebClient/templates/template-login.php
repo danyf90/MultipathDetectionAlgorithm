@@ -17,7 +17,7 @@
 				<h1>Welcome!</h1>
 				<p>Welcome to Vineyard Web Client login.</p>
 				<p>You can login using either the usename or the email address provided to the system.</p>
-				<input class="ajax" type="text" name="username" placeholder="Username or Email" autofocus="true" />
+				<input class="ajax" id="username" type="text" name="username" placeholder="Username or Email" autofocus="true" />
 				<input class="ajax" id="password" type="password" name="password" placeholder="Password" />
 				<input class="ajax" type="text" id="server" placeholder="Vineyard Server Address" value="http://vineyard-server.no-ip.org/"/>
 				<input class="ajax" type="hidden" name="role" value="admin"/>

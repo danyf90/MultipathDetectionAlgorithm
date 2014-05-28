@@ -8,10 +8,21 @@ var init = function () {
 	S.form.on("submit", function () {
 		$("#loading").css("visibility", "visible");
 		var serverUrl = $("#server").val() + "api/worker/login";
-		$("#password").val(CryptoJS.MD5($("#password").val()));
+		
+		var password = $("#password").val();
+		$("#password").val(CryptoJS.MD5(password));
 
-		try {
-			$.post(serverUrl, S.form.serialize(), function (data) {
+		// if it contains '@' it is an email
+		if ($("#username").val().indexOf("@") >= 0)
+			$("#username").attr("name", "email");
+		
+		
+		$.ajax({
+			type: "POST",
+			url: serverUrl,
+			data: S.form.serialize(),
+			success: function (data) {
+				$("#password").val(password);
 				data = $.parseJSON(data);
 				sessionStorage.setItem("workerId", data.id);
 				sessionStorage.setItem("workerName", data.name);
@@ -19,9 +30,13 @@ var init = function () {
 				$("#login-id").attr("name", "login");
 				S.form.off("submit").submit();
 				$("#loading").css("visibility", "hidden");
-			});
-
-		} catch (e) { alert("login error"); $("#loading").css("visibility", "hidden"); }
+			},
+			error: function(XMLHttpRequest, textStatus, errorThrown) {
+				$("#password").val(password);
+				$("#loading").css("visibility", "hidden");
+				alert("login error");
+			}
+		});
 
 		return false;
 	});
