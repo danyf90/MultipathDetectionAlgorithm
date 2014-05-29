@@ -118,9 +118,8 @@ public class VineyardMainActivity extends ActionBarActivity implements
 			Toast.makeText(this,
 					getString(R.string.gcm_error_no_play_services),
 					Toast.LENGTH_LONG).show();
-		} else
-			Log.i(TAG, "GCM client id: " + gcmClient.getRegId());
-
+		}
+		
 		serverInit();
 	}
 
@@ -191,7 +190,7 @@ public class VineyardMainActivity extends ActionBarActivity implements
 
 		case 4: // logout
 			sp.edit().remove(getString(R.string.preference_user_id)).commit();
-			startLoginActivity();
+			new UserLogoutTask(vineyardServer.getUrl(), userId).execute();
 			break;
 
 		default:
@@ -1031,11 +1030,11 @@ public class VineyardMainActivity extends ActionBarActivity implements
 		}
 	}
 
-	public class UserLogoutTask extends AsyncHttpRequest {
+	private class UserLogoutTask extends AsyncHttpRequest {
 
 		public UserLogoutTask(String serverUrl, int userId) {
 			super(serverUrl + String.format(VineyardServer.LOGOUT_API, userId),
-					AsyncHttpRequest.Type.POST);
+					AsyncHttpRequest.Type.PUT);
 		}
 
 		@Override
