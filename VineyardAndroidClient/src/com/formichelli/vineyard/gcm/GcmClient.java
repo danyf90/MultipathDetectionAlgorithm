@@ -3,6 +3,7 @@ package com.formichelli.vineyard.gcm;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
@@ -21,6 +22,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.util.Pair;
 import android.widget.Toast;
 
 public class GcmClient {
@@ -169,9 +171,19 @@ public class GcmClient {
 					(new AsyncHttpRequest(
 							activity.getServer().getUrl()
 									+ VineyardServer.WORKERS_API
-									+ activity.getUserId(), Type.PUT, params))
-							.execute();
-					// TODO check the result
+									+ activity.getUserId(), Type.PUT, params) {
+						@Override
+						protected void onPostExecute(
+								Pair<Integer, String> response) {
+							if (response == null || response.first != HttpStatus.SC_ACCEPTED) {
+								Toast.makeText(
+										activity,
+										activity.getString(R.string.gcm_error_no_registration_id),
+										Toast.LENGTH_LONG).show();
+								Log.e(TAG, response.first + ": " + response.second);
+							}
+						}
+					}).execute();
 				}
 			}
 
