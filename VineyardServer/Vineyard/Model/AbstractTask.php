@@ -20,7 +20,7 @@ abstract class AbstractTask extends TemporalORM implements IResource {
     static $priorityEnum = array('low','medium','high');
 
     public function check() {
-        $v = new Validator($this, !isset($this->id)));
+        $v = new Validator($this, !isset($this->id));
 
         $modelNamespace = "\\Vineyard\\Model\\";
 
@@ -125,7 +125,7 @@ abstract class AbstractTask extends TemporalORM implements IResource {
 
         static::get(function($obj) use (&$list) {
             $list[] = clone $obj;
-        }, "`issue` IS" . ((static::isIssueInstance()) ? " NOT" : "") . " NULL");
+        }, "`issuer` IS" . ((static::isIssueInstance()) ? " NOT" : "") . " NULL");
 
         return $list;
     }
@@ -144,9 +144,12 @@ abstract class AbstractTask extends TemporalORM implements IResource {
             $s = parent::getById($id);
         else
             $s = static::getByRevision($id, $_GET['rev']);
-            
-        if ($s->isIssue() == static::isIssueInstance())
+        
+        if ($s->isIssue() xor static::isIssueInstance())
         	return new \stdClass();
+
+	if (static::isIssueInstance())
+		$s->loadPhotos();
 
         return $s;
     }

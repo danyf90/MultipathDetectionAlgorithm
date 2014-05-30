@@ -36,31 +36,28 @@ class Worker extends TrackedORM implements IResource {
     }
 
     protected function generatePassword() {
-		/*
+
 		$characters = 'abcdefghijklmnopqrstuvwxyz0123456789_.';
 		$password_length = 10;
 		$password = '';
 
 		for ($i = 0; $i < $password_length; $i++)
 			$password .= $characters[rand(0, strlen($characters) - 1)];
-		*/
-		// TODO
-	    	$password = 'password';
 
 		$this->password = md5($password);
 		return $password;
     }
 
     protected function sendPasswordByEmail($password) {
-		/*
+
 		$to = $this->email;
 		$subject = "Welcome to Vineyard!";
 		$message = "These are your credential to access Vineyard:\nUsername: " . $this->username . "\nPassword: " . $password . "\n";
+		$headers = 'From: webmaster@vineyard-server.no-ip.org' . "\r\n" .
+                	'Reply-To: webmaster@vineyard-server.no-ip.org' . "\r\n" .
+	                'X-Mailer: PHP/' . phpversion();
 
-		mail($to, $subject, $message);
-		*/
-		
-		// TODO
+        	mail($to, $subject, $headers, "-f webmaster@vineyard-server.no-ip.org");
     }
 
 

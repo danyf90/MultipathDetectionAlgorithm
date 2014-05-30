@@ -11,11 +11,11 @@ use \Vineyard\Model\AbstractTask;
 
 class Issue extends AbstractTask implements IResource {
 
-	static public function isIssueInstance() { return true; }
-	
+static public function isIssueInstance() { return true; }
+
     public function check() {
         $v = parent::check();
-		$modelNamespace = "\\Vineyard\\Model\\";
+	$modelNamespace = "\\Vineyard\\Model\\";
 
         // issuer
         $v->id('issuer', $modelNamespace . "Worker");
@@ -32,8 +32,7 @@ class Issue extends AbstractTask implements IResource {
     }
 
     static public function getById($id) {
-		$s =  parent::getById($id);
-		$s->loadPhotos();
+		$s = parent::getById($id);
 		return $s;
 	}
 	
