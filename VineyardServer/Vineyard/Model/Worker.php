@@ -31,7 +31,7 @@ class Worker extends TrackedORM implements IResource {
     public static function getById($id) {
         $w = parent::getById($id);
         unset($w->password);
-        unset($w->notification_id);
+//        unset($w->notification_id);
 		return $w;
     }
 
@@ -45,8 +45,8 @@ class Worker extends TrackedORM implements IResource {
 			$password .= $characters[rand(0, strlen($characters) - 1)];
 		*/
 		// TODO
-    	$password = 'password';
-		
+	    	$password = 'password';
+
 		$this->password = md5($password);
 		return $password;
     }
@@ -136,7 +136,7 @@ class Worker extends TrackedORM implements IResource {
 
     public static function handleLoginRequest($method) {
 	if ($method == "OPTIONS") {
-        	header("Allow: POST");
+        	header("Allow: POST, OPTIONS");
 		return;
  	}
 
@@ -179,11 +179,11 @@ class Worker extends TrackedORM implements IResource {
 
     public static function handleLogoutRequest($method, $id) {
 	if ($method == "OPTIONS") {
-	    header("Allow: POST");
+	    header("Allow: PUT, OPTIONS");
 	    return;
 	}
 
-	if ($method != "POST") {
+	if ($method != "PUT") {
 	    http_response_code(501); // Not Implemented
 	    return;
 	}

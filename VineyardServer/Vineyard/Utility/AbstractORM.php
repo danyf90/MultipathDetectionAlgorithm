@@ -67,10 +67,18 @@ abstract class AbstractORM implements JsonSerializable {
      * Savers and Loaders Methods
      **************************************/
 
+    protected function sanitize() {
+	foreach ($this->_data as $key => $value)
+	    if (strlen($this->_data[$key]) == 0)
+		$this->_data[$key] = null;
+    }
+
     /**
      * Save the instance in the db, either inserting or updating an entry.
      */
     public function save() {
+
+	$this->sanitize();
 
         $wrong_fields = $this->check();
 
@@ -188,6 +196,10 @@ abstract class AbstractORM implements JsonSerializable {
     public function populate(array $data) {
         if (isset($data['id']))
             unset($data['id']);
+
+	array_walk($_POST, function(&$v){
+            $v = trim($v);
+        });
 
         $this->_data = array_merge($this->_data, $data);
         $this->touchedFields = array_keys($data);
