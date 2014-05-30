@@ -46,8 +46,10 @@
     <string name="loading">Caricamento&#8230;</string>
     <string name="loading_error">Si è verificato un errore</string>
     <string name="tasks_no_tasks">Nessun lavoro</string>
-    <string name="notification_new_issue">È stato segnalato un nuovo problema</string>
-    <string name="notification_new_task">È stato pianificato un nuovo lavoro</string>
+    <string name="notification_new_issue">Nuovo problema</string>
+    <string name="notification_issue_edited">Problema modificato</string>
+    <string name="notification_new_task">Nuovo lavoro</string>
+    <string name="notification_task_edited">Lavoro modificato</string>
     <string name="gcm_error_no_play_services">Google Play Services non è presente, non sarà possibile ricevere notifiche</string>
     <string name="gcm_error_no_registration_id">Impossibile ottenere il codice di registrazione da Google Play Services, riavviare per riprovare altrimenti non sarà possibile ricevere notifiche</string>
 

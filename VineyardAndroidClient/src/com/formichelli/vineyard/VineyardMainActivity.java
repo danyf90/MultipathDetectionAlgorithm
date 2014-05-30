@@ -103,7 +103,9 @@ public class VineyardMainActivity extends ActionBarActivity implements
 			return;
 		}
 
-		timeout = Integer.valueOf(sp.getString(getString(R.string.prefs_request_timeout), null));
+		timeout = Integer.valueOf(sp.getString(
+				getString(R.string.prefs_request_timeout),
+				getString(R.string.request_timeout_default)));
 
 		mNavigationDrawerFragment = (NavigationDrawerFragment) getSupportFragmentManager()
 				.findFragmentById(R.id.navigation_drawer);
@@ -119,7 +121,7 @@ public class VineyardMainActivity extends ActionBarActivity implements
 					getString(R.string.gcm_error_no_play_services),
 					Toast.LENGTH_LONG).show();
 		}
-		
+
 		serverInit();
 	}
 
@@ -1064,14 +1066,14 @@ public class VineyardMainActivity extends ActionBarActivity implements
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			int issueId = intent.getExtras().getInt(SendImagesIntent.ISSUE_ID);
-			String photoName = intent.getExtras().getString(
+			String photoUrl = intent.getExtras().getString(
 					SendImagesIntent.PHOTO_NAME);
 
-			Log.e(TAG, "photos uploaded");
+			Toast.makeText(VineyardMainActivity.this, R.string.issue_report_sending_images_completed, Toast.LENGTH_SHORT).show();
 
 			IssueTask issue = issues.get(issueId);
 			if (issue != null)
-				issue.addPhoto(photoName);
+				issue.addPhoto(photoUrl);
 		}
 	};
 

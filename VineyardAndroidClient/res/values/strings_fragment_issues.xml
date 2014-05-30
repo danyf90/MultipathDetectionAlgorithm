@@ -29,6 +29,7 @@
     <string name="task_view_calendar_list">Calendar/List</string>
     <string name="issue_use_location_label">Use current location</string>
     <string name="issue_add_photo_title">Add photo</string>
+    <string name="issue_add_photo_error">The photo has not been loaded</string>
 
     <string-array name="issue_add_photo_options">
         <item>Take from camera</item>

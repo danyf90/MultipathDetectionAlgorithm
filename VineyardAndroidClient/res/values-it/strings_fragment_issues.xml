@@ -21,14 +21,14 @@
     <string name="issues_no_issues">Nessun problema</string>
     <string name="issue_report_error">Si è verificato un errore, il problema non è stato segnalato</string>
     <string name="issue_report_sending_images">Il caricamento delle immagini continua in background</string>
-    <string name="issue_report_sending_images_complete">Caricamento delle immagini completato</string>
+    <string name="issue_report_sending_images_completed">Caricamento delle immagini completato</string>
     <string name="issue_report_sending_images_error">Si è verificato un errore durante il caricamento di una o più immagini</string>
     <string name="issue_mark_done_error">Si è verificato un errore, il problema non è stato marcato come risolto</string>
     <string name="issue_view_mine">Miei</string>
     <string name="issue_view_all">Tutti</string>
     <string name="issue_use_location_label">Invia posizione</string>
-
     <string name="issue_add_photo_title">Aggiungi photo</string>
+    <string name="issue_add_photo_error">La foto non è stata caricata</string>
 
     <string-array name="issue_add_photo_options">
         <item>Fai una foto</item>
@@ -40,7 +40,6 @@
         <item>Media</item>
         <item>Alta</item>
     </string-array>
-    
     <string-array name="task_status">
         <item>--</item>
         <item>Nuovo</item>

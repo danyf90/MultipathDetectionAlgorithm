@@ -294,7 +294,7 @@ public class SimpleTask implements Task, Comparable<SimpleTask> {
 		if (getPriority() != null)
 			params.add(new BasicNameValuePair(PRIORITY, getPriority().toString()));
 		else
-			params.add(new BasicNameValuePair(PRIORITY, "null"));
+			params.add(new BasicNameValuePair(PRIORITY, ""));
 
 		params.add(new BasicNameValuePair(PLACE, String.valueOf(getPlace()
 				.getId())));
@@ -310,9 +310,9 @@ public class SimpleTask implements Task, Comparable<SimpleTask> {
 			params.add(new BasicNameValuePair(LONGITUDE, String
 					.valueOf(getLongitude())));
 		} else {
-			params.add(new BasicNameValuePair(LATITUDE, "null"));
+			params.add(new BasicNameValuePair(LATITUDE, ""));
 
-			params.add(new BasicNameValuePair(LONGITUDE, "null"));
+			params.add(new BasicNameValuePair(LONGITUDE, ""));
 		}
 
 		return params;
