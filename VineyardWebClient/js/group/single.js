@@ -73,7 +73,7 @@ var addNewWorker = function () {
 	var $select = $('<select class="new-worker"></select>');
 	
 	for (var i in S.workers)
-		if (S.group.workers.indexOf(i) == -1)
+		if (S.group.workers == null || S.group.workers.indexOf(i) == -1)
 			$select.append('<option value="' + S.workers[i].id + '">' + S.workers[i].name + '</option>');
 
 	var $row = $('<tr><th></th><td style="display: flex;"></td></tr>');
