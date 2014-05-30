@@ -212,6 +212,7 @@ main #loading:before {
 	border-collapse: collapse;
 	border-spacing: 0;
 	min-width: 550px;
+	height: 100%;
 }
 
 .entity table tbody tr:hover { background-color: rgba(215,215,215,0.5); }
@@ -249,6 +250,7 @@ main #loading:before {
 	border-spacing: 0;
 	width: 97%;
 	margin: 10px;
+	height: 100%;
 }
 
 .entity-all table tbody tr { border-bottom:1px solid #aaa; }
