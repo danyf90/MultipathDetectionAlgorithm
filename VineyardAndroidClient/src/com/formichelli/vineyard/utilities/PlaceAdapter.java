@@ -28,21 +28,22 @@ public class PlaceAdapter extends ArrayAdapter<Place> {
 	 *            Activity context
 	 * @param resource
 	 *            item layout. It must contain a TextView with id
-	 *            place_list_item_label that will contain the Place name, a TextView with id
-	 *            place_list_item_issues that will contain the count of the issues of the place, a TextView with id
-	 *            place_list_item_tasks that will contain the count of the tasks of the place
+	 *            place_list_item_label that will contain the Place name, a
+	 *            TextView with id place_list_item_issues that will contain the
+	 *            count of the issues of the place, a TextView with id
+	 *            place_list_item_tasks that will contain the count of the tasks
+	 *            of the place
 	 * @param objects
 	 *            places to be added to the ListView
 	 */
 	public PlaceAdapter(Context context, int resource, List<Place> objects) {
 		super(context, resource, objects);
 
-		
 		this.context = context;
-		
+
 		this.resource = resource;
 
-		if (objects != null)		
+		if (objects != null)
 			this.objects = objects;
 		else
 			this.objects = new ArrayList<Place>();
@@ -58,12 +59,20 @@ public class PlaceAdapter extends ArrayAdapter<Place> {
 
 		item.setTag(p);
 
+		// set name
 		((TextView) item.findViewById(R.id.place_list_item_label)).setText(p
 				.getName());
-		
-		((TextView) item.findViewById(R.id.place_list_item_issues))
-				.setText(String.valueOf(p.getChildrenIssuesCount()));
 
+		// set issues count
+		int childrenIssuesCount = p.getChildrenIssuesCount();
+		if (childrenIssuesCount == 0)
+			((TextView) item.findViewById(R.id.place_list_item_issues))
+					.setVisibility(View.INVISIBLE);
+		else
+			((TextView) item.findViewById(R.id.place_list_item_issues))
+					.setText(String.valueOf(childrenIssuesCount));
+
+		// set tasks count
 		((TextView) item.findViewById(R.id.place_list_item_tasks))
 				.setText(String.valueOf(p.getChildrenTasksCount()));
 
@@ -86,7 +95,7 @@ public class PlaceAdapter extends ArrayAdapter<Place> {
 			this.objects = objects;
 		else
 			this.objects.clear();
-		
+
 		notifyDataSetChanged();
 	}
 }
