@@ -45,6 +45,18 @@ class Group extends TrackedORM implements IResource {
         return $s;
     }
 
+    // Override AbstractORM::delete()
+    public static function delete($id) {
+	$pdo = DB::getConnection();
+	$sql = $pdo->prepare("DELETE FROM `group_composition` WHERE `group` = ?");
+	try {
+	    $sql->execute(array($id));
+	    return parent::delete($id);
+	} catch (PDOException $e) {
+	    http_response_code(400); // Bad Request
+	}
+    }
+
     public static function handleRequest($method, array $requestParameters) {
 
         switch (count($requestParameters)) {
