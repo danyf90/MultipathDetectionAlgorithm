@@ -68,7 +68,91 @@ class Task extends TemporalORM implements IResource {
     }
 
     public static function getTableName() { return 'task'; }
+	
+	protected function getNotificationRecipients() {
+		$recipients = array();
+		
+		if (!isset($this->assigned_worker) && !isset($this->assigned_group))
+		{
+			Worker::get(function ($worker) use (&$recipients) {
+				$recipients[] = $worker->{"notification_id"};
+			}, "`id` <> ? AND `notification_id` IS NOT NULL", array($this->modifier));
+			
+			return $recipients;
+		}
+		
+		if (isset($this->assigned_worker)) 
+		{
+			 Worker::get(function ($worker) use (&$recipients) {
+				$recipients[] = $worker->{"notification_id"};
+			}, "`id` = ? AND `notification_id` IS NOT NULL", array($this->assigned_worker));
+		}
+		
+		if (isset($this->assigned_group)) {
+			$pdo = DB::getConnection();
+			$sql = $pdo->prepare("SELECT `notification_id`
+				FROM `worker`
+				JOIN `group_composition` ON (`worker.id` = `group_composition`.`worker`)
+				JOIN `group` ON (`group_composition`.`group` = `group`.`id`)
+				WHERE `group`.`id` = ?
+				AND `notification_id` IS NOT NULL");
+			$sql->execute(array($this->assigned_group));
+			$recipients = array_merge( $recipients, $sql->fetchAll(PDO::FETCH_ASSOC) );
+		}
+		
+		return $recipients;
+	}
+	
+	protected function notifyInsertion() {
+		$n = new Notificator();
 
+        $title = "task-insertion";
+        $p = Place::getById($this->place);
+
+        $description = $p->name . ": " . $this->title;
+        if (isset($this->description) && strlen($this->description) > 0)
+            $description .= " - " . $this->description;
+
+        $message = array(
+            'id' => $this->id,
+            'title' => $title,
+            'description' => $description,
+            'placeId' => $this->place
+        );
+
+        $recipients = $this->getNotficationRecipients();
+
+        $n->setData($message);
+        $n->setRecipients($recipients);
+        $n->send();
+	}
+	
+	protected function notifyModification() {
+		$n = new Notificator();
+		
+		$this->load($this->id);
+		
+        $title = "task-modification";
+        $p = Place::getById($this->place);
+
+        $description = $p->name . ": " . $this->title;
+        if (isset($this->description) && strlen($this->description) > 0)
+            $description .= " - " . $this->description;
+
+        $message = array(
+            'id' => $this->id,
+            'title' => $title,
+            'description' => $description,
+            'placeId' => $this->place
+        );
+
+        $recipients = $this->getNotficationRecipients();
+
+        $n->setData($message);
+        $n->setRecipients($recipients);
+        $n->send();
+	}
+	
     // Override AbstractORM::listAll()
     public static function listAll() {
 
@@ -87,33 +171,8 @@ class Task extends TemporalORM implements IResource {
             $sql = $pdo->prepare("UPDATE `task` SET `create_time` = `start_time` WHERE `id` = ? AND `end_time` IS NULL");
             $sql->execute(array($this->id));
 
-
-            // Send notifications to all users
-        $n = new Notificator();
-
-        $title = "task";
-        $p = Place::getById($this->place);
-
-        $description = $p->name . ": " . $this->title;
-        if (isset($this->description) && strlen($this->description) > 0)
-            $description .= " - " . $this->description;
-
-        $message = array(
-            'id' => $this->id,
-            'title' => $title,
-            'description' => $description,
-            'placeId' => $this->place
-        );
-
-        $recipients = array();
-
-        Worker::get(function ($worker) use (&$recipients) {
-            $recipients[] = $worker->{"notification_id"};
-        }, "`id` <> ? AND `notification_id` IS NOT NULL", array($this->modifier));
-
-        $n->setData($message);
-        $n->setRecipients($recipients);
-        $n->send();
+            // Send notifications
+			$this->notifyInsertion();
     }
 
     // Override AbstractORM::getById() to include task revisions
@@ -166,12 +225,9 @@ class Task extends TemporalORM implements IResource {
                     break;
 
                     default:
-                        http_response_code(400); // Bad Request
+                        http_response_code(501); // Not Implemented
                 }
-
-                $id = array_shift($requestParameters);
-
-
+			
             break;
 
             default:
