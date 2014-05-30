@@ -317,10 +317,7 @@ main #loading:before {
 	z-index: 10;
 }
 
-#place #place-photo div.hidden {
-	visibility: hidden;
-	width: 5px;
-}
+#place #place-photo div.hidden { visibility: hidden; }
 
 #place #place-photo progress {
 	visibility: hidden;
@@ -393,12 +390,12 @@ main #loading:before {
 .first-col { width: 25%; }
 .third-col { width: 15%; }
 .has-children { cursor: pointer; }
-.has-children .first-col:before {
+.has-children > .first-col:before {
 	font-family: monospace;
 	content: '[+] ';
 }
 
-.open .first-col:before {
+.has-children.open > .first-col:before {
 	font-family: monospace;
 	content: '[-] ';
 }
@@ -478,6 +475,8 @@ main #loading:before {
 }
 
 .task-issue .assign-time { display: block; font-size: 0.7em; }
+
+#issue-map { height: 100vh; width: 100%; }
 
 /**
  * GROUPS

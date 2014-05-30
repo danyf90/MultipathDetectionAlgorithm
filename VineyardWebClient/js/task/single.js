@@ -14,7 +14,7 @@ var insertTask = function () {
 	var origType = S.taskDueTime.attr("type");
 	
 	S.taskDueTime.attr("type", "hidden");
-	S.taskDueTime.val(a + " 00:00:00");
+	S.taskDueTime.val(origValue + " 00:00:00");
 	
 	$.post(requestedUrl, $("form").serialize(), function (data, xhr) {
 		

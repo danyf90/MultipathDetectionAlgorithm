@@ -16,7 +16,10 @@ $(function() {
 		$(".menu-item-" + resource).addClass("current");
 
 	$loading = $("#loading");
-
+	
+	// disable cache for AJAX requests
+	$.ajaxSetup({cache: false});
+	
 	$(document).ajaxStart(function() {
 		$loading.css("visibility", "visible");
 	}).ajaxStop(function(){
