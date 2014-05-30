@@ -96,7 +96,7 @@ public class VineyardMainActivity extends ActionBarActivity implements
 		sp = PreferenceManager.getDefaultSharedPreferences(this);
 
 		// Retrieve values written by LoginActivity
-		userId = sp.getInt(LoginActivity.USERID, -1);
+		userId = sp.getInt(getString(R.string.preference_user_id), -1);
 		serverUrl = sp.getString(getString(R.string.prefs_server_url), null);
 		if (userId == -1 || serverUrl == null) {
 			startLoginActivity();
@@ -190,6 +190,7 @@ public class VineyardMainActivity extends ActionBarActivity implements
 
 		case 4: // logout
 			sp.edit().remove(getString(R.string.preference_user_id)).commit();
+			gcmClient.unregister(this);
 			new UserLogoutTask(vineyardServer.getUrl(), userId).execute();
 			break;
 
@@ -199,8 +200,6 @@ public class VineyardMainActivity extends ActionBarActivity implements
 	}
 
 	private void startLoginActivity() {
-		if (gcmClient != null)
-			gcmClient.unregister(this);
 		startActivity(new Intent(this, LoginActivity.class));
 		finish();
 	}

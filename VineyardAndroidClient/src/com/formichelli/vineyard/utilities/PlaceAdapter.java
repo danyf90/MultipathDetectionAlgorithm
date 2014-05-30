@@ -64,17 +64,22 @@ public class PlaceAdapter extends ArrayAdapter<Place> {
 				.getName());
 
 		// set issues count
-		int childrenIssuesCount = p.getChildrenIssuesCount();
-		if (childrenIssuesCount == 0)
+		int childrenCount = p.getChildrenIssuesCount();
+		if (childrenCount == 0)
 			((TextView) item.findViewById(R.id.place_list_item_issues))
-					.setVisibility(View.INVISIBLE);
+					.setVisibility(View.GONE);
 		else
 			((TextView) item.findViewById(R.id.place_list_item_issues))
-					.setText(String.valueOf(childrenIssuesCount));
+					.setText(String.valueOf(childrenCount));
 
 		// set tasks count
-		((TextView) item.findViewById(R.id.place_list_item_tasks))
-				.setText(String.valueOf(p.getChildrenTasksCount()));
+		childrenCount = p.getChildrenTasksCount();
+		if (childrenCount == 0)
+			((TextView) item.findViewById(R.id.place_list_item_tasks))
+					.setWidth(0);
+		else
+			((TextView) item.findViewById(R.id.place_list_item_tasks))
+					.setText(String.valueOf(childrenCount));
 
 		return item;
 	}

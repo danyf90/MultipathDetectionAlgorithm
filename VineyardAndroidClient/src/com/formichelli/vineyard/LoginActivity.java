@@ -232,7 +232,7 @@ public class LoginActivity extends Activity {
 
 				try {
 					sp.edit()
-							.putInt(USERID,
+							.putInt(getString(R.string.preference_user_id),
 									new JSONObject(response.second)
 											.getInt(USERID)).commit();
 				} catch (JSONException e) {

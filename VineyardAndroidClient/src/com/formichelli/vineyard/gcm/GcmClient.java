@@ -73,7 +73,8 @@ public class GcmClient {
 			return null;
 		}
 
-		// Check if application was updated; if so, it must clear the registration ID
+		// Check if application was updated; if so, it must clear the
+		// registration ID
 		// since the existing regID is not guaranteed to work with the new
 		// application version.
 		int registeredVersion = prefs.getInt(PROPERTY_APP_VERSION,
@@ -143,10 +144,6 @@ public class GcmClient {
 					storeRegistrationId(activity, regId);
 					return true;
 				} catch (IOException e) {
-					Toast.makeText(
-							activity,
-							activity.getString(R.string.gcm_error_no_registration_id),
-							Toast.LENGTH_LONG).show();
 					Log.e(TAG, e.getLocalizedMessage());
 				}
 				return false;
@@ -154,8 +151,13 @@ public class GcmClient {
 
 			@Override
 			protected void onPostExecute(Boolean result) {
-				if (result == false)
+				if (result == false) {
+					Toast.makeText(
+							activity,
+							activity.getString(R.string.gcm_error_no_registration_id),
+							Toast.LENGTH_LONG).show();
 					return;
+				}
 
 				sendRegistrationId();
 			}
