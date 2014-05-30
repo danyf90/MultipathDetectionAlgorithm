@@ -45,7 +45,7 @@ abstract class AbstractTask extends TemporalORM implements IResource {
         $v->id('modifier', $modelNamespace . "Worker");
         $v->set('modifier');
         // create_time
-        $v->notSet('create_time');
+        $v->timestamp('create_time');
         // status
         $v->nullEnum('status', self::$statusEnum);
         // priority
@@ -76,7 +76,7 @@ abstract class AbstractTask extends TemporalORM implements IResource {
 		{
 			 Worker::get(function ($worker) use (&$recipients) {
 				$recipients[] = $worker->{"notification_id"};
-			}, "`id` = ? AND `notification_id` IS NOT NULL", array($this->assigned_worker));
+			}, "`id` = ? AND `id` <> ? AND `notification_id` IS NOT NULL", array($this->assigned_worker, $this->modifier));
 		}
 		
 		if (isset($this->assigned_group)) {
@@ -86,8 +86,9 @@ abstract class AbstractTask extends TemporalORM implements IResource {
 				JOIN `group_composition` ON (`worker.id` = `group_composition`.`worker`)
 				JOIN `group` ON (`group_composition`.`group` = `group`.`id`)
 				WHERE `group`.`id` = ?
+				AND `worker`.`id` <> ?
 				AND `notification_id` IS NOT NULL");
-			$sql->execute(array($this->assigned_group));
+			$sql->execute(array($this->assigned_group, $this->modifier));
 			$recipients = array_merge( $recipients, $sql->fetchAll(PDO::FETCH_ASSOC) );
 		}
 		
