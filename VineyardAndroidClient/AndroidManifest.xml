@@ -60,13 +60,11 @@
         </activity>
         <activity
             android:name="com.formichelli.vineyard.SettingsActivity"
-            android:label="@string/activity_settings"
-            android:parentActivityName="com.formichelli.vineyard.VineyardMainActivity" >
+            android:label="@string/activity_settings" >
         </activity>
         <activity
             android:name="com.formichelli.vineyard.PlacePickerActivity"
-            android:label="@string/activity_place_picker"
-            android:parentActivityName="com.formichelli.vineyard.VineyardMainActivity" >
+            android:label="@string/activity_place_picker" >
         </activity>
 
         <receiver
