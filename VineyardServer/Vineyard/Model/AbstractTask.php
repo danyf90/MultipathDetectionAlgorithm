@@ -45,9 +45,9 @@ abstract class AbstractTask extends TemporalORM implements IResource {
         $v->id('modifier', $modelNamespace . "Worker");
         $v->set('modifier');
         // create_time
-        $v->timestamp('create_time');
+        $v->notSet('create_time');
         // status
-        $v->enum('status', self::$statusEnum);
+        $v->nullEnum('status', self::$statusEnum);
         // priority
         $v->nullEnum('priority', self::$priorityEnum);
         // description
@@ -55,7 +55,6 @@ abstract class AbstractTask extends TemporalORM implements IResource {
         $v->notSet('start_time');
         // end_time
         $v->notSet('end_time');
-
         return $v;
     }
 
