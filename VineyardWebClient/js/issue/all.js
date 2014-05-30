@@ -57,12 +57,55 @@ var insertIssue = function (issue, $container) {
 	$container.append($row);
 };
 
+
+var putOnMap = function (i, issue) {
+	if (issue.latitude == null)
+		return;
+	
+	new google.maps.Marker({
+		position: new google.maps.LatLng(issue.latitude, issue.longitude),
+		map: S.issueMap,
+		title: issue.title
+	});
+};
+
+var initializeMap = function () {
+	var mapOpt = {
+		zoom: 6,
+		center: S.issueMapCenter
+	};
+	
+	S.issueMap = new google.maps.Map(S.issueMapContainer[0], mapOpt);
+	$.each(S.openIssues, putOnMap);
+};
+
+var showMap = function () {
+	if (S.isMapInitialized == null)
+		initializeMap();
+	
+	S.isMapInizialized = true;
+	$("form").hide();
+	S.issueMapContainer.show();
+	
+};
+
 var insertJSONList = function (issues) {
+	var i = 0;
+	var avgLat = 0, avgLong = 0;
 	
 	$.each(issues, function (i, issue) {
 		insertIssue(issue, S.issueAllTableBody); 
+		
+		// computer center of map
+		if (issue.latitude != null) {
+			avgLat += parseFloat(issue.latitude);
+			avgLong += parseFloat(issue.longitude);
+			i++
+		}
 	});
-};
+	
+	S.issueMapCenter = new google.maps.LatLng(avgLat, avgLong);
+};		
 
 var insertElementList = function (issues) {
 	
@@ -164,6 +207,7 @@ var loadList = function () {
 				$this.toggleClass("active");
 			});
 			
+			$("#show-issue-map").on("click", showMap);
 		});
 	});
 		
@@ -171,7 +215,7 @@ var loadList = function () {
 
 var init = function () {
 	S.issueAllTableBody = $("#issue-all-table-body");
-	
+	S.issueMapContainer = $("#issue-map").hide();
 	loadList();
 };
 

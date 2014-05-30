@@ -7,6 +7,7 @@
 					<div>
 						<h2>Issues</h2>
 						<input type="button" value="Show All" id="toggle-all">
+						<input type="button" value="Show In Map" id="show-issue-map">
 					</div>
 				</td>
 			</tr>
@@ -14,5 +15,7 @@
         </thead>
         <tbody id="issue-all-table-body"></tbody>
     </table>
-	<script src="/js/issue/all.js"></script>
 </form>
+<div id="issue-map"></div>
+<script type="text/javascript" src='http://maps.google.com/maps/api/js?v=3.exp&sensor=false'></script>
+<script src="/js/issue/all.js"></script>
