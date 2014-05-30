@@ -17,12 +17,16 @@ import android.util.Log;
 
 public class GcmIntentService extends IntentService {
 	private static final String TAG = "GcmIntentService";
-	
+
 	public static final int NOTIFICATION_ID = 1;
 	private static final String TITLE = "title";
 	private static final String DESCRIPTION = "description";
 	private static final String PLACE_ID = "placeId";
 	private static final String TASK_ID = "id";
+
+	private enum NotificationType {
+		ISSUE_INSERTION, ISSUE_MODIFICATION, TASK_INSERTION, TASK_MODIFICATION, UNKNOWN
+	};
 
 	public GcmIntentService() {
 		super("GcmIntentService");
@@ -34,7 +38,6 @@ public class GcmIntentService extends IntentService {
 		GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(this);
 
 		String messageType = gcm.getMessageType(intent);
-		
 
 		Log.i(TAG, "GCM message received: " + extras.toString());
 
@@ -47,25 +50,22 @@ public class GcmIntentService extends IntentService {
 	}
 
 	private void sendNotification(Bundle extras) {
+		NotificationType notificationType;
 		String title = extras.getString(TITLE);
 		String description = extras.getString(DESCRIPTION);
 		int placeId = Integer.valueOf(extras.getString(PLACE_ID));
 		int taskId = Integer.valueOf(extras.getString(TASK_ID));
-		int issueOrTask;
 		boolean showIssuesNotifications, showTasksNotifications;
 		Context context = getApplicationContext();
 
 		showIssuesNotifications = PreferenceManager
-				.getDefaultSharedPreferences(context)
-				.getBoolean(
+				.getDefaultSharedPreferences(context).getBoolean(
 						context.getString(R.string.prefs_issues_notifications),
 						true);
-		
-		showTasksNotifications = PreferenceManager
-				.getDefaultSharedPreferences(context)
-				.getBoolean(
-						context.getString(R.string.prefs_tasks_notifications),
-						true);
+
+		showTasksNotifications = PreferenceManager.getDefaultSharedPreferences(
+				context).getBoolean(
+				context.getString(R.string.prefs_tasks_notifications), true);
 
 		NotificationManager mNotificationManager = (NotificationManager) this
 				.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -73,31 +73,37 @@ public class GcmIntentService extends IntentService {
 		Intent intent = new Intent(this, VineyardMainActivity.class);
 		intent.putExtra(VineyardMainActivity.PLACE_ID, placeId);
 
-		if (title.compareTo("issue") == 0) {
+		notificationType = getNotificationType(title);
+
+		switch (notificationType) {
+		case ISSUE_INSERTION:
 			if (!showIssuesNotifications)
 				return;
-
-			issueOrTask = 0;
-
-		} else if (title.compareTo("task") == 0) {
-			if (!showTasksNotifications)
-				return;
-
-			issueOrTask = 1;
-		} else
-			issueOrTask = -1;
-
-		switch (issueOrTask) {
-		case 0:
-			title = getResources().getString(R.string.notification_new_issue);
+			title = getResources().getString(R.string.notification_issue_insertion);
 			intent.putExtra(VineyardMainActivity.ISSUE_ID, taskId);
 			break;
-		case 1:
-			title = getResources().getString(R.string.notification_new_task);
+			
+		case ISSUE_MODIFICATION:
+			if (!showIssuesNotifications)
+				return;
+			title = getResources().getString(R.string.notification_issue_modification);
+			intent.putExtra(VineyardMainActivity.ISSUE_ID, taskId);
+			break;
+		case TASK_INSERTION:
+			if (!showTasksNotifications)
+				return;
+			title = getResources().getString(R.string.notification_task_insertion);
 			intent.putExtra(VineyardMainActivity.TASK_ID, taskId);
 			break;
-		default:
+		case TASK_MODIFICATION:
+			if (!showTasksNotifications)
+				return;
+			title = getResources().getString(R.string.notification_task_modification);
+			intent.putExtra(VineyardMainActivity.TASK_ID, taskId);
+			break;
+		case UNKNOWN:
 			title = "unexpected notification type: " + title;
+			break;
 		}
 
 		PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
@@ -120,5 +126,23 @@ public class GcmIntentService extends IntentService {
 			final long pattern[] = { 0, 100, 100, 100, 100, 100 };
 			v.vibrate(pattern, -1);
 		}
+	}
+
+	private NotificationType getNotificationType(String title) {
+
+		if (title.compareTo("issue-insertion") == 0)
+			return NotificationType.ISSUE_INSERTION;
+
+		else if (title.compareTo("issue-modification") == 0)
+			return NotificationType.ISSUE_MODIFICATION;
+
+		else if (title.compareTo("task-insertion") == 0)
+			return NotificationType.TASK_INSERTION;
+
+		else if (title.compareTo("task-modification") == 0)
+			return NotificationType.TASK_MODIFICATION;
+
+		else
+			return NotificationType.UNKNOWN;
 	}
 }
