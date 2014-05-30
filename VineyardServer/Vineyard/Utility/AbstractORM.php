@@ -319,6 +319,7 @@ abstract class AbstractORM implements JsonSerializable {
         try {
             $s->save();
             http_response_code(202); // Accepted
+			$s->onPostUpdate();
             return ''; // Empty response body
         } catch (ORMException $e) {
             http_response_code(400); // Bad Request
@@ -328,6 +329,11 @@ abstract class AbstractORM implements JsonSerializable {
 	    	return $e->getMessage();
         }
     }
+	
+	 /**
+     * Overridable event, triggered after the instance is updated in the DB by means of a PUT request
+     */
+	protected function onPostUpdate() {}
 
     public static function delete($id) {
 
