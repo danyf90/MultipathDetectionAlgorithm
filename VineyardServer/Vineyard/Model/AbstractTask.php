@@ -89,9 +89,8 @@ abstract class AbstractTask extends TemporalORM implements IResource {
 				AND `worker`.`id` <> ?
 				AND `notification_id` IS NOT NULL");
 			$sql->execute(array($this->assigned_group, $this->modifier));
-			$recipients = array_merge( $recipients, $sql->fetchAll(PDO::FETCH_ASSOC) );
+			$recipients = array_merge( $recipients, $sql->fetchAll(PDO::FETCH_ASSOC | PDO::FETCH_COLUMN, 0));
 		}
-		
 		return $recipients;
 	}
 	
