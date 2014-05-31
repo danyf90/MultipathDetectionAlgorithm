@@ -192,6 +192,17 @@ var commitIssueChanges = function () {
 		S.issueDueTime.val(origValue + " 00:00:00");
 	}
 	
+	S.issueAssignTo = $("#issue-assigned-to");
+	
+	if ( S.issueAssignTo[0].selectedIndex == 0 ) {
+		S.issueAssignTo.removeAttr("name");
+		S.issueAssignTo.after('<input type="hidden" name="assigned_worker" value="" />');
+		S.issueAssignTo.after('<input type="hidden" name="assigned_group" value="" />');
+	} else if (S.issueAssignTo.attr("name") == "assigned_worker")
+		S.issueAssignTo.after('<input type="hidden" name="assigned_group" value="" />');
+	else if (S.issueAssignTo.attr("name") == "assigned_group")
+		S.issueAssignTo.after('<input type="hidden" name="assigned_worker" value="" />');
+	
 	var data = $("form").serialize();
 	
 	if (adjustDueTime) {
@@ -206,6 +217,9 @@ var commitIssueChanges = function () {
 			data: data,
 			success: function() { window.location.reload(); }
 		}).fail(showError);
+	
+	S.issueAssignTo.siblings("input[type='hidden']").remove();
+
 };
 
 

@@ -195,6 +195,17 @@ var commitTaskChanges = function () {
 		S.taskDueTime.val(origValue + " 00:00:00");
 	}
 	
+	S.taskAssignTo = $("#task-assigned-to");
+	
+	if ( S.taskAssignTo[0].selectedIndex == 0 ) {
+		S.taskAssignTo.removeAttr("name");
+		S.taskAssignTo.after('<input type="hidden" name="assigned_worker" value="" />');
+		S.taskAssignTo.after('<input type="hidden" name="assigned_group" value="" />');
+	} else if (S.taskAssignTo.attr("name") == "assigned_worker")
+		S.taskAssignTo.after('<input type="hidden" name="assigned_group" value="" />');
+	else if (S.taskAssignTo.attr("name") == "assigned_group")
+		S.taskAssignTo.after('<input type="hidden" name="assigned_worker" value="" />');
+	
 	var data = $("form").serialize();
 	
 	if (adjustDueTime) {
@@ -209,6 +220,8 @@ var commitTaskChanges = function () {
 			data: data,
 			success: function() { window.location.reload(); }
 		}).fail(showError);
+	
+	S.taskAssignTo.siblings("input[type='hidden']").remove();
 };
 
 
