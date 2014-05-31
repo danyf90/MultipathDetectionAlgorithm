@@ -52,8 +52,10 @@
     <string name="tasks_no_tasks">There are no tasks</string>
     <string name="notification_issue_insertion">New issue</string>
     <string name="notification_issue_modification">Issue edited</string>
+    <string name="notification_issue_resolved">Issue solved</string>
     <string name="notification_task_insertion">New task</string>
     <string name="notification_task_modification">Task edited</string>
+    <string name="notification_task_resolved">Task solved</string>
     <string name="gcm_error_no_play_services">No Google Play Services found, you will not receive any notification</string>
     <string name="gcm_error_no_registration_id">Unable to get registration id from Google Play Services, restart the application to try again otherwise you will not receive any notification</string>
 

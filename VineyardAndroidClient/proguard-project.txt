@@ -19,6 +19,8 @@
 #   public *;
 #}
 
+-keep class org.apache.http.**
+-keep interface org.apache.http.**
 
 #Google Play Services exceptions
 

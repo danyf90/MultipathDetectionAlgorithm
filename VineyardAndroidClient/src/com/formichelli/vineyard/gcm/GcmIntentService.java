@@ -25,7 +25,7 @@ public class GcmIntentService extends IntentService {
 	private static final String TASK_ID = "id";
 
 	private enum NotificationType {
-		ISSUE_INSERTION, ISSUE_MODIFICATION, TASK_INSERTION, TASK_MODIFICATION, UNKNOWN
+		ISSUE_INSERTION, ISSUE_MODIFICATION, ISSUE_RESOLVED, TASK_INSERTION, TASK_MODIFICATION, TASK_RESOLVED, UNKNOWN
 	};
 
 	public GcmIntentService() {
@@ -82,12 +82,17 @@ public class GcmIntentService extends IntentService {
 			title = getResources().getString(R.string.notification_issue_insertion);
 			intent.putExtra(VineyardMainActivity.ISSUE_ID, taskId);
 			break;
-			
+
 		case ISSUE_MODIFICATION:
 			if (!showIssuesNotifications)
 				return;
 			title = getResources().getString(R.string.notification_issue_modification);
 			intent.putExtra(VineyardMainActivity.ISSUE_ID, taskId);
+			break;
+		case ISSUE_RESOLVED:
+			if (!showIssuesNotifications)
+				return;
+			title = getResources().getString(R.string.notification_issue_resolved);
 			break;
 		case TASK_INSERTION:
 			if (!showTasksNotifications)
@@ -100,6 +105,11 @@ public class GcmIntentService extends IntentService {
 				return;
 			title = getResources().getString(R.string.notification_task_modification);
 			intent.putExtra(VineyardMainActivity.TASK_ID, taskId);
+			break;
+		case TASK_RESOLVED:
+			if (!showTasksNotifications)
+				return;
+			title = getResources().getString(R.string.notification_task_resolved);
 			break;
 		case UNKNOWN:
 			title = "unexpected notification type: " + title;

@@ -48,8 +48,10 @@
     <string name="tasks_no_tasks">Nessun lavoro</string>
     <string name="notification_issue_insertion">Nuovo problema</string>
     <string name="notification_issue_modification">Problema modificato</string>
+    <string name="notification_issue_resolved">Problema risolto</string>
     <string name="notification_task_insertion">Nuovo lavoro</string>
     <string name="notification_task_modification">Lavoro modificato</string>
+    <string name="notification_task_resolved">Lavoro risolto</string>
     <string name="gcm_error_no_play_services">Google Play Services non è presente, non sarà possibile ricevere notifiche</string>
     <string name="gcm_error_no_registration_id">Impossibile ottenere il codice di registrazione da Google Play Services, riavviare per riprovare altrimenti non sarà possibile ricevere notifiche</string>
 
