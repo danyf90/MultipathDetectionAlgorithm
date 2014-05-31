@@ -118,6 +118,13 @@ abstract class AbstractTask extends TemporalORM implements IResource {
         $n->send();
 	}
 	
+    // Override AbstractORM::sanitize()
+/*    protected function sanitize() {
+	parent::sanitize();
+		$this->status = "assigned";
+    }
+*/
+
     // Override AbstractORM::listAll()
     public static function listAll() {
 
@@ -130,11 +137,28 @@ abstract class AbstractTask extends TemporalORM implements IResource {
         return $list;
     }
 
+    // Override AbstractORM::onPreInsert()
+    protected function onPreInsert() {
+	parent::onPreInsert();
+	if (isset($this->assigned_worker) || isset($this->assigned_group))
+	    $this->_data['status'] = "assigned";
+    }
+
     // Override AbstractORM::onPostInsert()
     protected function onPostInsert() {
             $pdo = DB::getConnection();
             $sql = $pdo->prepare("UPDATE `task` SET `create_time` = `start_time` WHERE `id` = ? AND `end_time` IS NULL");
             $sql->execute(array($this->id));
+		parent::onPostInsert();
+    }
+
+    protected function onPreUpdate() {
+	parent::onPreUpdate();
+	if ($this->status == "resolved")
+	    return;
+
+	if (isset($this->assigned_worker) || isset($this->assigned_group))
+	    $this->_data['status'] = "assigned";
     }
 
     // Override AbstractORM::getById() to include task revisions

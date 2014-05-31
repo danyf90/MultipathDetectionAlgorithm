@@ -2,11 +2,7 @@
 
 namespace Vineyard\Utility;
 
-use \PDO;
-use \PDOException;
-use Vineyard\Utility\DB;
-use Vineyard\Utility\ORMException;
-use \JsonSerializable;
+use \PDO; use \PDOException; use Vineyard\Utility\DB; use Vineyard\Utility\ORMException; use \JsonSerializable;
 
 abstract class TemporalORM extends TrackedORM {
 
@@ -71,10 +67,13 @@ abstract class TemporalORM extends TrackedORM {
         $sql = $pdo->prepare($query);
         $sql->execute($whereParams);
 
+	if ($sql->rowCount() == 0)
+		throw new ORMException("", 404);
+
         $this->_data = $sql->fetch(PDO::FETCH_ASSOC);
         $this->touchedFields = array();
     }
-    
+
     public function populate(array $data) {
         if (isset($data['id']))
             unset($data['id']);
@@ -151,18 +150,20 @@ abstract class TemporalORM extends TrackedORM {
             $v = trim($v);
         });
 
-        $s = new static();
-        $s->load($id);
-		unset($s->start_time);
-		unset($s->end_time);
-        $s->populate($_PUT);
-
         try {
+            $s = new static();
+            $s->load($id);
+	    unset($s->start_time);
+	    unset($s->end_time);
+            $s->populate($_PUT);
+
+	    $s->onPreUpdate();
             $s->save();
+	    $s->onPostUpdate();
             http_response_code(202); // Accepted
             return ''; // Empty response body
         } catch (ORMException $e) {
-            http_response_code(400); // Bad Request
+            http_response_code($e->getCode());
             return $e->getWrongFields();
         } catch (PDOException $e) {
             http_response_code(500);

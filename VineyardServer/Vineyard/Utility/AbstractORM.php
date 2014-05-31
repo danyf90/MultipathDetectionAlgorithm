@@ -82,8 +82,11 @@ abstract class AbstractORM implements JsonSerializable {
 
         $wrong_fields = $this->check();
 
-        if (!empty($wrong_fields))
-            throw new ORMException($wrong_fields);
+        if (!empty($wrong_fields)) {
+            $e = new ORMException("", 400);
+		$e->setWrongFields($wrong_fields);
+		throw $e;
+	}
 
         if (isset($this->_data['id']))
             $this->_update();
@@ -167,6 +170,8 @@ abstract class AbstractORM implements JsonSerializable {
         $sql = $pdo->prepare("SELECT * FROM `" . $tableName . "` WHERE `id` = ?");
         $id = (int) $id;
         $sql->execute(array($id));
+		if ($sql->rowCount() == 0)
+			throw new ORMException("", 404);
 
         $this->_data = $sql->fetch(PDO::FETCH_ASSOC);
         $this->touchedFields = array();
@@ -184,7 +189,7 @@ abstract class AbstractORM implements JsonSerializable {
         $sql->execute(array($id));
 
         if ($sql->rowCount()  == 0)
-            throw new ORMException();
+            throw new ORMException("", 404);
 
         $this->_data = array('id' => $id);
         $this->touchedFields = array();
@@ -295,7 +300,7 @@ abstract class AbstractORM implements JsonSerializable {
             http_response_code(201); // Created
             return array( 'id' => $s->id );
         } catch (ORMException $e) {
-            http_response_code(400); // Bad Request
+            http_response_code($e->getCode()); // Bad Request
             return $e->getWrongFields();
         } catch (PDOException $e) {
 			http_response_code(400);
@@ -317,12 +322,13 @@ abstract class AbstractORM implements JsonSerializable {
         $s->populate($_PUT);
 
         try {
+		$s->onPreUpdate();
             $s->save();
             http_response_code(202); // Accepted
 			$s->onPostUpdate();
             return ''; // Empty response body
         } catch (ORMException $e) {
-            http_response_code(400); // Bad Request
+            http_response_code($e->getCode()); // Bad Request
             return $e->getWrongFields();
         } catch (PDOException $e) {
             http_response_code(400);
@@ -334,7 +340,7 @@ abstract class AbstractORM implements JsonSerializable {
      * Overridable event, triggered after the instance is updated in the DB by means of a PUT request
      */
 	protected function onPostUpdate() {}
-
+	protected function onPreUpdate() {}
     public static function delete($id) {
 
         $pdo = DB::getConnection();

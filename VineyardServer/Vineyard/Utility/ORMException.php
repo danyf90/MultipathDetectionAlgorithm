@@ -5,8 +5,8 @@ class ORMException extends \Exception {
 
     protected $wrongFields = null;
 
-    public function __construct(array $wrongFields = null) {
-        $this->wrongFields = $wrongFields;
+    public function __construct($message, $code) {
+        parent::__construct($message, $code);
     }
 
     public function setWrongFields(array $wf) {

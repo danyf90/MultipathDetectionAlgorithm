@@ -37,7 +37,9 @@ static public function isIssueInstance() { return true; }
 	}
 	
 	protected function onPostUpdate() {
-		$this->nofity("task-modification");
+		if ($this->status == "resolved")
+			$this->notify("issue-resolved");
+		$this->nofity("issue-modification");
 	}
 
     public static function handleRequest($method, array $requestParameters) {
