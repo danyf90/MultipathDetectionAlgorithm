@@ -23,6 +23,15 @@ abstract class TemporalORM extends TrackedORM {
      */
     protected function _update() {
 
+	$newAttributes = $this->_data;
+
+	$this->load($this->id);
+        unset($this->start_time);
+        unset($this->end_time);
+
+	$this->_data = array_merge($this->_data, $newAttributes);
+	$this->touchedFields = array_diff( array_keys($this->_data), array("id") );
+
         $this->_finalizeSnapshot();
 
         $pdo = DB::getConnection();
@@ -140,12 +149,5 @@ abstract class TemporalORM extends TrackedORM {
 		return $e->getJSONMessage();
 	}
     }
-
-	protected function onPreUpdate() {
-		parent::onPreUpdate();
-		$this->load($this->id);
-	    unset($this->start_time);
-	    unset($this->end_time);
-	}
 }
 ?>
