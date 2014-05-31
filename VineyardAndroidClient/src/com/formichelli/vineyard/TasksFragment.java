@@ -57,7 +57,7 @@ public class TasksFragment extends Fragment {
 	Drawable viewModeCalendarIcon, viewModeListIcon;
 	Place selectedPlace;
 	SimpleTask selectedTask;
-	
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -176,8 +176,10 @@ public class TasksFragment extends Fragment {
 								myTasksList.add(task);
 						taskAdapter.replaceItems(myTasksList);
 					}
-				} else
+				} else if (currentDay == null)
 					taskAdapter.replaceItems(tasksList);
+				else
+					taskAdapter.replaceItems(getTasksOfTheDay(currentDay));
 
 				taskAdapter.setShowPlace(true);
 				if (taskAdapter.getGroupCount() > 0)
@@ -190,9 +192,9 @@ public class TasksFragment extends Fragment {
 			showMode.setVisible(true);
 			viewMode.setVisible(false);
 			taskAdapter.setShowPlace(false);
-			
+
 			List<SimpleTask> myTasksList;
-			
+
 			activity.setTitle(String.format(
 					activity.getString(R.string.title_tasks_fragment),
 					selectedPlace.getName()));
@@ -207,9 +209,8 @@ public class TasksFragment extends Fragment {
 						myTasksList.add(task);
 			} else
 				myTasksList = selectedPlace.getTasks();
-			
-			taskAdapter.replaceItems(myTasksList);
 
+			taskAdapter.replaceItems(myTasksList);
 
 			if (selectedTask != null) {
 				// used in case of notification
@@ -217,7 +218,6 @@ public class TasksFragment extends Fragment {
 				selectedTask = null;
 			}
 
-			
 			if (taskAdapter.getGroupCount() > 0)
 				tasksListView.setVisibility(View.VISIBLE);
 			else
@@ -317,13 +317,10 @@ public class TasksFragment extends Fragment {
 		@Override
 		public void onDayClicked(AdapterView<?> adapter, View view,
 				int position, long id, Day day) {
-			currentDay = day;
-
-			ArrayList<SimpleTask> tasks = getTasksOfTheDay(day);
-
 			// change view only if there is at least one task
-			if (tasks.size() != 0) {
+			if (getTasksOfTheDay(day).size() != 0) {
 				calendarMode = false;
+				currentDay = day;
 				viewMode.setIcon(viewModeCalendarIcon);
 				showMode.setVisible(true);
 				loadData();
@@ -364,6 +361,10 @@ public class TasksFragment extends Fragment {
 		if (selectedPlace == null && calendarView.getVisibility() == View.GONE) {
 			calendarView.setVisibility(View.VISIBLE);
 			tasksListView.setVisibility(View.GONE);
+			calendarMode = true;
+			viewMode.setIcon(calendarMode ? viewModeListIcon
+					: viewModeCalendarIcon);
+			currentDay = null;
 			showMine = false;
 			showMode.setTitle(showMine ? showAllLabel : showMineLabel);
 			showMode.setVisible(false);
@@ -372,7 +373,6 @@ public class TasksFragment extends Fragment {
 
 		return false;
 	}
-	
 
 	OnClickListener doneOnClickListener = new OnClickListener() {
 		@Override
@@ -393,8 +393,8 @@ public class TasksFragment extends Fragment {
 		SimpleTask task;
 
 		public AsyncMarkTaskAsDone(String serverUrl, SimpleTask task) {
-			super(serverUrl + VineyardServer.TASKS_API
-					+ task.getId(), AsyncHttpRequest.Type.PUT);
+			super(serverUrl + VineyardServer.TASKS_API + task.getId(),
+					AsyncHttpRequest.Type.PUT);
 
 			this.task = task;
 
