@@ -35,9 +35,17 @@ var loadList = function () {
 		
 		$("#place-all tr").not(".children-row").on("click", function () {
 			$(this).toggleClass("open").next(".children-row").children().toggle();
+			console.log("done");
 		});
 		
+		
 		$("#place-all .children-row > td").hide();
+		
+		$("#place-all-table-body > tr.has-children").trigger("click");
+		
+		$(".has-children a").on("click", function (e) {
+			e.stopPropagation();
+		});
     });
 };
 

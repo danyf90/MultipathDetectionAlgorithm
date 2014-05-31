@@ -5,8 +5,8 @@
             <tr><th id="loading">Loading...</th><td><h2><input id="worker-name" data-name="name" placeholder="Insert a name..." type="text" /></h2></td></tr>
         </thead>
         <tbody id="worker-table-body">
-            <tr><th>Username</th><td><input id="worker-username" data-name="username" type="text" placeholder="Insert the username..."/></td></tr>
-            <tr><th>Email</th><td><input id="worker-email" data-name="email" type="text" placeholder="Insert the email..."/></td></tr>
+            <tr><th>Username</th><td><input id="worker-username" data-name="username" pattern="[^@]" type="text" placeholder="Insert the username..."/></td></tr>
+            <tr><th>Email</th><td><input id="worker-email" data-name="email" type="email" placeholder="Insert the email..."/></td></tr>
             <tr><th>Roles</th><td><select id="worker-role" multiple="multiple">
 					<option value="admin">Administrator</option>
 					<option value="operator">Operator</option>

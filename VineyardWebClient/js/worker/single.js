@@ -8,6 +8,12 @@ var showError = function () {
 
 var insertWorker = function () {
 		// TODO minimum validation!
+	
+	if ($("#worker-username").val().indexOf("@") != -1) {
+		alert("No @ are permitted in the username");
+		return;
+	}
+	
 	var requestedUrl = vineyard.config.serverUrl + "worker/";
 	$.post(requestedUrl, $("form").serialize(), function (data, e, xhr) {
 		data = $.parseJSON(data);

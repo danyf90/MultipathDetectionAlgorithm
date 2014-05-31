@@ -11,6 +11,9 @@
 				</td>
 			</tr>
         </thead>
+		<tbody>
+			<tr><td colspan="2"><div id="issue-photos"></div></td></tr>
+		</tbody>
         <tbody id="issue-table-body">
             <tr><th>Description</th><td><input data-name="description" id="issue-description" type="text" placeholder="Insert a description..."/></td></tr>
 			<tr><th>Status</th><td class="status" id="issue-status"></td></tr>

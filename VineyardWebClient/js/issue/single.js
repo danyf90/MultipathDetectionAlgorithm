@@ -104,6 +104,13 @@ var loadIssue = function(id) {
 		S.issue = issue;
         // Name
         $("#issue-title").val(issue.title); 
+		
+		// Photos
+		if (issue.photos != null)
+			for (var i = 0, l = issue.photos.length; i < l; i++)
+				$("#issue-photos")
+				.append('<img src="http://vineyard-server.no-ip.org/api/photo/' + issue.photos[i] + '?h=100">');
+		
         // Description
         $("#issue-description").val(issue.description); 
         // Position Link

@@ -384,13 +384,15 @@ tr:hover .delete-row {
 	background-position: left center;
 	background-size: contain;
 	background-repeat: no-repeat;
+	width: 18px;
+	display: inline-block;
 }
 
 #place-all .issues { background-image: url(images/action_issue_dark.png); }
 #place-all .tasks { background-image: url(images/action_task_dark.png); }
 
 .first-col { width: 25%; }
-.third-col { width: 15%; }
+.third-col { width: 17%; }
 .has-children { cursor: pointer; }
 .has-children > .first-col:before {
 	font-family: monospace;
@@ -478,7 +480,9 @@ tr:hover .delete-row {
 
 .task-issue .assign-time { display: block; font-size: 0.7em; }
 
-#issue-map { height: 100vh; width: 100%; }
+#issue-map { flex: 1; }
+
+#issue-photos { display: flex; justify-content: space-between; }
 
 /**
  * GROUPS

@@ -21,7 +21,8 @@
             locationName: options.locationName,
             settings: options.settings,
             domContainer: domElement,
-            geodecoder: new google.maps.Geocoder()
+            geodecoder: new google.maps.Geocoder(),
+			mapTypeId: google.maps.MapTypeId.SATELLITE
         }
     }
 

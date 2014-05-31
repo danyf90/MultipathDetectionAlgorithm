@@ -8,7 +8,7 @@ var S = {};
 var insertGroup = function () {
 	// TODO minimum validation!
 	var requestedUrl = vineyard.config.serverUrl + "group/";
-	$.post(requestedUrl, $("form").serialize(), function (data, xhr) {
+	$.post(requestedUrl, $("form").serialize(), function (data, e, xhr) {
 		
 		data = $.parseJSON(data);
 		
@@ -151,7 +151,7 @@ var commitGroupChanges = function () {
 			defObjs.push( $.ajax(requestOptions) );
 		});
 		
-		$.when(defObjs).done(function () { window.location.reload(); });
+		$.when.apply($, defObjs).always(function () { window.location.reload(); });
 	};
 	
 	if (data != "")

@@ -315,13 +315,11 @@ var commitPlaceChanges = function () {
 				}
 			};
 
-			console.log(requestOptions);
-
 			defObjs.push( $.ajax(requestOptions) );
 
 		});
 
-		$.when(defObjs).always(resetForm);
+		$.when.apply($, defObjs).always(resetForm);
 	};
 
 	if (data != "")

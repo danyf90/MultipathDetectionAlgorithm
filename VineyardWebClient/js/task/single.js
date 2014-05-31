@@ -16,10 +16,10 @@ var insertTask = function () {
 	S.taskDueTime.attr("type", "hidden");
 	S.taskDueTime.val(origValue + " 00:00:00");
 	
-	$.post(requestedUrl, $("form").serialize(), function (data, xhr) {
+	$.post(requestedUrl, $("form").serialize(), function (data, e, xhr) {
 		
 		data = $.parseJSON(data);
-		
+
 		if (xhr.status != 201) {
 			console.log(data);
 			return;

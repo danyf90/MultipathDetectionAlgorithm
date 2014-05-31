@@ -62,21 +62,32 @@ var putOnMap = function (i, issue) {
 	if (issue.latitude == null)
 		return;
 	
-	new google.maps.Marker({
-		position: new google.maps.LatLng(issue.latitude, issue.longitude),
+	var latlng = new google.maps.LatLng(issue.latitude, issue.longitude);
+	
+	S.bounds.extend(latlng);
+	
+	var marker = new google.maps.Marker({
+		position: latlng,
 		map: S.issueMap,
 		title: issue.title
+	});
+	
+	google.maps.event.addListener(marker, 'click', function() {
+		window.location = "/issue/" + issue.id;
 	});
 };
 
 var initializeMap = function () {
 	var mapOpt = {
-		zoom: 6,
-		center: S.issueMapCenter
+		zoom: 20,
+		center: S.issueMapCenter,
+		mapTypeId: google.maps.MapTypeId.SATELLITE
 	};
 	
 	S.issueMap = new google.maps.Map(S.issueMapContainer[0], mapOpt);
+	S.bounds = new google.maps.LatLngBounds();
 	$.each(S.openIssues, putOnMap);
+	S.issueMap.fitBounds(S.bounds);
 };
 
 var showMap = function () {
@@ -93,18 +104,18 @@ var insertJSONList = function (issues) {
 	var i = 0;
 	var avgLat = 0, avgLong = 0;
 	
-	$.each(issues, function (i, issue) {
+	$.each(issues, function (j, issue) {
 		insertIssue(issue, S.issueAllTableBody); 
 		
 		// computer center of map
 		if (issue.latitude != null) {
 			avgLat += parseFloat(issue.latitude);
 			avgLong += parseFloat(issue.longitude);
-			i++
+			i++;
 		}
 	});
-	
-	S.issueMapCenter = new google.maps.LatLng(avgLat, avgLong);
+	debugger;
+	S.issueMapCenter = new google.maps.LatLng(avgLat/i, avgLong/i);
 };		
 
 var insertElementList = function (issues) {
