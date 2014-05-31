@@ -45,7 +45,7 @@ abstract class AbstractTask extends TemporalORM implements IResource {
         $v->id('modifier', $modelNamespace . "Worker");
         $v->set('modifier');
         // create_time
-        $v->timestamp('create_time');
+        // $v->timestamp('create_time');
         // status
         $v->nullEnum('status', self::$statusEnum);
         // priority
@@ -83,7 +83,7 @@ abstract class AbstractTask extends TemporalORM implements IResource {
 			$pdo = DB::getConnection();
 			$sql = $pdo->prepare("SELECT `notification_id`
 				FROM `worker`
-				JOIN `group_composition` ON (`worker.id` = `group_composition`.`worker`)
+				JOIN `group_composition` ON (`worker`.`id` = `group_composition`.`worker`)
 				JOIN `group` ON (`group_composition`.`group` = `group`.`id`)
 				WHERE `group`.`id` = ?
 				AND `worker`.`id` <> ?
