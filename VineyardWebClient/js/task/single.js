@@ -24,7 +24,6 @@ var insertTask = function () {
 			console.log(data);
 			return;
 		}
-		
 		window.location = "/task/" + data.id;
 	});
 	
@@ -203,7 +202,7 @@ var commitTaskChanges = function () {
 		S.taskDueTime.val(origValue);
 	}
 	
-	if (data != "")
+	if (data != "")	
 		$.ajax({
 			type: 'PUT',
 			url: vineyard.config.serverUrl + "task/" + S.task.id,
@@ -225,7 +224,16 @@ var loadTaskModification = function (id) {
 		$("input, select").on("change", function () {
 			this.name = this.dataset.name;
 			S.controls.css("visibility", "visible");
-		});		
+		});
+		
+		$("#task-assigned-to").on("change", function () {
+			if (this.selectedIndex == 0) {
+				this.removeAttribute("name");
+				return;
+			}
+			
+			this.name = this.selectedOptions[0].parentNode.dataset.name;
+		});
 	});
 };
 

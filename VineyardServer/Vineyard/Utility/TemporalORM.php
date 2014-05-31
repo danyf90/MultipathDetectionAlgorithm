@@ -75,11 +75,8 @@ abstract class TemporalORM extends TrackedORM {
     }
 
     public function populate(array $data) {
-        if (isset($data['id']))
-            unset($data['id']);
-
-        $this->_data = array_merge($this->_data, $data);
-        $this->touchedFields = array_diff( array_keys($this->_data), array("id") );
+		parent::populate($data);
+    	$this->touchedFields = array_diff( array_keys($this->_data), array("id") );
     }
 
     /**************************************
@@ -140,55 +137,10 @@ abstract class TemporalORM extends TrackedORM {
         return $s;
     }
 
-
-	public static function update($id) {
-
-        // access PUT variables and put them in $_PUT for omogeinity
-        parse_str(file_get_contents("php://input"), $_PUT);
-
-        array_walk($_PUT, function(&$v){
-            $v = trim($v);
-        });
-
-        try {
-            $s = new static();
-            $s->load($id);
-	    unset($s->start_time);
-	    unset($s->end_time);
-            $s->populate($_PUT);
-
-	    $s->onPreUpdate();
-            $s->save();
-	    $s->onPostUpdate();
-            http_response_code(202); // Accepted
-            return ''; // Empty response body
-        } catch (ORMException $e) {
-            http_response_code($e->getCode());
-            return $e->getWrongFields();
-        } catch (PDOException $e) {
-            http_response_code(500);
-	    	return $e->getMessage();
-        }
-    }
-    
-    // TODO: delete issues? mark as duplicate but maintained?
-    /*static public function delete($id) {
-
-        $pdo = DB::getConnection();
-        $tableName = static::getTableName();
-
-        try {
-            $sql = $pdo->prepare("DELETE FROM `" . $tableName . "` WHERE `id` = ?");
-            $id = (int) $id;
-            $sql->execute(array($id));
-
-            http_response_code(202); // Accepted
-            return ''; // Empty response body
-        } catch (PDOException $e) {
-            http_response_code(400); // Bad Request
-            return $e->getMessage() . ": " . implode(",", $e->getWrongFields());
-        }
-    }*/
-
+	protected function onPreUpdate() {
+		$this->load($this->id);
+	    unset($this->start_time);
+	    unset($this->end_time);
+	}
 }
 ?>

@@ -202,9 +202,9 @@ abstract class AbstractORM implements JsonSerializable {
         if (isset($data['id']))
             unset($data['id']);
 
-	array_walk($_POST, function(&$v){
-            $v = trim($v);
-        });
+		array_walk($_POST, function(&$v){
+			$v = trim($v);
+		});
 
         $this->_data = array_merge($this->_data, $data);
         $this->touchedFields = array_keys($data);
@@ -309,20 +309,15 @@ abstract class AbstractORM implements JsonSerializable {
     }
 
     public static function update($id) {
-
         // access PUT variables and put them in $_PUT for omogeinity
         parse_str(file_get_contents("php://input"), $_PUT);
 
-        array_walk($_PUT, function(&$v){
-            $v = trim($v);
-        });
-
-        $s = new static();
-        $s->loadEmpty($id);
-        $s->populate($_PUT);
-
         try {
-		$s->onPreUpdate();
+        	$s = new static();
+        	$s->loadEmpty($id);
+        	$s->populate($_PUT);
+
+			$s->onPreUpdate();
             $s->save();
             http_response_code(202); // Accepted
 			$s->onPostUpdate();
