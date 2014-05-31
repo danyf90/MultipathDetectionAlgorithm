@@ -17,5 +17,5 @@
     </table>
 </form>
 <div id="issue-map"></div>
-<script type="text/javascript" src='http://maps.google.com/maps/api/js?v=3.exp&sensor=false'></script>
+<script type="text/javascript" src='/js/maps.js'></script>
 <script src="/js/issue/all.js"></script>
