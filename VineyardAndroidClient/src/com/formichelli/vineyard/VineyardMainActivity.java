@@ -96,7 +96,7 @@ public class VineyardMainActivity extends ActionBarActivity implements
 		sp = PreferenceManager.getDefaultSharedPreferences(this);
 
 		// Retrieve values written by LoginActivity
-		userId = sp.getInt(getString(R.string.preference_user_id), -1);
+		userId = sp.getInt(getString(R.string.prefs_user_id), -1);
 		serverUrl = sp.getString(getString(R.string.prefs_server_url), null);
 		if (userId == -1 || serverUrl == null) {
 			startLoginActivity();
@@ -191,7 +191,7 @@ public class VineyardMainActivity extends ActionBarActivity implements
 			break;
 
 		case 4: // logout
-			sp.edit().remove(getString(R.string.preference_user_id)).commit();
+			sp.edit().remove(getString(R.string.prefs_user_id)).commit();
 			gcmClient.unregister(this);
 			new UserLogoutTask(vineyardServer.getUrl(), userId).execute();
 			break;
@@ -223,7 +223,7 @@ public class VineyardMainActivity extends ActionBarActivity implements
 		return;
 	}
 
-	private void askExit() {
+	public void askExit() {
 		new DialogFragment() {
 			@Override
 			public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -1069,7 +1069,9 @@ public class VineyardMainActivity extends ActionBarActivity implements
 			String photoUrl = intent.getExtras().getString(
 					SendImagesIntent.PHOTO_NAME);
 
-			Toast.makeText(VineyardMainActivity.this, R.string.issue_report_sending_images_completed, Toast.LENGTH_SHORT).show();
+			Toast.makeText(VineyardMainActivity.this,
+					R.string.issue_report_sending_images_completed,
+					Toast.LENGTH_SHORT).show();
 
 			IssueTask issue = issues.get(issueId);
 			if (issue != null)

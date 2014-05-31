@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="prompt_email">Email o Username</string>
-    <string name="prompt_password">Password</string>
     <string name="prompt_server_url">URL del server</string>
-    <string name="preference_user_id">user_id</string>
     <string name="preference_settings_restored">Le impostazioni sono state ripristinate</string>
     <string name="preference_settings_restore_title">Sei sicuro di voler ripristinare le impostazioni iniziali?</string>
     <string name="preference_settings_restore_confirm">Sì</string>

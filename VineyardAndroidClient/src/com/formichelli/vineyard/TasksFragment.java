@@ -237,6 +237,7 @@ public class TasksFragment extends Fragment {
 	}
 
 	private ContentValues generateContentValuesFromTask(SimpleTask task) {
+		int color;
 		ContentValues values = new ContentValues();
 		Calendar cal = Calendar.getInstance();
 		TimeZone tz = TimeZone.getDefault();
@@ -247,7 +248,6 @@ public class TasksFragment extends Fragment {
 		values.put(CalendarProvider.LOCATION, location);
 		values.put(CalendarProvider.EVENT, task.getId());
 
-		int color = Event.DEFAULT_EVENT_ICON;
 
 		if (task.getPriority() != null) {
 
@@ -261,8 +261,13 @@ public class TasksFragment extends Fragment {
 			case HIGH:
 				color = Event.COLOR_RED;
 				break;
+			default:
+				color = Event.COLOR_PURPLE;
+				break;
 			}
 		}
+		else
+			color = Event.COLOR_PURPLE;
 
 		values.put(CalendarProvider.COLOR, color);
 

@@ -4,6 +4,7 @@
     <string name="prefs_email">email</string>
     <string name="prefs_password">password</string>
     <string name="prefs_server_url">server_url</string>
+    <string name="prefs_user_id">user_id</string>
     <string name="preference_settings_restored">Settings has been restored</string>
     <string name="preference_settings_restore_title">Are you sure you want to restore default settings?</string>
     <string name="preference_settings_restore_confirm">Yes</string>

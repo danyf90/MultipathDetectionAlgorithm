@@ -28,7 +28,8 @@
     <string name="action_up">Su</string>
     <string name="loading_message">Caricamento&#8230;</string>
     <string name="loading_places">Caricamento luoghi&#8230;</string>
-    <string name="loading_issues_and_tasks">Caricamento problemi e lavori&#8230;</string>
+    <string name="loading_issues">Caricamento problemi&#8230;</string>
+    <string name="loading_tasks">Caricamento lavori&#8230;</string>
     <string name="loading_workers">Caricamento operatori&#8230;</string>
     <string name="loading_workgroups">Caricamento gruppi di lavoro&#8230;</string>
     <string name="loading_sending_request">Invio richiesta in corso&#8230;</string>

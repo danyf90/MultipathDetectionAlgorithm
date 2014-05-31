@@ -6,7 +6,6 @@
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
     <string name="action_sign_in"><b>Accedi</b></string>
-    <string name="action_sign_in_short">Accedi</string>
     <string name="login_progress_signing_in">Accesso in corso&#8230;</string>
     <string name="error_invalid_email">L\'indirizzo email non è valido</string>
     <string name="error_invalid_password">La password è troppo corta</string>
