@@ -120,7 +120,7 @@ abstract class TemporalORM extends TrackedORM {
             return $sql->fetchAll(PDO::FETCH_ASSOC);
         }  catch (PDOException $e) {
             http_response_code(400); // Bad Request
-            return $e->getMessage() . ": " . implode(",", $e->getWrongFields());
+            return $e->getMessage();
         }
     }
 
@@ -130,14 +130,19 @@ abstract class TemporalORM extends TrackedORM {
             http_response_code(400);
             return;
         }
+	try {
+        	$s = new static();
+	        $s->load($id, $rev);
 
-        $s = new static();
-        $s->load($id, $rev);
-
-        return $s;
+        	return $s;
+	} catch (ORMException $e) {
+		http_response_code($e->getCode());
+		return $e->getJSONMessage();
+	}
     }
 
 	protected function onPreUpdate() {
+		parent::onPreUpdate();
 		$this->load($this->id);
 	    unset($this->start_time);
 	    unset($this->end_time);

@@ -13,6 +13,12 @@ class ORMException extends \Exception {
         $this->wrongFields = $wf;
     }
 
+    public function getJSONMessage() {
+	if (!is_null($this->wrongFields))
+	    return $this->wrongFields();
+	return $this->getMessage();
+    }
+
     public function getWrongFields() {
         return $this->wrongFields;
     }

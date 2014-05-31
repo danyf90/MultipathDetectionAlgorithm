@@ -255,10 +255,13 @@ abstract class AbstractORM implements JsonSerializable {
             http_response_code(400);
             return;
         }
-
-        $s = new static();
-        $s->load($id);
-
+	try {
+	        $s = new static();
+        	$s->load($id);
+	} catch (ORMException $e) {
+		http_response_code($e->getCode());
+		return $e->getJSONMessage();
+	}
         return $s;
     }
 
@@ -301,7 +304,7 @@ abstract class AbstractORM implements JsonSerializable {
             return array( 'id' => $s->id );
         } catch (ORMException $e) {
             http_response_code($e->getCode()); // Bad Request
-            return $e->getWrongFields();
+            return $e->getJSONMessage();
         } catch (PDOException $e) {
 			http_response_code(400);
 			return $e->getMessage();
@@ -324,7 +327,7 @@ abstract class AbstractORM implements JsonSerializable {
             return ''; // Empty response body
         } catch (ORMException $e) {
             http_response_code($e->getCode()); // Bad Request
-            return $e->getWrongFields();
+            return $e->getJSONMessage();
         } catch (PDOException $e) {
             http_response_code(400);
 	    	return $e->getMessage();
