@@ -32,6 +32,7 @@ import android.widget.Toast;
 import com.formichelli.vineyard.entities.Place;
 import com.formichelli.vineyard.entities.SimpleTask;
 import com.formichelli.vineyard.entities.Task;
+import com.formichelli.vineyard.entities.WorkGroup;
 import com.formichelli.vineyard.entities.Worker;
 import com.formichelli.vineyard.utilities.AsyncHttpRequest;
 import com.formichelli.vineyard.utilities.TaskExpandableAdapter;
@@ -144,86 +145,79 @@ public class TasksFragment extends Fragment {
 	}
 
 	public void loadData() {
+		List<SimpleTask> tasks;
 		final boolean showAllTasks = selectedPlace == null;
 
 		if (showAllTasks) {
 			viewMode.setVisible(true);
+
 			// show tasks of all places
 			activity.setTitle(activity
 					.getString(R.string.title_tasks_fragment_all));
+			taskAdapter.setShowPlace(true);
 
 			if (calendarMode) {
 				// show calendar
 				showMode.setVisible(false);
 				calendarView.setVisibility(View.VISIBLE);
 				tasksListView.setVisibility(View.GONE);
-			} else {
-				// show tasks for the selected day
-				showMode.setVisible(true);
-				calendarView.setVisibility(View.GONE);
-				tasksListView.setVisibility(View.VISIBLE);
-
-				if (showMine) {
-					int userId = activity.getUserId();
-					if (currentDay != null)
-						// get all my tasks for current day
-						taskAdapter.replaceItems(getTasksOfTheDay(currentDay));
-					else {
-						// get all my tasks
-						List<SimpleTask> myTasksList = new ArrayList<SimpleTask>();
-						for (SimpleTask task : tasksList)
-							if (task.getId() == userId)
-								myTasksList.add(task);
-						taskAdapter.replaceItems(myTasksList);
-					}
-				} else if (currentDay == null)
-					taskAdapter.replaceItems(tasksList);
-				else
-					taskAdapter.replaceItems(getTasksOfTheDay(currentDay));
-
-				taskAdapter.setShowPlace(true);
-				if (taskAdapter.getGroupCount() > 0)
-					tasksListView.setVisibility(View.VISIBLE);
-				else
-					tasksListView.setVisibility(View.GONE);
+				return;
 			}
+
+			if (currentDay != null)
+				tasks = getTasksOfTheDay(currentDay);
+			else
+				tasks = tasksList;
 		} else {
 			// show tasks of the selected place only
-			showMode.setVisible(true);
-			viewMode.setVisible(false);
-			taskAdapter.setShowPlace(false);
-
-			List<SimpleTask> myTasksList;
-
 			activity.setTitle(String.format(
 					activity.getString(R.string.title_tasks_fragment),
 					selectedPlace.getName()));
-			calendarView.setVisibility(View.GONE);
+			viewMode.setVisible(false);
+			taskAdapter.setShowPlace(false);
 
-			if (showMine) {
-				int userId = activity.getUserId();
-				// get all my tasks
-				myTasksList = new ArrayList<SimpleTask>();
-				for (SimpleTask task : selectedPlace.getTasks())
-					if (task.getId() == userId)
-						myTasksList.add(task);
-			} else
-				myTasksList = selectedPlace.getTasks();
-
-			taskAdapter.replaceItems(myTasksList);
-
-			if (selectedTask != null) {
-				// used in case of notification
-				tasksListView.expandGroup(myTasksList.indexOf(selectedTask));
-				selectedTask = null;
-			}
-
-			if (taskAdapter.getGroupCount() > 0)
-				tasksListView.setVisibility(View.VISIBLE);
-			else
-				tasksListView.setVisibility(View.GONE);
+			tasks = selectedPlace.getTasks();
 		}
 
+		// show tasks for the selected day
+		showMode.setVisible(true);
+		calendarView.setVisibility(View.GONE);
+		tasksListView.setVisibility(View.VISIBLE);
+
+		if (showMine) {
+			int userId = activity.getUserId();
+
+			List<SimpleTask> myTasksList = new ArrayList<SimpleTask>();
+			for (SimpleTask task : tasks) {
+				Worker assignedWorker = task.getAssignedWorker();
+				if (assignedWorker != null && assignedWorker.getId() == userId)
+					myTasksList.add(task);
+				else {
+					WorkGroup group = task.getAssignedGroup();
+					if (group != null)
+						for (Worker worker : group.getWorkers())
+							if (worker.getId() == userId) {
+								myTasksList.add(task);
+								break;
+							}
+				}
+			}
+
+			tasks = myTasksList;
+		}
+
+		taskAdapter.replaceItems(tasks);
+
+		if (taskAdapter.getGroupCount() > 0)
+			tasksListView.setVisibility(View.VISIBLE);
+		else
+			tasksListView.setVisibility(View.GONE);
+
+		if (selectedTask != null) {
+			// used in case of notification
+			tasksListView.expandGroup(tasks.indexOf(selectedTask));
+			selectedTask = null;
+		}
 	}
 
 	public void populateCalendarProvider() {

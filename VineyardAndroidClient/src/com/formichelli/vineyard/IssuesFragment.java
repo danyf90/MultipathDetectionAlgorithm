@@ -11,6 +11,7 @@ import com.formichelli.vineyard.entities.IssueTask;
 import com.formichelli.vineyard.entities.Place;
 import com.formichelli.vineyard.entities.SimpleTask;
 import com.formichelli.vineyard.entities.Task;
+import com.formichelli.vineyard.entities.WorkGroup;
 import com.formichelli.vineyard.entities.Worker;
 import com.formichelli.vineyard.utilities.AsyncHttpRequest;
 import com.formichelli.vineyard.utilities.TaskExpandableAdapter;
@@ -20,6 +21,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.util.Pair;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -111,39 +113,41 @@ public class IssuesFragment extends Fragment {
 		final boolean showAllIssues = selectedPlace == null;
 
 		if (showAllIssues) {
-			showMode.setVisible(true);
-			Place p = activity.getRootPlace();
-			issues = getAllIssues(p);
-			if (showMine) {
-				// show only issues of current user
-				int userId = activity.getUserId();
-				ArrayList<IssueTask> myIssues = new ArrayList<IssueTask>();
+			SparseArray<IssueTask> allIssues = activity.getIssues();
 
-				// show the issue only if it is assigned to the current user or
-				// to one of his groups
-				for (IssueTask issue : issues) {
-					if (issue.getAssignedWorker() != null
-							&& issue.getAssignedWorker().getId() == userId)
-						myIssues.add(issue);
-					else if (issue.getAssignedGroup() != null) {
-						for (Worker worker : issue.getAssignedGroup()
-								.getWorkers())
+			issues = new ArrayList<IssueTask>();
+			for (int i = 0, l = allIssues.size(); i < l; i++)
+				issues.add(allIssues.valueAt(i));
+		} else {
+			activity.setTitle(String.format(
+					getString(R.string.title_issue_fragment),
+					selectedPlace.getName()));
+			issues = selectedPlace.getIssues();
+		}
+
+		if (showMine) {
+			// show only issues of current user
+			int userId = activity.getUserId();
+			ArrayList<IssueTask> myIssues = new ArrayList<IssueTask>();
+
+			// show the issue only if it is assigned to the current user or
+			// to one of his groups
+			for (IssueTask issue : issues) {
+				Worker assignedWorker = issue.getAssignedWorker();
+				if (assignedWorker != null && assignedWorker.getId() == userId)
+					myIssues.add(issue);
+				else {
+					WorkGroup group = issue.getAssignedGroup();
+					if (group != null) {
+						for (Worker worker : group.getWorkers())
 							if (worker.getId() == userId) {
 								myIssues.add(issue);
 								break;
 							}
 					}
 				}
-				issues = myIssues;
 			}
-
-			activity.setTitle(getString(R.string.title_issue_fragment_all));
-		} else {
-			showMode.setVisible(false);
-			activity.setTitle(String.format(
-					getString(R.string.title_issue_fragment),
-					selectedPlace.getName()));
-			issues = selectedPlace.getIssues();
+			issues = myIssues;
 		}
 
 		Collections.sort(issues);
@@ -165,18 +169,6 @@ public class IssuesFragment extends Fragment {
 			noIssuesMessage.setVisibility(View.GONE);
 		else
 			noIssuesMessage.setVisibility(View.VISIBLE);
-	}
-
-	private List<IssueTask> getAllIssues(Place place) {
-
-		List<IssueTask> issues = new ArrayList<IssueTask>();
-
-		issues.addAll(place.getIssues());
-
-		for (Place p : place.getChildren())
-			issues.addAll(getAllIssues(p));
-
-		return issues;
 	}
 
 	OnClickListener reportIssueOnClickListener = new OnClickListener() {
@@ -229,8 +221,8 @@ public class IssuesFragment extends Fragment {
 		IssueTask issue;
 
 		public AsyncMarkIssueAsDone(String serverUrl, IssueTask issue) {
-			super(serverUrl + VineyardServer.ISSUES_API
-					+ issue.getId(), AsyncHttpRequest.Type.PUT);
+			super(serverUrl + VineyardServer.ISSUES_API + issue.getId(),
+					AsyncHttpRequest.Type.PUT);
 
 			this.issue = issue;
 
