@@ -39,7 +39,7 @@ static public function isIssueInstance() { return true; }
 	protected function onPostUpdate() {
 		if ($this->status == "resolved")
 			$this->notify("issue-resolved");
-		$this->notify("issue-modification");
+		else $this->notify("issue-modification");
 	}
 
     public static function handleRequest($method, array $requestParameters) {

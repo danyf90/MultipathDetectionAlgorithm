@@ -384,13 +384,15 @@ class Place extends TrackedORM implements IResource {
             FROM `task`
             WHERE `end_time` IS NULL
             AND `issuer` IS NULL
-            AND `place` = ?";
+            AND `place` = ?
+            AND `status` <> 'resolved'";
 
        $iQuery = "SELECT COUNT(*) AS `issues`
             FROM `task`
             WHERE `end_time` IS NULL
             AND `issuer` IS NOT NULL
-            AND `place` = ?";
+            AND `place` = ?
+	        AND `status` <> 'resolved'";
 
         $tSql = $pdo->prepare($tQuery);
         $tSql->execute(array($this->id));

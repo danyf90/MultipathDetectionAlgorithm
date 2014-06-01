@@ -18,6 +18,9 @@ abstract class AbstractTask extends TemporalORM implements IResource {
 	
     static $statusEnum = array('new','assigned','resolved');
     static $priorityEnum = array('low','medium','high');
+    
+    // additional recipients of notification, used when the task is reassigned
+    protected $additionalRecipients = array();
 
     public function check() {
         $v = new Validator($this, !isset($this->id));
@@ -112,6 +115,8 @@ abstract class AbstractTask extends TemporalORM implements IResource {
         );
 
         $recipients = $this->getNotificationRecipients();
+        
+        $recipients = array_merge($recipients, $this->additionalRecipients);
 
         $n->setData($message);
         $n->setRecipients($recipients);
@@ -154,8 +159,13 @@ abstract class AbstractTask extends TemporalORM implements IResource {
 		if ($this->status == "resolved")
 			return;
 
-		if (strlen($this->assigned_worker) > 0 || strlen($this->assigned_group) > 0)
+		if (strlen($this->assigned_worker) > 0 || strlen($this->assigned_group) > 0) {
 			$this->_data['status'] = "assigned";
+			$t = new static();
+			$t->load($this->id);
+			$this->additionalRecipients = $t->getNotificationRecipients();
+			unset($t);
+		}
 		else $this->_data['status'] = "new";
     }
 
