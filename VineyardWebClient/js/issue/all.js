@@ -53,9 +53,7 @@ var insertIssue = function (issue, $container) {
 		'<td>' + getTime(issue) + '</td>' + 
 		'<td><a href="/worker/' + issue.issuer + '">' + S.workers[issue.issuer].name + '</a></td></tr>';
 	
-	$row = $(row);
-	$row.find(".mark-as-solved").on("click", markIssueAsSolved);
-	$container.append($row);
+	$container.append(row);
 };
 
 
@@ -222,6 +220,8 @@ var loadList = function () {
 			});
 			
 			$("#show-issue-map").on("click", showMap);
+			
+			S.issueAllTableBody.on("click", ".mark-as-solved", markIssueAsSolved);
 		});
 	});
 		

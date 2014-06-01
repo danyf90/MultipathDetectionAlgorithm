@@ -52,8 +52,7 @@ var insertTask = function (task, $container) {
 		'<td class="priority ' + ((task.priority) ? task.priority : "") + '">' + task.priority + '</td>' + 
 		'<td>' + getTime(task) + '</td></tr>';
 	
-	$row = $(row).find(".mark-as-solved").on("click", markTaskAsSolved).end();
-	$container.append($row);
+	$container.append(row);
 };
 
 var insertJSONList = function (tasks) {
@@ -145,6 +144,7 @@ var loadList = function () {
 				$this.toggleClass("active");
 			});
 			
+			S.taskAllTableBody.on("click", ".mark-as-solved", markTaskAsSolved);
 		});
     });
 };
