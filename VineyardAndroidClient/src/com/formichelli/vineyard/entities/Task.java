@@ -5,7 +5,7 @@ import java.util.Locale;
 
 import org.json.JSONException;
 
-public interface Task {
+public interface Task extends Comparable<Task>{
 
 	public enum Status {
 		NEW, ASSIGNED, RESOLVED;

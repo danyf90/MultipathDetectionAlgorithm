@@ -1,7 +1,6 @@
 package com.formichelli.vineyard;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.http.HttpStatus;
@@ -149,8 +148,6 @@ public class IssuesFragment extends Fragment {
 			}
 			issues = myIssues;
 		}
-
-		Collections.sort(issues);
 
 		issueAdapter = new TaskExpandableAdapter<IssueTask>(activity,
 				R.layout.issues_list_item, R.layout.issue_view, issues, true,

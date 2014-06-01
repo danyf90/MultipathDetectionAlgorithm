@@ -61,6 +61,7 @@ public class SendImagesIntent extends IntentService {
 					LocalBroadcastManager.getInstance(this).sendBroadcast(photoUploadedIntent);
 					Log.i(TAG, "image " + path + " sent!");
 				} else {
+					LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(IMAGE_SENT));
 					Log.e(TAG, "An error occurred while sending the image: "
 							+ response.getStatusLine().getStatusCode());
 				}
@@ -73,8 +74,6 @@ public class SendImagesIntent extends IntentService {
 			if (f != null)
 				f.delete();
 		}
-
-		// TODO notify the user in some way
 	}
 	
 	private String getPhotoName(HttpResponse response) {

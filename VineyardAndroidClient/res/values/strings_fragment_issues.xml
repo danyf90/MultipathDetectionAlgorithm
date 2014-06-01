@@ -21,7 +21,7 @@
     <string name="issues_no_issues">There are no issues</string>
     <string name="issue_report_error">An error occurred, the issues has not been reported</string>
     <string name="issue_report_sending_images">Images uploading continues in background</string>
-    <string name="issue_report_sending_images_completed">Images uploading completed</string>
+    <string name="issue_report_sending_images_completed">Image uploading completed</string>
     <string name="issue_report_sending_images_error">An error occurred, one or more images has not been sent to the server</string>
     <string name="issue_mark_done_error">An error occurred, the issues has not been marked as done</string>
     <string name="issue_view_mine">Mine</string>

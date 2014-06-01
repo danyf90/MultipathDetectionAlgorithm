@@ -248,7 +248,6 @@ public class TasksFragment extends Fragment {
 		values.put(CalendarProvider.LOCATION, location);
 		values.put(CalendarProvider.EVENT, task.getId());
 
-
 		if (task.getPriority() != null) {
 
 			switch (task.getPriority()) {

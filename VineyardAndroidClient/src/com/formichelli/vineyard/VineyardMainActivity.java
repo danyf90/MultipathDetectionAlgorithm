@@ -219,11 +219,13 @@ public class VineyardMainActivity extends ActionBarActivity implements
 				switchFragment(placeViewerFragment);
 		} else if (currentFragment == loadingFragment)
 			askExit();
+		else if (currentFragment instanceof ReportIssueFragment)
+			((ReportIssueFragment) currentFragment).onBackPressed();
 
 		return;
 	}
 
-	public void askExit() {
+	private void askExit() {
 		new DialogFragment() {
 			@Override
 			public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -1065,7 +1067,14 @@ public class VineyardMainActivity extends ActionBarActivity implements
 
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			int issueId = intent.getExtras().getInt(SendImagesIntent.ISSUE_ID);
+			int issueId = intent.getExtras().getInt(SendImagesIntent.ISSUE_ID,
+					-1);
+
+			if (issueId == -1)
+				Toast.makeText(VineyardMainActivity.this,
+						R.string.issue_report_sending_images_error,
+						Toast.LENGTH_SHORT).show();
+			
 			String photoUrl = intent.getExtras().getString(
 					SendImagesIntent.PHOTO_NAME);
 

@@ -209,6 +209,7 @@ public class ReportIssueFragment extends Fragment {
 
 		switch (item.getItemId()) {
 		case R.id.action_report_issue_cancel:
+			gallery.removeAllImages();
 			activity.switchFragment();
 			break;
 		case R.id.action_report_issue_send:
@@ -437,6 +438,11 @@ public class ReportIssueFragment extends Fragment {
 			locationButton.setEnabled(false);
 		}
 
+	}
+
+	public void onBackPressed() {
+		gallery.removeAllImages();
+		activity.switchFragment();
 	}
 
 };

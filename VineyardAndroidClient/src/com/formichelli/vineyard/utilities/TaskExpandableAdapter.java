@@ -2,6 +2,7 @@ package com.formichelli.vineyard.utilities;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -87,12 +88,10 @@ public class TaskExpandableAdapter<T extends Task> extends
 		this.context = context;
 		this.groupResource = groupResource;
 		this.childResource = childResource;
-		if (objects != null)
-			this.objects = objects;
-		else
-			this.objects = new ArrayList<T>();
+		this.objects = new ArrayList<T>();
+		replaceItems(objects);
 		this.offset = showAdd ? 1 : 0;
-		this.showPlace = showPlace;
+		setShowPlace(showPlace);
 
 		this.reportIssueOnClickListener = reportIssueOnClickListener;
 		this.editOnClickListener = editOnClickListener;
@@ -323,9 +322,10 @@ public class TaskExpandableAdapter<T extends Task> extends
 	 *            new objects of the ExpandableListView
 	 */
 	public void replaceItems(List<T> objects) {
-		if (objects != null)
+		if (objects != null) {
 			this.objects = objects;
-		else
+			Collections.sort(this.objects);
+		} else
 			this.objects.clear();
 
 		notifyDataSetChanged();
