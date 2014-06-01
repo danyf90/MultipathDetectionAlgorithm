@@ -14,7 +14,7 @@ var getTime = function (issue) {
 var markIssueAsSolved = function () {
 	// this = span mark as solved
 	$this = $(this);
-	var issueId = $this.parent().parent().data("id");
+	var issueId = $this.parents("tr").data("id");
 	$.ajax({
 		type: 'PUT',
 		url: vineyard.config.serverUrl + "issue/" + issueId,
@@ -23,7 +23,7 @@ var markIssueAsSolved = function () {
 			status: 'resolved'
 		},
 		success: function() {
-			
+			debugger;
 			if ($("#toggle-all").hasClass("active")) {
 				// invalidate cache
 				S.allIssues = null;
@@ -53,7 +53,8 @@ var insertIssue = function (issue, $container) {
 		'<td>' + getTime(issue) + '</td>' + 
 		'<td><a href="/worker/' + issue.issuer + '">' + S.workers[issue.issuer].name + '</a></td></tr>';
 	
-	$row = $(row).find(".mark-as-solved").on("click", markIssueAsSolved).end();
+	$row = $(row);
+	$row.find(".mark-as-solved").on("click", markIssueAsSolved);
 	$container.append($row);
 };
 
@@ -114,7 +115,7 @@ var insertJSONList = function (issues) {
 			i++;
 		}
 	});
-	debugger;
+	
 	S.issueMapCenter = new google.maps.LatLng(avgLat/i, avgLong/i);
 };		
 
@@ -193,6 +194,8 @@ var loadList = function () {
 		$.getJSON(requestedUrl, function (issues) {
 			S.openIssues = issues;
 			insertJSONList(issues);
+			// sort by date descending
+			sortListBy(4, false);
 			
 			$("thead tr").eq(1).children().each(function(i){
 				$(this).on("click", function() {

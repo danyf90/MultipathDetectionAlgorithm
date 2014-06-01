@@ -118,6 +118,8 @@ var loadList = function () {
 		$.getJSON(requestedUrl, function (tasks) {
 			S.openTasks = tasks;
 			insertJSONList(tasks);
+			// sort by date descending
+			sortListBy(4, false);
 			
 			$("thead tr").eq(1).children().each(function(i){
 				$(this).on("click", function() {

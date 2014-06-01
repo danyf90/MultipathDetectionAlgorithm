@@ -116,6 +116,8 @@ var loadIssue = function(id) {
         // Position Link
         if (issue.latitude !== undefined)
             $("#issue-location-link a").text("Mostra mappa").on("click", showLocationPicker); 
+		else $("#issue-location-link").parents("tr").remove();
+		
 		// Status
 		$("#issue-status").addClass(issue.status).text(issue.status);
 		
