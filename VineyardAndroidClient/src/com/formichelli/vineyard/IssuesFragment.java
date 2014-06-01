@@ -97,6 +97,9 @@ public class IssuesFragment extends Fragment {
 	public boolean onOptionsItemSelected(MenuItem item) {
 
 		if (item.getItemId() == R.id.action_issue_view_mode) {
+
+			for (int i = 0, l = issueAdapter.getGroupCount(); i < l; i++)
+				issuesList.collapseGroup(i);
 			showMine = !showMine;
 			showMode.setTitle(showMine ? showAllLabel : showMineLabel);
 			loadData();

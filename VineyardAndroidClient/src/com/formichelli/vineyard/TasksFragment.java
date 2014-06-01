@@ -107,7 +107,12 @@ public class TasksFragment extends Fragment {
 		inflater.inflate(R.menu.tasks, menu);
 
 		showMode = menu.findItem(R.id.action_task_view_all_mine);
+		showMode.setTitle(showMine ? showAllLabel : showMineLabel);
+		showMode.setVisible(!calendarMode);
+
 		viewMode = menu.findItem(R.id.action_task_view_mode);
+		viewMode.setIcon(calendarMode ? viewModeListIcon : viewModeCalendarIcon);
+		viewMode.setVisible(selectedPlace == null);
 
 		if (first) {
 			// loadData() must be called just once after that both
@@ -125,6 +130,8 @@ public class TasksFragment extends Fragment {
 
 		switch (item.getItemId()) {
 		case R.id.action_task_view_all_mine:
+			for (int i = 0, l = taskAdapter.getGroupCount(); i < l; i++)
+				tasksListView.collapseGroup(i);
 			showMine = !showMine;
 			showMode.setTitle(showMine ? showAllLabel : showMineLabel);
 			break;
@@ -146,9 +153,8 @@ public class TasksFragment extends Fragment {
 
 	public void loadData() {
 		List<SimpleTask> tasks;
-		final boolean showAllTasks = selectedPlace == null;
 
-		if (showAllTasks) {
+		if (selectedPlace == null) {
 			viewMode.setVisible(true);
 
 			// show tasks of all places
@@ -264,8 +270,7 @@ public class TasksFragment extends Fragment {
 				color = Event.COLOR_PURPLE;
 				break;
 			}
-		}
-		else
+		} else
 			color = Event.COLOR_PURPLE;
 
 		values.put(CalendarProvider.COLOR, color);
