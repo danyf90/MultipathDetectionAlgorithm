@@ -15,7 +15,7 @@ class ORMException extends \Exception {
 
     public function getJSONMessage() {
 	if (!is_null($this->wrongFields))
-	    return $this->wrongFields();
+	    return $this->wrongFields;
 	return $this->getMessage();
     }
 

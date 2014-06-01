@@ -91,6 +91,7 @@ abstract class AbstractTask extends TemporalORM implements IResource {
 			$sql->execute(array($this->assigned_group, $this->modifier));
 			$recipients = array_merge( $recipients, $sql->fetchAll(PDO::FETCH_ASSOC | PDO::FETCH_COLUMN, 0));
 		}
+		
 		return $recipients;
 	}
 	
@@ -115,14 +116,11 @@ abstract class AbstractTask extends TemporalORM implements IResource {
         $n->setData($message);
         $n->setRecipients($recipients);
         $n->send();
+        
+        $debug = "Notifications to: " . implode(",", $recipients) . "\n";
+        error_log($debug, 3, "./php_log");
+        
 	}
-	
-    // Override AbstractORM::sanitize()
-/*    protected function sanitize() {
-	parent::sanitize();
-		$this->status = "assigned";
-    }
-*/
 
     // Override AbstractORM::listAll()
     public static function listAll() {
@@ -138,9 +136,9 @@ abstract class AbstractTask extends TemporalORM implements IResource {
 
     // Override AbstractORM::onPreInsert()
     protected function onPreInsert() {
-	parent::onPreInsert();
-	if (isset($this->assigned_worker) || isset($this->assigned_group))
-	    $this->_data['status'] = "assigned";
+		parent::onPreInsert();
+		if (strlen($this->assigned_worker) > 0 || strlen($this->assigned_group) > 0)
+			$this->_data['status'] = "assigned";
     }
 
     // Override AbstractORM::onPostInsert()
@@ -152,12 +150,13 @@ abstract class AbstractTask extends TemporalORM implements IResource {
     }
 
     protected function onPreUpdate() {
-	parent::onPreUpdate();
-	if ($this->status == "resolved")
-	    return;
+		parent::onPreUpdate();
+		if ($this->status == "resolved")
+			return;
 
-	if (isset($this->assigned_worker) || isset($this->assigned_group))
-	    $this->_data['status'] = "assigned";
+		if (strlen($this->assigned_worker) > 0 || strlen($this->assigned_group) > 0)
+			$this->_data['status'] = "assigned";
+		else $this->_data['status'] = "new";
     }
 
     // Override AbstractORM::getById() to include task revisions
