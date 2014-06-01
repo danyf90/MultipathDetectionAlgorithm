@@ -27,7 +27,8 @@
     <string name="action_retry">Retry</string>
     <string name="action_report_issue">Report</string>
     <string name="action_send">Send</string>
-    <string name="action_settings_restore">Restore default</string>
+    <string name="action_settings_restore">Restore default settings</string>
+    <string name="action_settings_change_password">Change password</string>
     <string name="action_up">Up</string>
     <string name="loading_message">Loading&#8230;</string>
     <string name="loading_places">Loading places&#8230;</string>

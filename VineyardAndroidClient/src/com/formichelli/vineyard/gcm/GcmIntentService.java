@@ -113,6 +113,7 @@ public class GcmIntentService extends IntentService {
 			break;
 		case UNKNOWN:
 			title = "unexpected notification type: " + title;
+			Log.e(TAG, "notification type: " + title);
 			break;
 		}
 
@@ -146,13 +147,18 @@ public class GcmIntentService extends IntentService {
 		else if (title.compareTo("issue-modification") == 0)
 			return NotificationType.ISSUE_MODIFICATION;
 
+		else if (title.compareTo("issue-resolved") == 0)
+			return NotificationType.ISSUE_RESOLVED;
+
 		else if (title.compareTo("task-insertion") == 0)
 			return NotificationType.TASK_INSERTION;
 
 		else if (title.compareTo("task-modification") == 0)
 			return NotificationType.TASK_MODIFICATION;
 
-		else
-			return NotificationType.UNKNOWN;
+		else if (title.compareTo("task-resolved") == 0)
+			return NotificationType.TASK_RESOLVED;
+		
+		return NotificationType.UNKNOWN;
 	}
 }

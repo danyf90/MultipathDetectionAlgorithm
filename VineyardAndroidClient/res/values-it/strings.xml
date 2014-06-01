@@ -25,6 +25,7 @@
     <string name="action_report_issue">Segnala</string>
     <string name="action_send">Invia</string>
     <string name="action_settings_restore">Ripristina predefiniti</string>
+    <string name="action_settings_change_password">Modifica password</string>
     <string name="action_up">Su</string>
     <string name="loading_message">Caricamento&#8230;</string>
     <string name="loading_places">Caricamento luoghi&#8230;</string>

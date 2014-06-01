@@ -20,6 +20,13 @@
     <string name="prefs_tasks_notifications">tasks_notification</string>
     <string name="tasks_notifications">Notify tasks</string>
     <string name="tasks_notifications_default">true</string>
-    
-    
+    <string name="change_password_title">Change password</string>
+    <string name="new_password">New password</string>
+    <string name="new_password_confirm">Confirm password</string>
+    <string name="change_password_confirm">Change</string>
+    <string name="change_password_cancel">Cancel</string>
+    <string name="new_password_confirm_error">Passwords mismatch</string>
+    <string name="change_password_error">Password not changed</string>
+    <string name="change_password_done">Password changed</string>
+
 </resources>

@@ -1,9 +1,5 @@
 package com.formichelli.vineyard;
 
-import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-
 import org.apache.http.HttpStatus;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
@@ -30,6 +26,7 @@ import android.widget.Toast;
 import com.formichelli.vineyard.entities.Worker;
 import com.formichelli.vineyard.entities.Worker.Role;
 import com.formichelli.vineyard.utilities.AsyncHttpRequest;
+import com.formichelli.vineyard.utilities.Util;
 import com.formichelli.vineyard.utilities.VineyardServer;
 
 /**
@@ -208,19 +205,8 @@ public class LoginActivity extends Activity {
 			else
 				addParam(new BasicNameValuePair(Worker.USERNAME, mEmail));
 
-			try {
-				String passwordHash = getHexString(MessageDigest.getInstance(
-						"MD5").digest(mPassword.getBytes()));
-				addParam(new BasicNameValuePair(Worker.PASSWORD, passwordHash));
-			} catch (NoSuchAlgorithmException e) {
-				cancel(true);
-			}
-			
+			addParam(new BasicNameValuePair(Worker.PASSWORD, Util.md5(mPassword)));
 			addParam(new BasicNameValuePair(Worker.ROLES, Role.OPERATOR.toString()));
-		}
-
-		private String getHexString(byte[] digest) {
-			return String.format("%032x", new BigInteger(1, digest));
 		}
 
 		@Override

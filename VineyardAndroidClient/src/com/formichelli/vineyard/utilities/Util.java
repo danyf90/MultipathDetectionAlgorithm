@@ -1,5 +1,9 @@
 package com.formichelli.vineyard.utilities;
 
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListAdapter;
@@ -24,10 +28,29 @@ public class Util {
 		}
 
 		ViewGroup.LayoutParams params = listView.getLayoutParams();
-		
+
 		params.height = totalHeight
 				+ (listView.getDividerHeight() * (listAdapter.getCount() - 1));
 		listView.setLayoutParams(params);
 		listView.requestLayout();
 	}
+
+	/**
+	 * Compute the md5 of @p value and returns its hexadecimal value
+	 */
+	public static String md5(String value) {
+
+		try {
+			return getHexString(MessageDigest.getInstance("MD5").digest(
+					value.getBytes()));
+		} catch (NoSuchAlgorithmException e) {
+			return null;
+		}
+
+	}
+
+	private static String getHexString(byte[] digest) {
+		return String.format("%032x", new BigInteger(1, digest));
+	}
+
 }

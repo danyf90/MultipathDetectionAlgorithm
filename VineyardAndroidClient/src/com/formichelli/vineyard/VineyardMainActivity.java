@@ -187,7 +187,8 @@ public class VineyardMainActivity extends ActionBarActivity implements
 			break;
 
 		case 3: // settings
-			startActivity(new Intent(this, SettingsActivity.class));
+			startActivity(new Intent(this, SettingsActivity.class)
+					.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION));
 			break;
 
 		case 4: // logout
@@ -1074,7 +1075,7 @@ public class VineyardMainActivity extends ActionBarActivity implements
 				Toast.makeText(VineyardMainActivity.this,
 						R.string.issue_report_sending_images_error,
 						Toast.LENGTH_SHORT).show();
-			
+
 			String photoUrl = intent.getExtras().getString(
 					SendImagesIntent.PHOTO_NAME);
 

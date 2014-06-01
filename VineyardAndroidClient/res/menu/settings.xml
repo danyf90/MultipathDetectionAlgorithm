@@ -5,8 +5,11 @@
 
     <item
         android:id="@+id/action_settings_restore"
-        android:icon="@drawable/action_refresh"
-        android:title="@string/action_settings_restore"
-        android:showAsAction="always"/>
+        android:showAsAction="never"
+        android:title="@string/action_settings_restore"/>
+    <item
+        android:id="@+id/action_settings_change_password"
+        android:showAsAction="never"
+        android:title="@string/action_settings_change_password"/>
 
 </menu>

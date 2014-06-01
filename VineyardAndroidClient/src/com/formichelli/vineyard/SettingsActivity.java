@@ -1,6 +1,13 @@
 package com.formichelli.vineyard;
 
+import java.util.ArrayList;
+
+import org.apache.http.HttpStatus;
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -13,10 +20,19 @@ import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceScreen;
+import android.util.Log;
+import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.EditText;
 import android.widget.Toast;
+
+import com.formichelli.vineyard.utilities.AsyncHttpRequest;
+import com.formichelli.vineyard.utilities.Util;
+import com.formichelli.vineyard.utilities.VineyardServer;
 
 /**
  * Activity which manages application settings
@@ -24,9 +40,7 @@ import android.widget.Toast;
 @SuppressWarnings("deprecation")
 public class SettingsActivity extends PreferenceActivity implements
 		OnSharedPreferenceChangeListener, OnPreferenceClickListener {
-
-	@SuppressWarnings("unused")
-	private static final String TAG = "SettingsActivity";
+	public static final String SERVER_URL = null;
 
 	private enum Validity {
 		VALID
@@ -34,7 +48,6 @@ public class SettingsActivity extends PreferenceActivity implements
 
 	PreferenceScreen ps;
 	String oldValue;
-	private MenuItem restoreDefault;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -50,11 +63,21 @@ public class SettingsActivity extends PreferenceActivity implements
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.settings, menu);
 
-		restoreDefault = menu.findItem(R.id.action_settings_restore);
-
-		restoreDefault.setOnMenuItemClickListener(this.restoreSettings);
+		menu.findItem(R.id.action_settings_restore).setOnMenuItemClickListener(
+				restoreSettings);
+		menu.findItem(R.id.action_settings_change_password)
+				.setOnMenuItemClickListener(changePassword);
 
 		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.action_settings_restore:
+		case R.id.action_settings_change_password:
+		}
+		return false;
 	}
 
 	@Override
@@ -220,8 +243,7 @@ public class SettingsActivity extends PreferenceActivity implements
 		}
 
 		private void restorePreferences() {
-			setTextPreference(
-					R.string.prefs_request_timeout,
+			setTextPreference(R.string.prefs_request_timeout,
 					getString(R.string.request_timeout_default));
 			setBooleanPreference(
 					R.string.prefs_issues_notifications,
@@ -255,5 +277,97 @@ public class SettingsActivity extends PreferenceActivity implements
 
 			setPreferenceSummary(findPreference(getString(id)));
 		}
+	};
+
+	/**
+	 * Show password change dialog
+	 */
+	OnMenuItemClickListener changePassword = new OnMenuItemClickListener() {
+		Dialog dialog;
+
+		@Override
+		public boolean onMenuItemClick(MenuItem item) {
+
+			dialog = new Dialog(SettingsActivity.this);
+			dialog.setContentView(R.layout.dialog_change_password);
+			dialog.setTitle(SettingsActivity.this
+					.getString(R.string.change_password_title));
+			dialog.findViewById(R.id.change_password_button)
+					.setOnClickListener(changePasswordRequest);
+			dialog.show();
+			return false;
+		}
+
+		private OnClickListener changePasswordRequest = new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				String newPassword = ((EditText) dialog
+						.findViewById(R.id.new_password)).getText().toString();
+				String newPasswordConfirm = ((EditText) dialog
+						.findViewById(R.id.new_password_confirm)).getText()
+						.toString();
+
+				if (newPassword.compareTo(newPasswordConfirm) == 0) {
+					String serverUrl = ps.getSharedPreferences().getString(
+							getString(R.string.prefs_server_url), null);
+					int userId = ps.getSharedPreferences().getInt(
+							getString(R.string.prefs_user_id), -1);
+
+					new AsyncPasswordChange(serverUrl
+							+ VineyardServer.WORKERS_API + userId, newPassword)
+							.execute();
+				} else
+					((EditText) dialog.findViewById(R.id.new_password_confirm))
+							.setError(SettingsActivity.this
+									.getString(R.string.new_password_confirm_error));
+
+			}
+		};
+
+		class AsyncPasswordChange extends AsyncHttpRequest {
+			private final static String TAG = "AsyncPasswordChange";
+
+			public AsyncPasswordChange(String serverUrl, String password) {
+				super(serverUrl, Type.PUT);
+				ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
+				params.add(new BasicNameValuePair("password", Util
+						.md5(password)));
+				setParams(params);
+			}
+
+			@Override
+			protected void onPreExecute() {
+				dialog.findViewById(R.id.settings_change_password_form)
+						.setVisibility(View.INVISIBLE);
+				dialog.findViewById(R.id.settings_change_password_progress)
+						.setVisibility(View.VISIBLE);
+			}
+
+			@Override
+			protected void onPostExecute(Pair<Integer, String> response) {
+				if (response != null
+						&& response.first == HttpStatus.SC_ACCEPTED) {
+					dialog.dismiss();
+					Toast.makeText(SettingsActivity.this,SettingsActivity.this
+							.getString(R.string.change_password_done),
+							Toast.LENGTH_SHORT).show();
+				} else {
+					if (response != null)
+						Log.e(TAG, response.first + ": " + response.second);
+					dialog.findViewById(R.id.settings_change_password_form)
+							.setVisibility(View.VISIBLE);
+					dialog.findViewById(R.id.settings_change_password_progress)
+							.setVisibility(View.INVISIBLE);
+					Toast.makeText(
+							SettingsActivity.this,
+							SettingsActivity.this
+									.getString(R.string.change_password_error),
+							Toast.LENGTH_SHORT).show();
+				}
+			}
+
+		}
+
 	};
 }
