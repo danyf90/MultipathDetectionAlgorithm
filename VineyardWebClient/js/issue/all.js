@@ -23,7 +23,7 @@ var markIssueAsSolved = function () {
 			status: 'resolved'
 		},
 		success: function() {
-			debugger;
+
 			if ($("#toggle-all").hasClass("active")) {
 				// invalidate cache
 				S.allIssues = null;
@@ -38,6 +38,9 @@ var markIssueAsSolved = function () {
 				.remove();
 			}
 			else $this.parents("tr").remove();
+			
+			S.openIssuesCount = $("#open-issues");
+			S.openIssuesCount.text(parseInt(S.openIssuesCount.text()) - 1);
 		}
 	});
 };
