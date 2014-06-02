@@ -482,7 +482,8 @@ tr:hover .delete-row {
 
 #issue-map { flex: 1; }
 
-#issue-photos { display: flex; justify-content: space-between; }
+#issue-photos { white-space: nowrap; overflow-x: auto; max-width: 550px; }
+#issue-photos img { padding: 0 1px; }
 
 /**
  * GROUPS

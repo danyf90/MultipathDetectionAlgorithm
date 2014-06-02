@@ -109,7 +109,7 @@ var loadIssue = function(id) {
 		if (issue.photos != null)
 			for (var i = 0, l = issue.photos.length; i < l; i++)
 				$("#issue-photos")
-				.append('<img src="http://vineyard-server.no-ip.org/api/photo/' + issue.photos[i] + '?h=100">');
+				.append('<a target="_blank" href="http://vineyard-server.no-ip.org/api/photo/' + issue.photos[i] + '"><img src="http://vineyard-server.no-ip.org/api/photo/' + issue.photos[i] + '?h=100"></a>');
 		
         // Description
         $("#issue-description").val(issue.description); 
