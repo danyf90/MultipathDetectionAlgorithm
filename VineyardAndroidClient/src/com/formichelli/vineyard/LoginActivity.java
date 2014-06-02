@@ -97,7 +97,7 @@ public class LoginActivity extends Activity {
 				new View.OnClickListener() {
 					@Override
 					public void onClick(View view) {
-						hideKeyboard();
+						Util.hideKeyboard(LoginActivity.this);
 						attemptLogin();
 					}
 				});
@@ -249,15 +249,6 @@ public class LoginActivity extends Activity {
 		protected void onCancelled() {
 			mAuthTask = null;
 			showProgress(false);
-		}
-	}
-
-	private void hideKeyboard() {
-		if (this.getCurrentFocus() != null) {
-			InputMethodManager inputManager = (InputMethodManager) this
-					.getSystemService(Context.INPUT_METHOD_SERVICE);
-			inputManager.hideSoftInputFromWindow(this.getCurrentFocus()
-					.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
 		}
 	}
 }

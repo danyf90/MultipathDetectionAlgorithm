@@ -39,6 +39,7 @@ import com.formichelli.vineyard.entities.SimpleTask;
 import com.formichelli.vineyard.entities.Task.Priority;
 import com.formichelli.vineyard.utilities.AsyncHttpRequest;
 import com.formichelli.vineyard.utilities.SendImagesIntent;
+import com.formichelli.vineyard.utilities.Util;
 import com.formichelli.vineyard.utilities.VineyardGallery;
 import com.formichelli.vineyard.utilities.VineyardServer;
 import com.google.android.gms.common.ConnectionResult;
@@ -206,6 +207,7 @@ public class ReportIssueFragment extends Fragment {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+		Util.hideKeyboard(activity);
 
 		switch (item.getItemId()) {
 		case R.id.action_report_issue_cancel:
@@ -213,10 +215,9 @@ public class ReportIssueFragment extends Fragment {
 			activity.switchFragment();
 			break;
 		case R.id.action_report_issue_send:
-			if (parseFields()) {
+			if (parseFields())
 				new AsyncIssueSend(vineyardServer.getUrl(), issue).execute();
-				break;
-			}
+			break;
 		default:
 			return false;
 		}

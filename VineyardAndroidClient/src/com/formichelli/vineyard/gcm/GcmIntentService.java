@@ -18,7 +18,6 @@ import android.util.Log;
 public class GcmIntentService extends IntentService {
 	private static final String TAG = "GcmIntentService";
 
-	public static final int NOTIFICATION_ID = 1;
 	private static final String TITLE = "title";
 	private static final String DESCRIPTION = "description";
 	private static final String PLACE_ID = "placeId";
@@ -130,7 +129,8 @@ public class GcmIntentService extends IntentService {
 								.bigText(description))
 				.setContentText(description).setContentIntent(contentIntent);
 
-		mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());
+		// using different id for notifications ensure that they are shown separately
+		mNotificationManager.notify((int) System.currentTimeMillis(), mBuilder.build());
 
 		Vibrator v = (Vibrator) getSystemService(VIBRATOR_SERVICE);
 		if (v != null) {

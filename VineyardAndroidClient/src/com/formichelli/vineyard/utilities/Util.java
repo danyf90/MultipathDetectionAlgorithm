@@ -4,8 +4,11 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import android.app.Activity;
+import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
@@ -49,8 +52,21 @@ public class Util {
 
 	}
 
+	/**
+	 * Hide soft-keyboard if it is showing
+	 */
+	public static void hideKeyboard(Activity context) {
+		if (context.getCurrentFocus() != null) {
+			InputMethodManager inputManager = (InputMethodManager) context
+					.getSystemService(Context.INPUT_METHOD_SERVICE);
+			inputManager.hideSoftInputFromWindow(context.getCurrentFocus()
+					.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+		}
+	}
+	
 	private static String getHexString(byte[] digest) {
 		return String.format("%032x", new BigInteger(1, digest));
 	}
 
+	
 }

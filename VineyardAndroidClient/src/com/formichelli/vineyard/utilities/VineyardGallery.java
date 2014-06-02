@@ -304,7 +304,7 @@ public class VineyardGallery extends HorizontalScrollView {
 	 * } Removes the images that are currently selected
 	 */
 	public void removeSelectedImages() {
-		for (ImageView v : selected)
+		for (ImageView v : new ArrayList<ImageView>(selected))
 			removeImage(v);
 	}
 
@@ -312,7 +312,7 @@ public class VineyardGallery extends HorizontalScrollView {
 	 * Remove all the images from the gallery
 	 */
 	public void removeAllImages() {
-		for (ImageView image : images)
+		for (ImageView image : new ArrayList<ImageView>(images))
 			removeImage(image);
 	}
 
@@ -320,7 +320,7 @@ public class VineyardGallery extends HorizontalScrollView {
 	 * Deselect all the images }
 	 */
 	private void deselectAll() {
-		for (ImageView v : selected)
+		for (ImageView v : new ArrayList<ImageView>(selected))
 			setSelected(v, false);
 	}
 
