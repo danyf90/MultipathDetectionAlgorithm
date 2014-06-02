@@ -11,10 +11,12 @@
     <string name="issues_notifications">Notifica i problemi</string>
     <string name="tasks_notifications">Notifica i lavori</string>
     <string name="change_password_title">Modifica password</string>
+    <string name="old_password">Password attuale</string>
     <string name="new_password">Nuova password</string>
     <string name="new_password_confirm">Conferma password</string>
     <string name="change_password_confirm">Cambia</string>
     <string name="change_password_cancel">Annulla</string>
+    <string name="old_password_error">La password attuale non è corretta</string>
     <string name="new_password_confirm_error">Le password non corrispondono</string>
     <string name="change_password_error">Password non modificata</string>
     <string name="change_password_done">Password modificata</string>

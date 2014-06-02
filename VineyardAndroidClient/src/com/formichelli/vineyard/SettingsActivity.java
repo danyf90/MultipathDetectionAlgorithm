@@ -30,6 +30,7 @@ import android.view.View.OnClickListener;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.formichelli.vineyard.entities.Worker;
 import com.formichelli.vineyard.utilities.AsyncHttpRequest;
 import com.formichelli.vineyard.utilities.Util;
 import com.formichelli.vineyard.utilities.VineyardServer;
@@ -302,25 +303,35 @@ public class SettingsActivity extends PreferenceActivity implements
 
 			@Override
 			public void onClick(View v) {
+				SharedPreferences sp = ps.getSharedPreferences();
+				String oldPassword = ((EditText) dialog
+						.findViewById(R.id.old_password)).getText().toString();
+				String actualOldPassword = sp.getString(
+						getString(R.string.prefs_password), null);
 				String newPassword = ((EditText) dialog
 						.findViewById(R.id.new_password)).getText().toString();
 				String newPasswordConfirm = ((EditText) dialog
 						.findViewById(R.id.new_password_confirm)).getText()
 						.toString();
 
-				if (newPassword.compareTo(newPasswordConfirm) == 0) {
-					String serverUrl = ps.getSharedPreferences().getString(
+				if (oldPassword.compareTo(actualOldPassword) != 0)
+					((EditText) dialog.findViewById(R.id.old_password))
+							.setError(SettingsActivity.this
+									.getString(R.string.old_password_error));
+				else if (newPassword.compareTo(newPasswordConfirm) != 0)
+					((EditText) dialog.findViewById(R.id.new_password_confirm))
+							.setError(SettingsActivity.this
+									.getString(R.string.new_password_confirm_error));
+				else {
+					String serverUrl = sp.getString(
 							getString(R.string.prefs_server_url), null);
-					int userId = ps.getSharedPreferences().getInt(
-							getString(R.string.prefs_user_id), -1);
+					int userId = sp.getInt(getString(R.string.prefs_user_id),
+							-1);
 
 					new AsyncPasswordChange(serverUrl
 							+ VineyardServer.WORKERS_API + userId, newPassword)
 							.execute();
-				} else
-					((EditText) dialog.findViewById(R.id.new_password_confirm))
-							.setError(SettingsActivity.this
-									.getString(R.string.new_password_confirm_error));
+				}
 
 			}
 		};
@@ -328,12 +339,16 @@ public class SettingsActivity extends PreferenceActivity implements
 		class AsyncPasswordChange extends AsyncHttpRequest {
 			private final static String TAG = "AsyncPasswordChange";
 
+			String newPassword;
+
 			public AsyncPasswordChange(String serverUrl, String password) {
 				super(serverUrl, Type.PUT);
 				ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
-				params.add(new BasicNameValuePair("password", Util
+				params.add(new BasicNameValuePair(Worker.PASSWORD, Util
 						.md5(password)));
 				setParams(params);
+
+				newPassword = password;
 			}
 
 			@Override
@@ -348,17 +363,25 @@ public class SettingsActivity extends PreferenceActivity implements
 			protected void onPostExecute(Pair<Integer, String> response) {
 				if (response != null
 						&& response.first == HttpStatus.SC_ACCEPTED) {
+					ps.getSharedPreferences()
+							.edit()
+							.putString(getString(R.string.prefs_password),
+									newPassword).apply();
 					dialog.dismiss();
-					Toast.makeText(SettingsActivity.this,SettingsActivity.this
-							.getString(R.string.change_password_done),
+					Toast.makeText(
+							SettingsActivity.this,
+							SettingsActivity.this
+									.getString(R.string.change_password_done),
 							Toast.LENGTH_SHORT).show();
 				} else {
 					if (response != null)
 						Log.e(TAG, response.first + ": " + response.second);
+
 					dialog.findViewById(R.id.settings_change_password_form)
 							.setVisibility(View.VISIBLE);
 					dialog.findViewById(R.id.settings_change_password_progress)
 							.setVisibility(View.INVISIBLE);
+
 					Toast.makeText(
 							SettingsActivity.this,
 							SettingsActivity.this

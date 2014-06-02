@@ -21,10 +21,12 @@
     <string name="tasks_notifications">Notify tasks</string>
     <string name="tasks_notifications_default">true</string>
     <string name="change_password_title">Change password</string>
+    <string name="old_password">Current password</string>
     <string name="new_password">New password</string>
     <string name="new_password_confirm">Confirm password</string>
     <string name="change_password_confirm">Change</string>
     <string name="change_password_cancel">Cancel</string>
+    <string name="old_password_error">Current password is wrong</string>
     <string name="new_password_confirm_error">Passwords mismatch</string>
     <string name="change_password_error">Password not changed</string>
     <string name="change_password_done">Password changed</string>
