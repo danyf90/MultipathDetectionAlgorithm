@@ -8,7 +8,9 @@ use \Vineyard\Utility\IResource;
 use \Vineyard\Utility\TemporalORM;
 use \Vineyard\Utility\TCrudRequestHandlers;
 use \Vineyard\Utility\Validator;
-use Vineyard\Utility\Notificator;
+use \Vineyard\Utility\Notificator;
+
+use \Vineyard\Model\Place;
 
 abstract class AbstractTask extends TemporalORM implements IResource {
 	
@@ -62,6 +64,12 @@ abstract class AbstractTask extends TemporalORM implements IResource {
     }
 
     public static function getTableName() { return 'task'; }
+    
+    // Override TrackedORM::updateLastModified to include Place lastModified update
+    protected static function updateLastModified() {
+		parent::updateLastModified();
+		Place::updateLastModified();
+    }
 	
 	protected function getNotificationRecipients() {
 		$recipients = array();
