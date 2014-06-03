@@ -37,7 +37,8 @@ var loadWorkerInsertion = function () {
 		for (var i = 0, l = this.selectedOptions.length; i < l; i++)
 			values.push(this.selectedOptions[i].value);
 
-		this.nextSibling.value = values.join(",");
+		this.nextElementSibling.name = this.nextElementSibling.dataset.name;
+		this.nextElementSibling.value = values.join(",");
 	});
 	
 	$("#control-ok").on("click", insertWorker);
@@ -94,8 +95,8 @@ var loadWorkerModification = function (id) {
 			for (var i = 0, l = this.selectedOptions.length; i < l; i++)
 				values.push(this.selectedOptions[i].value);
 			
-			this.nextElementSibling.value = values.join(",");
 			this.nextElementSibling.name = this.nextElementSibling.dataset.name;
+			this.nextElementSibling.value = values.join(",");
 			
 			S.controls.css("visibility", "visible");
 		});
