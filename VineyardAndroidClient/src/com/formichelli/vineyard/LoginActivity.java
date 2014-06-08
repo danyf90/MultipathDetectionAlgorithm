@@ -6,7 +6,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -18,7 +17,6 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -205,8 +203,10 @@ public class LoginActivity extends Activity {
 			else
 				addParam(new BasicNameValuePair(Worker.USERNAME, mEmail));
 
-			addParam(new BasicNameValuePair(Worker.PASSWORD, Util.md5(mPassword)));
-			addParam(new BasicNameValuePair(Worker.ROLES, Role.OPERATOR.toString()));
+			addParam(new BasicNameValuePair(Worker.PASSWORD,
+					Util.md5(mPassword)));
+			addParam(new BasicNameValuePair(Worker.ROLES,
+					Role.OPERATOR.toString()));
 		}
 
 		@Override
@@ -240,7 +240,7 @@ public class LoginActivity extends Activity {
 				Log.e(TAG, response.first + ": " + response.second);
 			else
 				Log.e(TAG, "response is null");
-			
+
 			Toast.makeText(LoginActivity.this, getString(R.string.error_login),
 					Toast.LENGTH_LONG).show();
 		}

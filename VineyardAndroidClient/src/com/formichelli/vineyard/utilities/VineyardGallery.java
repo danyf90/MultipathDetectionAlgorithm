@@ -404,7 +404,6 @@ public class VineyardGallery extends HorizontalScrollView {
 										break;
 									case 1: // pick photo from gallery
 
-										// Uri tempUri = Uri.fromFile(tempFile);
 										Intent pickImageIntent = new Intent(
 												Intent.ACTION_PICK,
 												android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);

@@ -57,16 +57,15 @@ public class Util {
 	 */
 	public static void hideKeyboard(Activity context) {
 		if (context.getCurrentFocus() != null) {
-			InputMethodManager inputManager = (InputMethodManager) context
-					.getSystemService(Context.INPUT_METHOD_SERVICE);
-			inputManager.hideSoftInputFromWindow(context.getCurrentFocus()
-					.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+			((InputMethodManager) context
+					.getSystemService(Context.INPUT_METHOD_SERVICE))
+					.hideSoftInputFromWindow(context.getCurrentFocus()
+							.getWindowToken(),
+							InputMethodManager.HIDE_NOT_ALWAYS);
 		}
 	}
-	
+
 	private static String getHexString(byte[] digest) {
 		return String.format("%032x", new BigInteger(1, digest));
 	}
-
-	
 }
