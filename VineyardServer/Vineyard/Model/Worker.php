@@ -51,13 +51,16 @@ class Worker extends TrackedORM implements IResource {
     protected function sendPasswordByEmail($password) {
 
 		$to = $this->email;
+		$from = "no-reply@vineyard-server.no-ip.org";
 		$subject = "Welcome to Vineyard!";
 		$message = "These are your credential to access Vineyard:\nUsername: " . $this->username . "\nPassword: " . $password . "\n";
-		$headers = 'From: webmaster@vineyard-server.no-ip.org' . "\r\n" .
-                	'Reply-To: webmaster@vineyard-server.no-ip.org' . "\r\n" .
-	                'X-Mailer: PHP/' . phpversion();
+		
+		$headers = "From: $from \r\n";
+		$headers .= "Reply-To: $from \r\n";
+		$headers .= "Return-Path: $from\r\n";
+		$headers .= 'X-Mailer: PHP/' . phpversion();
 
-        	mail($to, $subject, $headers, "-f webmaster@vineyard-server.no-ip.org");
+        mail($to, $subject, $headers);
     }
 
 

@@ -37,7 +37,7 @@ static public function isIssueInstance() { return true; }
 	}
 	
 	protected function onPostUpdate() {
-		if ($this->status == "resolved")
+		if (strtolower($this->status) == "resolved")
 			$this->notify("issue-resolved");
 		else $this->notify("issue-modification");
 	}

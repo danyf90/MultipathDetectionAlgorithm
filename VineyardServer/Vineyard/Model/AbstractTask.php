@@ -164,7 +164,7 @@ abstract class AbstractTask extends TemporalORM implements IResource {
 
     protected function onPreUpdate() {
 		parent::onPreUpdate();
-		if ($this->status == "resolved")
+		if (strtolower($this->status) == "resolved")
 			return;
 
 		if (strlen($this->assigned_worker) > 0 || strlen($this->assigned_group) > 0) {

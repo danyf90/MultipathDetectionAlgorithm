@@ -30,7 +30,7 @@ class Task extends AbstractTask implements IResource {
     static public function getById($id) { return parent::getById($id, false); }
 	
 	protected function onPostUpdate() {
-		if ($this->status == "resolved")
+		if (strtolower($this->status) == "resolved")
 			$this->notify("task-resolved");
 		else $this->notify("task-modification");
 
