@@ -416,9 +416,10 @@ public class TasksFragment extends Fragment {
 
 		@Override
 		protected void onPostExecute(Pair<Integer, String> response) {
-			if (response != null && response.first == HttpStatus.SC_ACCEPTED)
+			if (response != null && response.first == HttpStatus.SC_ACCEPTED) {
+				activity.getTasks().remove(task.getId());
 				task.getPlace().removeTask(task);
-			else {
+			} else {
 				Log.e(TAG, response.first + ": " + response.second);
 				Toast.makeText(activity,
 						activity.getString(R.string.issue_mark_done_error),

@@ -241,9 +241,10 @@ public class IssuesFragment extends Fragment {
 
 		@Override
 		protected void onPostExecute(Pair<Integer, String> response) {
-			if (response != null && response.first == HttpStatus.SC_ACCEPTED)
+			if (response != null && response.first == HttpStatus.SC_ACCEPTED) {
+				activity.getIssues().remove(issue.getId());
 				issue.getPlace().removeIssue(issue);
-			else {
+			} else {
 				Log.e(TAG, response.first + ": " + response.second);
 				Toast.makeText(activity,
 						activity.getString(R.string.issue_mark_done_error),

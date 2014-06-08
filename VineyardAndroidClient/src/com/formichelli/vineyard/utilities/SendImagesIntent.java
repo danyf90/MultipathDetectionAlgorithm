@@ -40,7 +40,7 @@ public class SendImagesIntent extends IntentService {
 		ArrayList<String> images = intent.getExtras().getStringArrayList(IMAGES);
 
 		for (String path : images) {
-			Log.i(TAG, "Sending image" + path + " to the server...");
+			Log.i(TAG, "Sending image " + path + " to the server...");
 			File image = new File(path);
 
 			HttpPost request = new HttpPost(serverUrl);

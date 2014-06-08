@@ -1068,16 +1068,18 @@ public class VineyardMainActivity extends ActionBarActivity implements
 
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			int issueId = intent.getExtras().getInt(SendImagesIntent.ISSUE_ID,
-					-1);
+			Bundle extras = intent.getExtras();
 
-			if (issueId == -1)
+			if (extras == null) {
 				Toast.makeText(VineyardMainActivity.this,
 						R.string.issue_report_sending_images_error,
 						Toast.LENGTH_SHORT).show();
+				return;
+			}
 
-			String photoUrl = intent.getExtras().getString(
-					SendImagesIntent.PHOTO_NAME);
+			int issueId = extras.getInt(SendImagesIntent.ISSUE_ID);
+
+			String photoUrl = extras.getString(SendImagesIntent.PHOTO_NAME);
 
 			Toast.makeText(VineyardMainActivity.this,
 					R.string.issue_report_sending_images_completed,
